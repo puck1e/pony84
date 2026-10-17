@@ -6,8 +6,9 @@
 <meta name="theme-color" content="#23211e">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <title>PONY84</title>
+<script>try { if (localStorage.getItem('pony84-skin') === 'spg') document.documentElement.dataset.skin = 'spg'; } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,800&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Narrow:wght@500;600;700&family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,800&family=DM+Mono:wght@400;500&family=VT323&display=swap">
 <style>
 /* Layout: una colonna "hardware" larga quanto un telefono, centrata; due viste (SEQ / MIXER) che si scambiano con uno swipe. */
 :root {
@@ -309,6 +310,132 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .guide-link { color: var(--lcd); font-size: 15px; letter-spacing: .5px; text-underline-offset: 3px; }
 a.ghost { display: inline-flex; align-items: center; text-decoration: none; }
 @media (prefers-reduced-motion: reduce) { .key.pending { animation: none; } }
+
+/* ===== SKIN SAD PONY GIRL: giallo "Guerrilla", maschere rosa, display VHS (weirdcore / nostalgiacore) ===== */
+.lcd .l3 { display: none; }
+html[data-skin="spg"] {
+  --body: #e6e22b; --panel: rgba(247,240,221,.78); --key: #f7f0dd; --edge: #2a1a22; --line: #2a1a22;
+  --cream: #2a1a22; --muted: #4f3340; --ink: #fffaf0; --white: #fffaf0; --dark: #2a1a22;
+  --red: #d92b22; --orange: #c7417b; --yellow: #6fb3ad; --pink: #e7578a; --coral: #f2704f; --deep: #8a1d4a;
+  --led: #ff3d7f; --led-off: rgba(42,26,34,.2);
+  --lcd-bg: linear-gradient(180deg, #8cc4be 0%, #5d9ea3 52%, #cdbf98 100%); --lcd: #fffaf0;
+  --cap-hi: #f7a3c0; --cap-mid: #e7578a; --cap-lo: #b8346f; --ring: #2a1a22;
+  --shade: rgba(42,26,34,.55); --veil: rgba(42,26,34,.55);
+  --display: 'Archivo Narrow', 'Arial Narrow', sans-serif;
+  --title: 'Anton', 'Arial Narrow', sans-serif;
+  --vhs: 'VT323', ui-monospace, monospace;
+  color-scheme: light;
+}
+html[data-skin="spg"] body { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='124'%3E%3Cg fill='%23e7578a' fill-opacity='.2' fill-rule='evenodd'%3E%3Cpath transform='translate(10 8) scale(.44) rotate(-8 50 50)' d='M50 4C78 4 94 22 94 46C94 70 80 88 68 102H32C20 88 6 70 6 46C6 22 22 4 50 4Z M16 36L44 41L42 56L20 52Z M84 36L56 41L58 56L80 52Z M50 46L44 72H56Z M41 80H59A5 5 0 0 1 59 90H41A5 5 0 0 1 41 80Z'/%3E%3Cpath transform='translate(70 70) scale(.44) rotate(6 50 50)' d='M50 4C78 4 94 22 94 46C94 70 80 88 68 102H32C20 88 6 70 6 46C6 22 22 4 50 4Z M16 36L44 41L42 56L20 52Z M84 36L56 41L58 56L80 52Z M50 46L44 72H56Z M41 80H59A5 5 0 0 1 59 90H41A5 5 0 0 1 41 80Z'/%3E%3C/g%3E%3C/svg%3E"); font-synthesis: none; }
+html[data-skin="spg"] body::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 60%, rgba(40,20,30,.2) 100%), repeating-linear-gradient(0deg, rgba(0,0,0,.035) 0 1px, transparent 1px 3px); }
+html[data-skin="spg"] :is(.logo, .tab, .trk .nm, .mach, .pad b, .key .n, .fbtn, .bankb, .sheet-title, .tap, .segb, .rpad b, .ghost, .latch, .busb, .recb, .mbtn, .businfo b, .master > b, .power .go, .rbtn, .ms button, .busmute) { font-family: var(--title); font-weight: 400; }
+html[data-skin="spg"] .label { font-weight: 700; }
+html[data-skin="spg"] .logo, html[data-skin="spg"] .logo b { font-style: normal; color: var(--red); letter-spacing: .5px; }
+html[data-skin="spg"] .tab, html[data-skin="spg"] .segb, html[data-skin="spg"] .mach, html[data-skin="spg"] .bankb, html[data-skin="spg"] .latch, html[data-skin="spg"] .busb, html[data-skin="spg"] .ghost { border: 2px solid var(--dark); color: var(--dark); }
+html[data-skin="spg"] .tab[aria-selected="true"], html[data-skin="spg"] .segb[aria-checked="true"], html[data-skin="spg"] .seg [data-act="mixPage"][aria-selected="true"] { background: var(--dark); color: var(--body); }
+html[data-skin="spg"] .hw { border: 2px solid var(--dark); box-shadow: 3px 3px 0 var(--dark); border-radius: 6px; color: var(--dark); }
+html[data-skin="spg"] .tbtn.on { background: var(--pink); box-shadow: 1px 1px 0 var(--dark); transform: translate(2px, 2px); }
+html[data-skin="spg"] .tap.on { background: var(--dark); color: var(--body); }
+
+/* display VHS */
+html[data-skin="spg"] .lcd { border: 2px solid var(--dark); border-radius: 6px; box-shadow: 3px 3px 0 var(--dark); font-family: var(--vhs);
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.09) 0 1px, transparent 1px 3px), repeating-radial-gradient(ellipse at 82% 80%, transparent 0 13px, rgba(255,250,240,.26) 13px 14.5px), var(--lcd-bg);
+  text-shadow: 1px 0 rgba(255,70,140,.85), -1px 0 rgba(60,230,255,.7); }
+html[data-skin="spg"] .lcd .l1 { font-size: 20px; }
+html[data-skin="spg"] .lcd .bpm small { font-size: 16px; opacity: .9; }
+html[data-skin="spg"] .lcd .bpm b { font-size: clamp(28px, 3.8dvh, 34px); font-weight: 400; line-height: .8; }
+html[data-skin="spg"] .lcd .bpm.drag { background: rgba(42,26,34,.25); }
+html[data-skin="spg"] .lcd .l2 { font-size: 17px; opacity: 1; }
+html[data-skin="spg"] .lcd .l3 { display: block; font-size: 16px; letter-spacing: 1.5px; color: #ffc23a; text-shadow: 1px 1px 0 rgba(42,26,34,.55); }
+html[data-skin="spg"] .app.wide .lcd .l1 { font-size: 22px; }
+html[data-skin="spg"] .app.wide .lcd .l2 { font-size: 19px; }
+
+/* tracce, machine, manopole */
+html[data-skin="spg"] .trk.sel { background: var(--orange); color: var(--white); box-shadow: 1px 1px 0 var(--dark); transform: translate(2px, 2px); }
+html[data-skin="spg"] .trk.sel .dot { background: var(--white); box-shadow: none; }
+html[data-skin="spg"] .trk .nm { font-size: 12px; letter-spacing: .3px; }
+html[data-skin="spg"] .mach { background: none; }
+html[data-skin="spg"] .mach[aria-checked="true"] { background: var(--red); border-color: var(--dark); color: var(--white); }
+html[data-skin="spg"] .ghost.armed, html[data-skin="spg"] .mbtn.armed { background: var(--red); color: var(--white); }
+html[data-skin="spg"] .knob .cap { border: 2px solid var(--dark); box-shadow: 2px 2px 0 var(--dark); }
+html[data-skin="spg"] .knob .rot i { background: var(--white); }
+html[data-skin="spg"] .knob .val { font-family: var(--vhs); font-size: 15px; color: var(--muted); }
+html[data-skin="spg"] .knob.locked .cap { box-shadow: 2px 2px 0 var(--dark), 0 0 0 3px var(--white), 0 0 0 5px var(--dark); }
+html[data-skin="spg"] .knob.locked .val { color: var(--deep); }
+html[data-skin="spg"] .knob.sm .cap { box-shadow: 2px 2px 0 var(--dark); }
+
+/* scatter: pad come adesivi */
+html[data-skin="spg"] .latch[aria-pressed="true"] { background: var(--yellow); color: var(--dark); }
+html[data-skin="spg"] .pad { border: 2px solid var(--dark); border-radius: 5px; box-shadow: 3px 3px 0 var(--dark); color: var(--dark); transition: transform .05s; }
+html[data-skin="spg"] .pad small { font-family: var(--vhs); font-size: 14px; opacity: 1; }
+html[data-skin="spg"] .pad:nth-child(1) { background: var(--orange); color: var(--white); transform: rotate(-2deg); }
+html[data-skin="spg"] .pad:nth-child(2) { background: var(--yellow); transform: rotate(1.5deg); }
+html[data-skin="spg"] .pad:nth-child(3) { background: var(--coral); transform: rotate(-1deg); }
+html[data-skin="spg"] .pad:nth-child(4) { background: var(--key); transform: rotate(2deg); }
+html[data-skin="spg"] .pad:nth-child(5) { background: var(--dark); color: #f3e94a; transform: rotate(-1.5deg); }
+html[data-skin="spg"] .pad:nth-child(6) { background: #b8346f; color: var(--white); transform: rotate(1deg); }
+html[data-skin="spg"] .pad.on { background: var(--white); color: var(--dark); transform: translate(2px, 2px); box-shadow: 0 0 0 3px var(--led), 0 0 18px var(--led); }
+
+/* step */
+html[data-skin="spg"] .led { border: 1.5px solid var(--dark); }
+html[data-skin="spg"] .key { border: 2px solid var(--dark); border-radius: 4px; box-shadow: 2px 2px 0 var(--dark); color: var(--dark); }
+html[data-skin="spg"] .key .n { font-size: 13px; }
+html[data-skin="spg"] .key .s { font-family: var(--vhs); font-size: 12px; }
+html[data-skin="spg"] .g0 { background: var(--orange); color: var(--white); }
+html[data-skin="spg"] .g1 { background: var(--coral); }
+html[data-skin="spg"] .g2 { background: var(--yellow); }
+html[data-skin="spg"] .g3 { background: #f3e7c9; }
+html[data-skin="spg"] .key.head { transform: translate(2px, 2px); box-shadow: none; }
+html[data-skin="spg"] .bankb { background: none; }
+html[data-skin="spg"] .bankb[aria-checked="true"] { background: var(--dark); color: var(--body); }
+html[data-skin="spg"] .fbtn[aria-pressed="true"], html[data-skin="spg"] .mbtn.on { background: var(--dark); color: var(--body); box-shadow: none; transform: translate(2px, 2px); }
+
+/* mixer */
+html[data-skin="spg"] :is(.strip, .master, .slot) { border: 2px solid var(--dark); box-shadow: 3px 3px 0 var(--dark); }
+html[data-skin="spg"] .strip .num, html[data-skin="spg"] .lvl { font-family: var(--vhs); font-size: 15px; }
+html[data-skin="spg"] .ms button, html[data-skin="spg"] .busmute { border: 2px solid var(--dark); color: var(--dark); }
+html[data-skin="spg"] .ms .mute[aria-pressed="true"], html[data-skin="spg"] .busmute[aria-pressed="true"] { background: var(--red); color: var(--white); }
+html[data-skin="spg"] .ms .solo[aria-pressed="true"], html[data-skin="spg"] .busb.on, html[data-skin="spg"] .bustabs .segb[aria-selected="true"] { background: var(--yellow); color: var(--dark); border-color: var(--dark); }
+html[data-skin="spg"] .meter span { background: rgba(42,26,34,.15); }
+html[data-skin="spg"] .meter span.on.c1 { background: var(--yellow); box-shadow: none; }
+html[data-skin="spg"] .meter span.on.c2 { background: var(--pink); box-shadow: 0 0 4px var(--pink); }
+html[data-skin="spg"] .fcap, html[data-skin="spg"] .hfader .hcap { background: var(--pink); border: 2px solid var(--dark); box-shadow: 2px 2px 0 var(--dark); }
+html[data-skin="spg"] .fcap i { width: 16px; background: var(--white); }
+html[data-skin="spg"] .fxsel { border: 2px solid var(--dark); color: var(--dark); font-family: var(--title); font-weight: 400; }
+
+/* roll: pad con la maschera in filigrana */
+html[data-skin="spg"] .rbtn b, html[data-skin="spg"] .oct b { color: var(--deep); }
+html[data-skin="spg"] .rates .segb { color: var(--dark); }
+html[data-skin="spg"] .rates .segb[aria-checked="true"] { background: var(--orange); color: var(--white); }
+html[data-skin="spg"] .recb { color: var(--red); border: 2px solid var(--red); }
+html[data-skin="spg"] .recb[aria-pressed="true"] { background: var(--red); color: var(--white); }
+html[data-skin="spg"] .rpad { position: relative; border: 2px solid var(--dark); border-radius: 6px; box-shadow: 3px 3px 0 var(--dark); color: var(--dark); }
+html[data-skin="spg"] .rpad::before { content: ""; position: absolute; inset: 20% 28%; background: currentColor; opacity: .14; pointer-events: none;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 106'%3E%3Cpath fill-rule='evenodd' d='M50 4C78 4 94 22 94 46C94 70 80 88 68 102H32C20 88 6 70 6 46C6 22 22 4 50 4Z M50 10C26 10 12 25 12 46C12 67 25 83 35 96H65C75 83 88 67 88 46C88 25 74 10 50 10Z M16 36L44 41L42 56L20 52Z M84 36L56 41L58 56L80 52Z M41 80H59A5 5 0 0 1 59 90H41A5 5 0 0 1 41 80Z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 106'%3E%3Cpath fill-rule='evenodd' d='M50 4C78 4 94 22 94 46C94 70 80 88 68 102H32C20 88 6 70 6 46C6 22 22 4 50 4Z M50 10C26 10 12 25 12 46C12 67 25 83 35 96H65C75 83 88 67 88 46C88 25 74 10 50 10Z M16 36L44 41L42 56L20 52Z M84 36L56 41L58 56L80 52Z M41 80H59A5 5 0 0 1 59 90H41A5 5 0 0 1 41 80Z'/%3E%3C/svg%3E") center / contain no-repeat; }
+html[data-skin="spg"] .rpad b, html[data-skin="spg"] .rpad small { position: relative; }
+html[data-skin="spg"] .rpad small { font-family: var(--vhs); font-size: 15px; color: inherit; }
+html[data-skin="spg"] .rpad:nth-child(-n+4) { background: var(--orange); color: var(--white); }
+html[data-skin="spg"] .rpad:nth-child(n+5):nth-child(-n+8) { background: var(--coral); }
+html[data-skin="spg"] .rpad:nth-child(n+9):nth-child(-n+12) { background: var(--yellow); }
+html[data-skin="spg"] .rpad:nth-child(n+13) { background: var(--key); }
+html[data-skin="spg"] .rpad.root { box-shadow: 3px 3px 0 var(--dark), inset 0 0 0 3px var(--white); }
+html[data-skin="spg"] .rpad.root::before { opacity: .32; }
+html[data-skin="spg"] .rpad.on { background: var(--white); color: var(--dark); transform: translate(2px, 2px); box-shadow: 0 0 0 3px var(--led), 0 0 18px var(--led); }
+
+/* pannelli, guida, messaggi */
+html[data-skin="spg"] .sheet-card { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='124'%3E%3Cg fill='%23e7578a' fill-opacity='.2' fill-rule='evenodd'%3E%3Cpath transform='translate(10 8) scale(.44) rotate(-8 50 50)' d='M50 4C78 4 94 22 94 46C94 70 80 88 68 102H32C20 88 6 70 6 46C6 22 22 4 50 4Z M16 36L44 41L42 56L20 52Z M84 36L56 41L58 56L80 52Z M50 46L44 72H56Z M41 80H59A5 5 0 0 1 59 90H41A5 5 0 0 1 41 80Z'/%3E%3Cpath transform='translate(70 70) scale(.44) rotate(6 50 50)' d='M50 4C78 4 94 22 94 46C94 70 80 88 68 102H32C20 88 6 70 6 46C6 22 22 4 50 4Z M16 36L44 41L42 56L20 52Z M84 36L56 41L58 56L80 52Z M50 46L44 72H56Z M41 80H59A5 5 0 0 1 59 90H41A5 5 0 0 1 41 80Z'/%3E%3C/g%3E%3C/svg%3E"); border: 2px solid var(--dark); }
+html[data-skin="spg"] .sheet-title { color: var(--red); font-size: 22px; }
+html[data-skin="spg"] .mmsg { font-family: var(--vhs); font-size: 16px; color: var(--deep); }
+html[data-skin="spg"] .wave-read b { font-family: var(--vhs); font-size: 19px; color: var(--dark); }
+html[data-skin="spg"] .wave-btns .wave-play { color: var(--white); }
+html[data-skin="spg"] .wave-lock { color: var(--deep); }
+html[data-skin="spg"] .wavebox { border-color: var(--dark); }
+html[data-skin="spg"] .learnbar { background: var(--yellow); color: var(--dark); border: 2px solid var(--dark); }
+html[data-skin="spg"] .learnbar .ghost { border-color: var(--dark); color: var(--dark); }
+html[data-skin="spg"] .power { background: rgba(230,226,43,.94); }
+html[data-skin="spg"] .power .go { border: 2px solid var(--dark); box-shadow: 3px 3px 0 var(--dark); color: var(--white); }
+html[data-skin="spg"] .guide-link { color: var(--dark); }
 </style>
 
 </head>
@@ -333,6 +460,7 @@ a.ghost { display: inline-flex; align-items: center; text-decoration: none; }
   <section class="lcd" aria-live="off" aria-label="Display">
     <div class="l1"><span id="lcd1"></span><span class="bpm" id="bpmCtl" data-bpm role="slider" tabindex="0" aria-label="BPM: trascina su o giù" aria-valuemin="40" aria-valuemax="240"><small>BPM</small><b id="lcdBpm">120.0</b></span></div>
     <div class="l2"><span id="lcd2"></span><span id="lcd3"></span></div>
+    <div class="l3" id="lcdDate" aria-hidden="true"></div>
   </section>
 
   <div class="view" id="seqView">
@@ -478,6 +606,14 @@ a.ghost { display: inline-flex; align-items: center; text-decoration: none; }
       <input type="file" id="projInput" accept=".pony84,application/json" hidden>
       <p class="mmsg" id="projMsg" aria-live="polite"></p>
       <p class="mnote">Il file .pony84 contiene pattern, suoni, mixer, effetti e i WAV caricati: puoi riaprirlo su un altro telefono o sul PC. I WAV caricati ora restano salvati anche quando chiudi PONY84.</p>
+    </section>
+
+    <section class="sec" aria-label="Skin">
+      <span class="label">SKIN</span>
+      <div class="mgrid" role="radiogroup" aria-label="Skin">
+        <button class="hw mbtn" data-act="skin" data-k="808" role="radio">808</button>
+        <button class="hw mbtn" data-act="skin" data-k="spg" role="radio">SAD PONY GIRL</button>
+      </div>
     </section>
 
     <section class="sec" aria-label="Controller MIDI">
@@ -2259,6 +2395,7 @@ function onAct(b) {
   }
   if (act === 'menu') { openMenu(); return; }
   if (act === 'menuClose') { closeMenu(); return; }
+  if (act === 'skin') { setSkin(b.dataset.k, true); return; }
   if (act === 'export') { exportProject(); return; }
   if (act === 'import') { projInput.click(); return; }
   if (act === 'newp') {
@@ -2552,6 +2689,23 @@ window.addEventListener('resize', () => {
   fitTimer = setTimeout(() => { if (updateWide()) renderAll(); else fit(); if (shows('mix')) drawMixer(); drawWave(); }, 120);
 });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+
+// skin: 808 (predefinita) o SAD PONY GIRL; la scelta resta salvata nel browser
+const MESI = ['GEN', 'FEB', 'MAR', 'APR', 'MAG', 'GIU', 'LUG', 'AGO', 'SET', 'OTT', 'NOV', 'DIC'];
+function vhsDate() {   // la data della videocamera: oggi, ma nel 1996
+  const d = new Date(), h = d.getHours();
+  $('lcdDate').textContent = MESI[d.getMonth()] + ' ' + String(d.getDate()).padStart(2, '0') + ' 1996  ' + (h < 12 ? 'AM' : 'PM') + ' ' + (h % 12 || 12) + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+function setSkin(k, save) {
+  const spg = k === 'spg', root = document.documentElement;
+  if (spg) root.dataset.skin = 'spg'; else delete root.dataset.skin;
+  if (save) { try { localStorage.setItem('pony84-skin', spg ? 'spg' : '808'); } catch (e) {} }
+  const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = spg ? '#e6e22b' : '#23211e';
+  document.querySelectorAll('[data-act="skin"]').forEach(b => { const on = b.dataset.k === (spg ? 'spg' : '808'); b.setAttribute('aria-checked', String(on)); b.classList.toggle('on', on); });
+  waveColors = null; vhsDate(); fit(); drawWave();
+}
+setSkin(document.documentElement.dataset.skin === 'spg' ? 'spg' : '808', false);
+setInterval(vhsDate, 30000);
 })();
 </script>
 
