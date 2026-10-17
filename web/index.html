@@ -186,6 +186,32 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .rpad.on { background: var(--orange); color: var(--ink); border-bottom-width: 2px; transform: translateY(3px); box-shadow: 0 0 16px var(--orange); }
 .rpad.on small { color: var(--ink); }
 
+/* mixer: pagine CANALI / BUS · FX */
+.mixpage { display: flex; flex-direction: column; gap: var(--gap); flex: 1; min-height: 0; }
+.busb { width: 100%; height: 24px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: .5px; color: var(--muted); border: 1px solid var(--line); background: none; }
+.busb.on { color: var(--ink); background: var(--yellow); border-color: var(--yellow); }
+.bustabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.bustabs .segb { height: clamp(30px, 4dvh, 36px); padding: 0; font-size: 12px; color: var(--cream); }
+.bustabs .segb[aria-selected="true"] { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.seg [data-act="mixPage"][aria-selected="true"] { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+.bushead { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.businfo { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.businfo b { font-size: 18px; letter-spacing: 1.5px; }
+.businfo .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.buslvl { display: flex; align-items: center; gap: 10px; }
+.busmute { width: 40px; height: 34px; border-radius: 5px; background: var(--key); font-weight: 700; font-size: 14px; border-bottom: 3px solid var(--edge); }
+.busmute[aria-pressed="true"] { background: var(--red); color: var(--white); }
+.slots { display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0; }
+.slot { background: var(--panel); border-radius: 8px; padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 8px; }
+.slot-top { display: flex; align-items: center; gap: 10px; }
+.slot-top .label { flex: none; }
+.fxsel { flex: 1; min-width: 0; height: 34px; border-radius: 6px; border: 1px solid var(--line); background: var(--key); color: var(--cream);
+  font-family: var(--display); font-size: 15px; font-weight: 700; letter-spacing: 1px; padding: 0 8px; }
+.fxsel:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.slot-knobs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.slot-knobs .knob.off { visibility: hidden; }
+.slot.empty .slot-knobs { display: none; }
+
 /* pannello PROGETTO & MIDI */
 .sheet { position: fixed; inset: 0; z-index: 30; background: var(--veil); display: flex; align-items: flex-end; justify-content: center;
   padding: env(safe-area-inset-top, 0px) max(10px, env(safe-area-inset-right, 0px)) 0 max(10px, env(safe-area-inset-left, 0px)); }
@@ -317,7 +343,7 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 
     <div class="fn" id="fn">
       <button class="hw fbtn" data-act="mode" data-m="PATTERN" aria-pressed="false">PATTERN</button>
-      <button class="hw fbtn" data-act="mode" data-m="TRIG" aria-pressed="true">TRIG</button>
+      <button class="hw fbtn" data-act="mode" data-m="TRIG" aria-pressed="true">STEP</button>
       <button class="hw fbtn" data-act="mode" data-m="PLOCK" aria-pressed="false">P-LOCK</button>
       <button class="hw fbtn" data-act="mode" data-m="COND" aria-pressed="false">PROB</button>
       <button class="hw fbtn" data-act="fx" aria-pressed="false">FX</button>
@@ -326,16 +352,42 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 
   <div class="view" id="mixView" hidden>
     <div class="row-between">
-      <span class="label">MIXER · 6 CANALI</span>
+      <span class="seg" role="tablist" aria-label="Pagina del mixer">
+        <button class="segb" role="tab" data-act="mixPage" data-p="ch">CANALI</button>
+        <button class="segb" role="tab" data-act="mixPage" data-p="bus">BUS · FX</button>
+      </span>
       <span class="label swipe-hint">SWIPE → ROLL</span>
     </div>
-    <div class="strips" id="strips"></div>
-    <div class="master">
-      <b>MASTER</b>
-      <div class="hfader" data-fader="master" role="slider" tabindex="0" aria-label="Volume master" aria-valuemin="0" aria-valuemax="127" id="masterFader">
-        <div class="track"></div><div class="fill" id="masterFill"></div><div class="hcap" id="masterCap"></div>
+
+    <div class="mixpage" id="mixCh">
+      <div class="strips" id="strips"></div>
+      <div class="master">
+        <b>MASTER</b>
+        <div class="hfader" data-fader="master" role="slider" tabindex="0" aria-label="Volume master" aria-valuemin="0" aria-valuemax="127" id="masterFader">
+          <div class="track"></div><div class="fill" id="masterFill"></div><div class="hcap" id="masterCap"></div>
+        </div>
+        <div id="driveKnob"></div>
       </div>
-      <div id="driveKnob"></div>
+    </div>
+
+    <div class="mixpage" id="mixBus" hidden>
+      <div class="seg bustabs" role="tablist" aria-label="Bus" id="busTabs">
+        <button class="segb" role="tab" data-act="busTab" data-b="0">BUS A</button>
+        <button class="segb" role="tab" data-act="busTab" data-b="1">BUS B</button>
+        <button class="segb" role="tab" data-act="busTab" data-b="2">BUS C</button>
+        <button class="segb" role="tab" data-act="busTab" data-b="3">MASTER</button>
+      </div>
+      <div class="bushead">
+        <div class="businfo">
+          <b id="busName">BUS A</b>
+          <span class="label" id="busTracks"></span>
+        </div>
+        <div class="buslvl" id="busLvlWrap">
+          <div id="busLvlKnob"></div>
+          <button class="busmute" id="busMute" data-act="busMute" aria-pressed="false">M</button>
+        </div>
+      </div>
+      <div class="slots" id="slots"></div>
     </div>
   </div>
 
@@ -472,6 +524,31 @@ const dlySteps = (v) => 1 + Math.round(v / 127 * 7);
 const clamp = (v) => Math.max(0, Math.min(127, Math.round(v)));
 const pad2 = (n) => String(n).padStart(2, '0');
 
+// ---------- effetti dei BUS ----------
+// ogni effetto ha 3 manopole (0..127); def = valori di partenza
+const FX_TYPES = {
+  NONE:      { label: '— VUOTO —', params: [], def: [] },
+  FILTER:    { label: 'FILTER', params: ['FREQ', 'RESO', 'LFO'], def: [64, 30, 0] },
+  SIDECHAIN: { label: 'SIDECHAIN', params: ['DEPTH', 'RELEASE', 'SOURCE'], def: [80, 40, 0] },
+  LOFI:      { label: 'LO-FI', params: ['BITS', 'RATE', 'MIX'], def: [70, 50, 127] },
+  VINYL:     { label: 'VINYL', params: ['TONE', 'CRACKLE', 'MIX'], def: [60, 50, 127] },
+  DRIVE:     { label: 'DRIVE', params: ['DRIVE', 'TONE', 'MIX'], def: [60, 90, 110] },
+  CHORUS:    { label: 'CHORUS', params: ['RATE', 'DEPTH', 'MIX'], def: [30, 60, 70] },
+  TAPE:      { label: 'TAPE ECHO', params: ['TIME', 'FEEDBK', 'MIX'], def: [36, 60, 50] },
+  ISOLATOR:  { label: 'ISOLATOR', params: ['LOW', 'MID', 'HIGH'], def: [64, 64, 64] },
+  REVERB:    { label: 'REVERB', params: ['SIZE', 'TONE', 'MIX'], def: [60, 80, 45] }
+};
+const FX_ORDER = ['NONE', 'FILTER', 'SIDECHAIN', 'LOFI', 'VINYL', 'DRIVE', 'CHORUS', 'TAPE', 'ISOLATOR', 'REVERB'];
+const BUS_NAMES = ['A', 'B', 'C'];
+const emptySlot = () => ({ type: 'NONE', p: [64, 64, 64] });
+const slotOf = (type, p) => ({ type, p: (p || FX_TYPES[type].def).slice() });
+function defaultMix() {
+  return {
+    buses: BUS_NAMES.map(() => ({ level: 100, mute: false, slots: [emptySlot(), emptySlot(), emptySlot()] })),
+    master: { slots: [emptySlot(), emptySlot(), emptySlot()] }
+  };
+}
+
 function emptyPattern() {
   return Array.from({ length: 6 }, () => Array.from({ length: 16 }, () => ({ on: false, locks: {}, cond: null })));
 }
@@ -488,11 +565,16 @@ function demoProject() {
   ];
   const p = {
     fx: { tempo: 126, swing: 12, dlyT: 36, dlyFb: 74, revSize: 72, revMix: 34, drive: 26, master: 110 },
-    tracks: kit.map(([m, params, level, pan]) => ({ machine: m, params, level, pan, mute: false, solo: false, sample: DEMO_SAMPLE })),
+    tracks: kit.map(([m, params, level, pan], i) => ({ machine: m, params, level, pan, mute: false, solo: false, sample: DEMO_SAMPLE, bus: [0, 1, 1, 1, 2, 3][i] })),
+    mix: defaultMix(),
     patterns: Array.from({ length: 16 }, emptyPattern),
     cur: 0,
     roll: Object.assign({}, ROLL_DEFAULT)
   };
+  // BUS del demo: A = percussioni (filtro DJ aperto), B = basso che "pompa" con la cassa, C = accordo con filtro che respira
+  p.mix.buses[0].slots[0] = slotOf('FILTER', [64, 30, 0]);
+  p.mix.buses[1].slots[0] = slotOf('SIDECHAIN', [72, 42, 0]);
+  p.mix.buses[2].slots[0] = slotOf('FILTER', [50, 38, 40]);
   const pt = p.patterns[0];
   const set = (t, s, o = {}) => { pt[t][s] = { on: true, locks: o.locks || {}, cond: o.cond || null, ...(o.v != null ? { v: o.v } : {}), ...(o.tp ? { tp: o.tp } : {}) }; };
   [0, 4, 8, 12].forEach((s) => set(0, s));                                                     // cassa dritta
@@ -514,7 +596,13 @@ function normalizeProject(p) {
   delete p.fx.bpm;
   p.roll = Object.assign({}, ROLL_DEFAULT, p.roll || {});
   p.cur = Math.max(0, Math.min(15, p.cur | 0));
-  p.tracks.forEach((t) => { if (typeof t.sample !== 'string') t.sample = DEMO_SAMPLE; });
+  p.tracks.forEach((t) => {
+    if (typeof t.sample !== 'string') t.sample = DEMO_SAMPLE;
+    t.bus = [0, 1, 2, 3].includes(t.bus) ? t.bus : 0;   // 0 = MAIN, 1..3 = BUS A..C
+  });
+  const okSlots = (s) => Array.isArray(s) && s.length === 3 && s.every((x) => x && FX_TYPES[x.type] && Array.isArray(x.p) && x.p.length === 3);
+  const m = p.mix;
+  if (!(m && Array.isArray(m.buses) && m.buses.length === 3 && m.buses.every((b) => okSlots(b.slots)) && m.master && okSlots(m.master.slots))) p.mix = defaultMix();
   return p;
 }
 function loadProject() {
@@ -605,7 +693,13 @@ function initAudio() {
   A.pre = ctx.createGain(); A.pre.gain.value = 0.7;
   A.shaper = ctx.createWaveShaper(); A.shaper.oversample = '2x';
   A.master = ctx.createGain();
-  A.bus.connect(A.sp); A.sp.connect(A.pre); A.pre.connect(A.shaper); A.shaper.connect(A.master); A.master.connect(ctx.destination);
+  // catena master: somma → scatter → effetti MASTER → drive → volume
+  A.busNodes = [0, 1, 2, 3].map(() => ({ in: ctx.createGain(), out: ctx.createGain(), fx: [null, null, null] }));
+  for (let b = 0; b < 3; b++) A.busNodes[b].out.connect(A.bus);
+  A.bus.connect(A.sp); A.sp.connect(A.busNodes[3].in); A.busNodes[3].out.connect(A.pre);
+  A.pre.connect(A.shaper); A.shaper.connect(A.master); A.master.connect(ctx.destination);
+  A.ducks = [];
+  loadLofi();
 
   A.dIn = ctx.createGain(); A.dly = ctx.createDelay(4); A.dFb = ctx.createGain();
   A.dLp = ctx.createBiquadFilter(); A.dLp.type = 'lowpass'; A.dLp.frequency.value = 3800;
@@ -622,10 +716,11 @@ function initAudio() {
     const inp = ctx.createGain(), lvl = ctx.createGain(), pan = ctx.createStereoPanner();
     const sd = ctx.createGain(), srv = ctx.createGain(), an = ctx.createAnalyser();
     an.fftSize = 256;
-    inp.connect(lvl); lvl.connect(pan); pan.connect(A.bus);
+    inp.connect(lvl); lvl.connect(pan);
     lvl.connect(sd); sd.connect(A.dIn); lvl.connect(srv); srv.connect(A.rIn); lvl.connect(an);
-    return { inp, lvl, pan, sd, srv, an, buf: new Float32Array(256), peak: 0 };
+    return { inp, lvl, pan, sd, srv, an, buf: new Float32Array(256), peak: 0, routed: -1 };
   });
+  for (let b = 0; b < 4; b++) buildChain(b);
   A.samples = P.tracks.map(() => null);
   A.reversed = new Map();
   A.demo = makeStab();
@@ -682,12 +777,19 @@ function applyFx() {
     clearTimeout(revTimer);
     revTimer = setTimeout(() => { A.lastRev = P.fx.revSize; A.conv.buffer = makeImpulse(0.3 + P.fx.revSize / 127 * 4.7); }, A.lastRev === null ? 0 : 180);
   }
+  A.busNodes.forEach((B) => B.fx.forEach((fx) => fx && fx.tempo && fx.tempo()));   // effetti a tempo (LFO, tape echo)
 }
 function applyMix() {
   if (!ctx) return;
   const t = ctx.currentTime;
+  P.mix.buses.forEach((b, k) => A.busNodes[k].out.gain.setTargetAtTime(b.mute ? 0 : b.level / 127 * 1.25, t, 0.02));
   P.tracks.forEach((tr, i) => {
     const N = A.tr[i];
+    if (N.routed !== tr.bus) {                                     // instradamento: MAIN o BUS A/B/C
+      N.pan.disconnect();
+      N.pan.connect(tr.bus ? A.busNodes[tr.bus - 1].in : A.bus);
+      N.routed = tr.bus;
+    }
     N.lvl.gain.setTargetAtTime(audible(i) ? tr.level / 127 * 1.2 : 0, t, 0.015);
     N.pan.pan.setTargetAtTime((tr.pan - 64) / 63, t, 0.02);
     N.sd.gain.setTargetAtTime(tr.params[6] / 127, t, 0.02);
@@ -703,6 +805,223 @@ function trigger(ti, step, t) {
   const vel = step && step.v != null ? step.v : 1;
   if (tr.machine === 'SAMPLE') playSample(ti, K, t, mul, vel);
   else { const v = voiceParams(tr.machine, K); v.freq *= mul; playFM(ti, v, t, vel); }
+  if (audible(ti)) A.ducks.forEach((d) => d.src === ti && d.duck(t, vel));   // sidechain
+}
+
+// ===================================================================
+// EFFETTI DEI BUS: ogni effetto è { in, out, set(p), tempo?(), stop() }
+// ===================================================================
+const LOFI_SRC = `class PonyLofi extends AudioWorkletProcessor {
+  static get parameterDescriptors() { return [{ name: 'bits', defaultValue: 16 }, { name: 'step', defaultValue: 1 }, { name: 'mix', defaultValue: 1 }]; }
+  constructor() { super(); this.h = [0, 0]; this.c = [0, 0]; }
+  process(ins, outs, p) {
+    const inp = ins[0], out = outs[0];
+    if (!inp || !inp.length) return true;
+    const q = Math.pow(2, p.bits[0] - 1), st = p.step[0], m = p.mix[0];
+    for (let ch = 0; ch < out.length; ch++) {
+      const x = inp[ch] || inp[0], y = out[ch];
+      for (let n = 0; n < y.length; n++) {
+        if (this.c[ch] <= 0) { this.h[ch] = Math.round(x[n] * q) / q; this.c[ch] += st; }
+        this.c[ch]--;
+        y[n] = x[n] * (1 - m) + this.h[ch] * m;
+      }
+    }
+    return true;
+  }
+}
+registerProcessor('pony-lofi', PonyLofi);`;
+function loadLofi() {
+  A.lofiReady = false;
+  if (!ctx.audioWorklet) return;
+  const url = URL.createObjectURL(new Blob([LOFI_SRC], { type: 'application/javascript' }));
+  ctx.audioWorklet.addModule(url).then(() => {
+    A.lofiReady = true;
+    for (let b = 0; b < 4; b++) if (busOf(b).slots.some((s) => s.type === 'LOFI')) buildChain(b);
+  }).catch(() => { /* senza worklet il LO-FI resta trasparente */ });
+}
+const busOf = (b) => (b === 3 ? P.mix.master : P.mix.buses[b]);
+const G = (v = 1) => { const g = ctx.createGain(); g.gain.value = v; return g; };
+const smooth = (param, v) => param.setTargetAtTime(v, ctx.currentTime, 0.03);
+const n01 = (v) => v / 127;
+// percorso dry/wet: inp → dry → out, wetNode → wet → out
+function dryWet(inp, out, wetNode) {
+  const dry = G(0), wet = G(1);
+  inp.connect(dry); dry.connect(out); wetNode.connect(wet); wet.connect(out);
+  return (m) => { smooth(dry.gain, Math.cos(m * Math.PI / 2)); smooth(wet.gain, Math.sin(m * Math.PI / 2)); };
+}
+function makeCrackle() {
+  if (A.crackle) return A.crackle;
+  const sr = ctx.sampleRate, n = sr * 4, b = ctx.createBuffer(2, n, sr);
+  for (let c = 0; c < 2; c++) {
+    const d = b.getChannelData(c);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * 0.012;           // fruscio
+    for (let k = 0; k < 40; k++) {                                                // crepitii
+      const at = Math.floor(Math.random() * (n - 40)), a = (0.25 + Math.random() * 0.7) * (Math.random() < 0.5 ? -1 : 1);
+      for (let j = 0; j < 30; j++) d[at + j] += a * Math.exp(-j / 4);
+    }
+  }
+  return (A.crackle = b);
+}
+function makeFx(type, b) {
+  const inp = G(), out = G(), stops = [];
+  const osc = (f, t = 'sine') => { const o = ctx.createOscillator(); o.type = t; o.frequency.value = f; o.start(); stops.push(o); return o; };
+  const fx = { in: inp, out, set() {}, stop() { stops.forEach((o) => { try { o.stop(); } catch (e) { /* ok */ } }); } };
+  switch (type) {
+    case 'FILTER': {   // filtro DJ: sotto 64 passa-basso, sopra 64 passa-alto; LFO a 2 battute
+      const hp = ctx.createBiquadFilter(), lp = ctx.createBiquadFilter(), lg = G(0);
+      hp.type = 'highpass'; lp.type = 'lowpass';
+      inp.connect(hp); hp.connect(lp); lp.connect(out);
+      const lfo = osc(1); lfo.connect(lg); lg.connect(lp.detune); lg.connect(hp.detune);
+      fx.tempo = () => { lfo.frequency.value = P.fx.tempo / 60 / 8; };
+      fx.set = (p) => {
+        const f = p[0], q = 0.7 + n01(p[1]) * 14;
+        smooth(lp.frequency, f < 64 ? 80 * Math.pow(250, f / 64) : 20000);
+        smooth(hp.frequency, f > 64 ? 20 * Math.pow(400, (f - 64) / 63) : 20);
+        smooth(lp.Q, f < 64 ? q : 0.7); smooth(hp.Q, f > 64 ? q : 0.7);
+        smooth(lg.gain, n01(p[2]) * 2400);
+      };
+      break;
+    }
+    case 'SIDECHAIN': {   // il bus si abbassa a ogni colpo della traccia SOURCE e risale
+      const g = G();
+      inp.connect(g); g.connect(out);
+      fx.set = (p) => { fx.depth = n01(p[0]); fx.rel = 0.04 + n01(p[1]) * 0.6; fx.src = Math.min(5, Math.floor(n01(p[2]) * 6)); };
+      fx.duck = (t, vel) => {
+        const t0 = Math.max(t, ctx.currentTime);
+        g.gain.cancelScheduledValues(t0);
+        g.gain.setTargetAtTime(1 - fx.depth * Math.min(1, vel + 0.2), t0, 0.004);
+        g.gain.setTargetAtTime(1, t0 + 0.03, fx.rel / 3);
+      };
+      A.ducks.push(fx);
+      const st = fx.stop; fx.stop = () => { A.ducks = A.ducks.filter((d) => d !== fx); st(); };
+      break;
+    }
+    case 'LOFI': {   // bitcrusher e riduzione del campionamento (AudioWorklet)
+      if (!A.lofiReady) { inp.connect(out); break; }
+      const w = new AudioWorkletNode(ctx, 'pony-lofi', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
+      inp.connect(w); w.connect(out);
+      fx.set = (p) => {
+        smooth(w.parameters.get('bits'), 16 - n01(p[0]) * 14);
+        smooth(w.parameters.get('step'), 1 + Math.pow(n01(p[1]), 2) * 31);
+        smooth(w.parameters.get('mix'), n01(p[2]));
+      };
+      break;
+    }
+    case 'VINYL': {   // banda stretta, fruscio e crepitii
+      const hp = ctx.createBiquadFilter(), lp = ctx.createBiquadFilter(), cg = G(0);
+      hp.type = 'highpass'; lp.type = 'lowpass';
+      inp.connect(hp); hp.connect(lp);
+      const mix = dryWet(inp, out, lp);
+      const src = ctx.createBufferSource(); src.buffer = makeCrackle(); src.loop = true; src.start(); stops.push(src);
+      src.connect(cg); cg.connect(out);
+      fx.set = (p) => {
+        const t = n01(p[0]);
+        smooth(hp.frequency, 20 + t * 450); smooth(lp.frequency, 18000 - t * 14800);
+        smooth(cg.gain, n01(p[1]) * 0.35); mix(n01(p[2]));
+      };
+      break;
+    }
+    case 'DRIVE': {
+      const sh = ctx.createWaveShaper(), lp = ctx.createBiquadFilter();
+      sh.oversample = '2x'; lp.type = 'lowpass';
+      inp.connect(sh); sh.connect(lp);
+      const mix = dryWet(inp, out, lp);
+      let last = -1;
+      fx.set = (p) => {
+        if (p[0] !== last) {
+          last = p[0];
+          const k = 1 + n01(p[0]) * 24, N = 1024, c = new Float32Array(N), th = Math.tanh(k);
+          for (let i = 0; i < N; i++) { const x = i / (N - 1) * 2 - 1; c[i] = Math.tanh(x * k) / th; }
+          sh.curve = c;
+        }
+        smooth(lp.frequency, 700 * Math.pow(25, n01(p[1]))); mix(n01(p[2]));
+      };
+      break;
+    }
+    case 'CHORUS': {   // due linee di ritardo modulate, una per lato
+      const dl = ctx.createDelay(0.05), dr = ctx.createDelay(0.05), pl = ctx.createStereoPanner(), pr = ctx.createStereoPanner(), sum = G();
+      dl.delayTime.value = 0.012; dr.delayTime.value = 0.018; pl.pan.value = -0.9; pr.pan.value = 0.9;
+      inp.connect(dl); inp.connect(dr); dl.connect(pl); dr.connect(pr); pl.connect(sum); pr.connect(sum);
+      const lfo = osc(0.4), gl = G(0), gr = G(0);
+      lfo.connect(gl); lfo.connect(gr); gl.connect(dl.delayTime); gr.connect(dr.delayTime);
+      const mix = dryWet(inp, out, sum);
+      fx.set = (p) => {
+        smooth(lfo.frequency, 0.05 + Math.pow(n01(p[0]), 2) * 6);
+        const d = n01(p[1]) * 0.007; smooth(gl.gain, d); smooth(gr.gain, -d);
+        mix(n01(p[2]));
+      };
+      break;
+    }
+    case 'TAPE': {   // eco a tempo con ripetizioni che si scuriscono e si sporcano
+      const d = ctx.createDelay(4), fb = G(0), lp = ctx.createBiquadFilter(), sh = ctx.createWaveShaper();
+      lp.type = 'lowpass'; lp.frequency.value = 3200;
+      const N = 512, c = new Float32Array(N); for (let i = 0; i < N; i++) { const x = i / (N - 1) * 2 - 1; c[i] = Math.tanh(x * 1.6); } sh.curve = c;
+      inp.connect(d); d.connect(lp); lp.connect(sh); sh.connect(fb); fb.connect(d);
+      const wow = osc(0.7), wg = G(0.0012); wow.connect(wg); wg.connect(d.delayTime);
+      const mix = dryWet(inp, out, d);
+      let steps = 3;
+      fx.tempo = () => { smooth(d.delayTime, steps * stepDur()); };
+      fx.set = (p) => { steps = 1 + Math.round(n01(p[0]) * 7); fx.tempo(); smooth(fb.gain, n01(p[1]) * 0.92); mix(n01(p[2])); };
+      break;
+    }
+    case 'ISOLATOR': {   // EQ a 3 bande con "kill" (0 = banda spenta, 64 = piatto)
+      const lo = ctx.createBiquadFilter(), mi = ctx.createBiquadFilter(), hi = ctx.createBiquadFilter();
+      lo.type = 'lowshelf'; lo.frequency.value = 250; mi.type = 'peaking'; mi.frequency.value = 1000; mi.Q.value = 0.7; hi.type = 'highshelf'; hi.frequency.value = 3500;
+      inp.connect(lo); lo.connect(mi); mi.connect(hi); hi.connect(out);
+      const db = (v) => (v <= 64 ? -40 * (1 - v / 64) : 6 * (v - 64) / 63);
+      fx.set = (p) => { smooth(lo.gain, db(p[0])); smooth(mi.gain, db(p[1])); smooth(hi.gain, db(p[2])); };
+      break;
+    }
+    case 'REVERB': {
+      const cv = ctx.createConvolver(), lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      inp.connect(cv); cv.connect(lp);
+      const mix = dryWet(inp, out, lp);
+      let size = -1, timer = null;
+      fx.set = (p) => {
+        if (p[0] !== size) {
+          size = p[0]; clearTimeout(timer);
+          timer = setTimeout(() => { cv.buffer = makeImpulse(0.4 + n01(size) * 5); }, cv.buffer ? 180 : 0);
+        }
+        smooth(lp.frequency, 1200 * Math.pow(15, n01(p[1]))); mix(n01(p[2]));
+      };
+      break;
+    }
+    default: inp.connect(out);
+  }
+  return fx;
+}
+// ricostruisce la catena di un bus (0..2 = A..C, 3 = MASTER) quando cambia un effetto
+function buildChain(b) {
+  if (!ctx) return;
+  const B = A.busNodes[b], slots = busOf(b).slots;
+  B.in.disconnect();
+  B.fx.forEach((fx) => { if (fx) { fx.out.disconnect(); fx.stop(); } });
+  let node = B.in;
+  B.fx = slots.map((s) => {
+    if (s.type === 'NONE') return null;
+    const fx = makeFx(s.type, b);
+    node.connect(fx.in); node = fx.out;
+    fx.set(s.p);
+    if (fx.tempo) fx.tempo();
+    return fx;
+  });
+  node.connect(B.out);
+}
+function fxSet(b, s) {
+  const fx = ctx && A.busNodes[b].fx[s];
+  if (fx) fx.set(busOf(b).slots[s].p);
+}
+const NOTE_FX = (v) => (v <= 64 ? 80 * Math.pow(250, v / 64) : 20 * Math.pow(400, (v - 64) / 63));
+function fxFmt(type, i, v) {
+  const name = FX_TYPES[type].params[i];
+  if (name === 'FREQ') return v === 64 ? 'APERTO' : (v < 64 ? 'LP ' : 'HP ') + fmtHz(NOTE_FX(v));
+  if (name === 'SOURCE') return 'T' + (Math.min(5, Math.floor(n01(v) * 6)) + 1);
+  if (name === 'TIME') return (1 + Math.round(n01(v) * 7)) + '/16';
+  if (name === 'BITS') return (16 - n01(v) * 14).toFixed(0) + ' BIT';
+  if (['LOW', 'MID', 'HIGH'].includes(name)) { if (v === 0) return 'KILL'; const d = v <= 64 ? -40 * (1 - v / 64) : 6 * (v - 64) / 63; return (d > 0 ? '+' : '') + d.toFixed(0) + 'dB'; }
+  if (name === 'SIZE') return (0.4 + n01(v) * 5).toFixed(1) + 's';
+  return String(v);
 }
 
 function playFM(ti, v, t, vel = 1) {
@@ -996,6 +1315,19 @@ function resolveKnob(id) {
       fmt: (v) => fmtParam(tr.machine, i, v)
     };
   }
+  if (id.startsWith('fx')) {   // manopole degli effetti del bus aperto
+    const [s, pi] = id.slice(2).split('_').map(Number), b = UI.busTab, slot = busOf(b).slots[s];
+    return {
+      label: FX_TYPES[slot.type].params[pi] || '—',
+      get: () => slot.p[pi],
+      set: (v) => { slot.p[pi] = v; fxSet(b, s); },
+      fmt: (v) => fxFmt(slot.type, pi, v)
+    };
+  }
+  if (id === 'blvl') {
+    const B = P.mix.buses[Math.min(2, UI.busTab)];
+    return { label: 'VOLUME', get: () => B.level, set: (v) => { B.level = v; applyMix(); }, fmt: String };
+  }
   if (id.startsWith('pan')) {
     const i = Number(id.slice(3)), tr = P.tracks[i];
     return { label: 'PAN', get: () => tr.pan, set: (v) => { tr.pan = v; applyMix(); }, fmt: (v) => (v === 64 ? 'C' : v < 64 ? 'L' + (64 - v) : 'R' + (v - 64)) };
@@ -1009,7 +1341,8 @@ function resolveKnob(id) {
 }
 
 // costruzione una tantum
-const trackBtns = [], machBtns = [], knobEls = [], padBtns = [], stepCells = [], strips = [], rateBtns = [], rpadBtns = [];
+const trackBtns = [], machBtns = [], knobEls = [], padBtns = [], stepCells = [], strips = [], rateBtns = [], rpadBtns = [], slotEls = [];
+UI.mixPage = 'ch'; UI.busTab = 0;
 (function build() {
   for (const box of ['tracks', 'rtracks']) {
     for (let i = 0; i < 6; i++) {
@@ -1050,7 +1383,7 @@ const trackBtns = [], machBtns = [], knobEls = [], padBtns = [], stepCells = [],
   }
   for (let i = 0; i < 6; i++) {
     const s = document.createElement('div'); s.className = 'strip';
-    s.innerHTML = '<span class="num">' + (i + 1) + '</span><span class="nm"></span>';
+    s.innerHTML = '<span class="num">' + (i + 1) + '</span><span class="nm"></span><button class="busb" data-act="busSel" data-i="' + i + '" aria-label="Uscita canale ' + (i + 1) + '">MAIN</button>';
     const kp = knobEl('pan' + i, true), kd = knobEl('dly' + i, true);
     s.appendChild(kp); s.appendChild(kd);
     const ms = document.createElement('div'); ms.className = 'ms';
@@ -1063,12 +1396,22 @@ const trackBtns = [], machBtns = [], knobEls = [], padBtns = [], stepCells = [],
     s.appendChild(fw);
     const lv = document.createElement('span'); lv.className = 'lvl'; s.appendChild(lv);
     $('strips').appendChild(s);
-    strips.push({ nm: s.querySelector('.nm'), kp, kd, mute: ms.querySelector('.mute'), solo: ms.querySelector('.solo'), fader: fw.querySelector('.fader'), cap: fw.querySelector('.fcap'), segs: Array.from(fw.querySelectorAll('.meter span')), lv, m: 0 });
+    strips.push({ nm: s.querySelector('.nm'), busb: s.querySelector('.busb'), kp, kd, mute: ms.querySelector('.mute'), solo: ms.querySelector('.solo'), fader: fw.querySelector('.fader'), cap: fw.querySelector('.fcap'), segs: Array.from(fw.querySelectorAll('.meter span')), lv, m: 0 });
   }
   $('driveKnob').appendChild(knobEl('drive', true));
+  $('busLvlKnob').appendChild(knobEl('blvl', true));
+  const opts = FX_ORDER.map((k) => '<option value="' + k + '">' + FX_TYPES[k].label + '</option>').join('');
+  for (let s = 0; s < 3; s++) {
+    const card = document.createElement('div'); card.className = 'slot';
+    card.innerHTML = '<div class="slot-top"><span class="label">SLOT ' + (s + 1) + '</span><select class="fxsel" id="fxsel' + s + '" data-slot="' + s + '" aria-label="Effetto dello slot ' + (s + 1) + '">' + opts + '</select></div><div class="slot-knobs"></div>';
+    const kb = card.querySelector('.slot-knobs');
+    const ks = [0, 1, 2].map((p) => { const k = knobEl('fx' + s + '_' + p, false); kb.appendChild(k); return k; });
+    $('slots').appendChild(card);
+    slotEls.push({ card, sel: card.querySelector('select'), ks });
+  }
 })();
 
-const MODE_NAME = { PATTERN: 'PATTERN', TRIG: 'TRIG', PLOCK: 'P-LOCK', COND: 'PROB' };
+const MODE_NAME = { PATTERN: 'PATTERN', TRIG: 'STEP', PLOCK: 'P-LOCK', COND: 'PROB' };
 function drawHeader() {
   $('tabSeq').setAttribute('aria-selected', String(UI.view === 'seq'));
   $('tabMix').setAttribute('aria-selected', String(UI.view === 'mix'));
@@ -1194,10 +1537,31 @@ function drawFn() {
   document.querySelectorAll('#fn [data-act="mode"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.m === UI.mode)));
   document.querySelector('#fn [data-act="fx"]').setAttribute('aria-pressed', String(UI.fx));
 }
+function drawBus() {
+  const b = UI.busTab, isM = b === 3, B = busOf(b);
+  document.querySelectorAll('[data-act="mixPage"]').forEach((t) => t.setAttribute('aria-selected', String(t.dataset.p === UI.mixPage)));
+  $('mixCh').hidden = UI.mixPage !== 'ch';
+  $('mixBus').hidden = UI.mixPage !== 'bus';
+  document.querySelectorAll('[data-act="busTab"]').forEach((t) => t.setAttribute('aria-selected', String(Number(t.dataset.b) === b)));
+  $('busName').textContent = isM ? 'MASTER' : 'BUS ' + BUS_NAMES[b];
+  const routed = P.tracks.map((t, i) => (t.bus === b + 1 ? 'T' + (i + 1) + ' ' + t.machine : null)).filter(Boolean);
+  $('busTracks').textContent = isM ? 'TUTTO IL MIX, DOPO LO SCATTER' : (routed.length ? routed.join(' · ') : 'NESSUNA TRACCIA · SCEGLILE IN CANALI');
+  $('busLvlWrap').hidden = isM;
+  if (!isM) { setKnob($('busLvlKnob').firstChild, resolveKnob('blvl')); $('busMute').setAttribute('aria-pressed', String(B.mute)); }
+  slotEls.forEach((el, s) => {
+    const slot = B.slots[s], T = FX_TYPES[slot.type];
+    el.sel.value = slot.type;
+    el.card.classList.toggle('empty', slot.type === 'NONE');
+    el.ks.forEach((k, pi) => { k.classList.toggle('off', !T.params[pi]); if (T.params[pi]) setKnob(k, resolveKnob('fx' + s + '_' + pi)); });
+  });
+}
 function drawMixer() {
+  drawBus();
   strips.forEach((s, i) => {
     const tr = P.tracks[i];
     s.nm.textContent = tr.machine;
+    s.busb.textContent = tr.bus ? 'BUS ' + BUS_NAMES[tr.bus - 1] : 'MAIN';
+    s.busb.classList.toggle('on', !!tr.bus);
     setKnob(s.kp, resolveKnob('pan' + i)); setKnob(s.kd, resolveKnob('dly' + i));
     s.mute.setAttribute('aria-pressed', String(tr.mute));
     s.solo.setAttribute('aria-pressed', String(tr.solo));
@@ -1225,9 +1589,9 @@ function drawMeters() {
 let needRender = false, lastView = null;
 function renderAll() {
   drawHeader(); drawLcd(); drawTracks(); drawMachine(); drawPads(); drawSteps(); drawFn(); drawRoll();
-  const layout = UI.view + (UI.wide ? '+wide' : '');
-  if (layout !== lastView) { lastView = layout; fit(); }
   if (shows('mix')) drawMixer();
+  const layout = UI.view + (UI.wide ? '+wide' : '');
+  if (layout !== lastView) { lastView = layout; fit(); }   // misura dopo aver riempito la vista
   save();
 }
 
@@ -1329,7 +1693,11 @@ async function useProject(p, samples) {
       try { await samplePut(k, { name: String(s.name || 'SAMPLE').slice(0, 16), data: b64ToBuf(s.b64) }); } catch (e) { /* file danneggiato: si salta */ }
     }
   }
-  if (ctx) { await restoreSamples(); applyFx(); applyMix(); }
+  if (ctx) {
+    for (let b = 0; b < 4; b++) buildChain(b);
+    A.tr.forEach((N) => { N.routed = -1; });
+    await restoreSamples(); applyFx(); applyMix();
+  }
   else P.tracks.forEach((t, i) => { if (!(samples && samples[i])) t.sample = DEMO_SAMPLE; });
   save(); renderAll();
 }
@@ -1367,6 +1735,8 @@ function targetName(id) {
   if (id.startsWith('pan')) return 'PAN ' + (Number(id.slice(3)) + 1);
   if (id.startsWith('dly')) return 'DLY ' + (Number(id.slice(3)) + 1);
   if (id.startsWith('lvl')) return 'VOLUME ' + (Number(id.slice(3)) + 1);
+  if (id.startsWith('fx')) { const [s, p] = id.slice(2).split('_').map(Number); return 'FX SLOT ' + (s + 1) + ' · MANOPOLA ' + (p + 1); }
+  if (id === 'blvl') return 'VOLUME DEL BUS';
   return id.toUpperCase();
 }
 async function midiEnable() {
@@ -1476,6 +1846,13 @@ function onAct(b) {
   if (act === 'midiOn') { midiEnable(); return; }
   if (act === 'learn') { setLearn(!UI.learn); return; }
   if (act === 'midiReset') { midiMap = {}; saveMidiMap(); UI.midiMsg = 'MAPPATURE AZZERATE: VALGONO QUELLE PREDEFINITE'; drawMenu(); return; }
+  if (act === 'mixPage') { UI.mixPage = b.dataset.p; drawMixer(); fit(); return; }
+  if (act === 'busTab') { UI.busTab = Number(b.dataset.b); drawBus(); return; }
+  if (act === 'busMute') { const B = P.mix.buses[UI.busTab]; B.mute = !B.mute; applyMix(); drawBus(); save(); return; }
+  if (act === 'busSel') {   // uscita del canale: MAIN → A → B → C → MAIN
+    const tr = P.tracks[Number(b.dataset.i)];
+    tr.bus = (tr.bus + 1) % 4; applyMix(); drawMixer(); save(); return;
+  }
   if (act === 'view') { UI.view = b.dataset.v; renderAll(); return; }
   if (act === 'play') { play(); return; }
   if (act === 'stop') { stop(); return; }
@@ -1624,8 +2001,16 @@ function endPointer(e) {
 document.addEventListener('pointerup', endPointer);
 document.addEventListener('pointercancel', endPointer);
 
+document.addEventListener('change', (e) => {   // scelta dell'effetto in uno slot
+  const sel = e.target.closest && e.target.closest('select[data-slot]');
+  if (!sel) return;
+  const s = Number(sel.dataset.slot), b = UI.busTab;
+  busOf(b).slots[s] = slotOf(sel.value);
+  buildChain(b); drawBus(); save();
+});
 function redrawAfterKnob(id) {
   if (id.startsWith('m')) { drawKnobs(); drawSteps(); drawLcd(); }
+  else if (id.startsWith('fx') || id === 'blvl') drawBus();
   else drawMixer();
   if (UI.view === 'mix' && id.startsWith('m')) drawMixer();
   save();
