@@ -186,6 +186,17 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .rpad.on { background: var(--orange); color: var(--ink); border-bottom-width: 2px; transform: translateY(3px); box-shadow: 0 0 16px var(--orange); }
 .rpad.on small { color: var(--ink); }
 
+/* banchi di pattern e copia/incolla */
+.stepbar { display: flex; gap: 6px; align-items: center; min-width: 0; flex: none; }
+#stepLabel { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stepbar .ghost { padding: 0 8px; white-space: nowrap; }
+.ghost.armed { background: var(--red); border-color: var(--red); color: var(--white); }
+.ghost:disabled { opacity: .35; cursor: default; }
+.banks { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; }
+.bankb { height: clamp(26px, 3.6dvh, 32px); border-radius: 4px; font-size: 13px; font-weight: 700; color: var(--cream); border: 1px solid var(--line); background: none; position: relative; }
+.bankb.used::after { content: ""; position: absolute; top: 3px; right: 4px; width: 4px; height: 4px; border-radius: 50%; background: var(--led); }
+.bankb[aria-checked="true"] { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+
 /* mixer: pagine CANALI / BUS · FX */
 .mixpage { display: flex; flex-direction: column; gap: var(--gap); flex: 1; min-height: 0; }
 .busb { width: 100%; height: 24px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: .5px; color: var(--muted); border: 1px solid var(--line); background: none; }
@@ -282,6 +293,8 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .power p { margin: 0; font-size: 17px; line-height: 1.35; color: var(--cream); text-wrap: balance; }
 .power .go { height: 56px; padding: 0 28px; border-radius: 10px; background: var(--orange); color: var(--ink); font-size: 20px; font-weight: 800; letter-spacing: 2px; border-bottom: 4px solid var(--edge); }
 .power small { font-size: 13px; color: var(--muted); }
+.guide-link { color: var(--lcd); font-size: 15px; letter-spacing: .5px; text-underline-offset: 3px; }
+a.ghost { display: inline-flex; align-items: center; text-decoration: none; }
 @media (prefers-reduced-motion: reduce) { .key.pending { animation: none; } }
 </style>
 
@@ -333,11 +346,14 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
     <section class="sec" aria-label="Sequencer">
       <div class="row-between">
         <span class="label" id="stepLabel">STEP</span>
-        <span style="display:flex;gap:8px;align-items:center">
+        <span class="stepbar">
           <span class="label" id="stepHint"></span>
+          <button class="ghost" id="copyBtn" data-act="copy" hidden>COPIA</button>
+          <button class="ghost" id="pasteBtn" data-act="paste" hidden>INCOLLA</button>
           <button class="ghost" id="stepAct" data-act="stepAct" hidden></button>
         </span>
       </div>
+      <div class="banks" id="banks" role="radiogroup" aria-label="Banco di pattern" hidden></div>
       <div class="steps" id="steps"></div>
     </section>
 
@@ -429,7 +445,10 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
   <div class="sheet-card">
     <div class="row-between">
       <b class="sheet-title" id="menuTitle">PROGETTO &amp; MIDI</b>
-      <button class="ghost" data-act="menuClose">CHIUDI</button>
+      <span class="rtop">
+        <a class="ghost" href="guide/" target="_blank" rel="noopener">GUIDA</a>
+        <button class="ghost" data-act="menuClose">CHIUDI</button>
+      </span>
     </div>
 
     <section class="sec" aria-label="Progetto">
@@ -474,6 +493,7 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
     <p>Motore FM, sampler, sequencer a 16 step, scatter e mixer a 6 canali.</p>
     <button class="go" id="powerBtn">ACCENDI</button>
     <small>Alza il volume. Il browser fa partire l'audio solo dopo un tocco.</small>
+    <a class="guide-link" href="guide/" target="_blank" rel="noopener">Leggi la guida · Read the guide</a>
   </div>
 </div>
 
@@ -549,6 +569,14 @@ function defaultMix() {
   };
 }
 
+const BANKS = 'ABCDEFGH', PATTERNS = 128;   // 8 banchi × 16 pattern
+const patName = (i) => BANKS[i >> 4] + pad2((i & 15) + 1);
+const emptyStep = () => ({ on: false, locks: {}, cond: null });
+const stepIsEmpty = (s) => !s.on && !s.cond && s.tp == null && s.v == null && Object.keys(s.locks).length === 0;
+// salvataggio compatto: gli step vuoti diventano 0 (128 pattern occuperebbero troppo spazio)
+function packProject(p) {
+  return Object.assign({}, p, { patterns: p.patterns.map((pt) => (pt.every((tr) => tr.every(stepIsEmpty)) ? 0 : pt.map((tr) => tr.map((s) => (stepIsEmpty(s) ? 0 : s))))) });
+}
 function emptyPattern() {
   return Array.from({ length: 6 }, () => Array.from({ length: 16 }, () => ({ on: false, locks: {}, cond: null })));
 }
@@ -567,7 +595,7 @@ function demoProject() {
     fx: { tempo: 126, swing: 12, dlyT: 36, dlyFb: 74, revSize: 72, revMix: 34, drive: 26, master: 110 },
     tracks: kit.map(([m, params, level, pan], i) => ({ machine: m, params, level, pan, mute: false, solo: false, sample: DEMO_SAMPLE, bus: [0, 1, 1, 1, 2, 3][i] })),
     mix: defaultMix(),
-    patterns: Array.from({ length: 16 }, emptyPattern),
+    patterns: Array.from({ length: PATTERNS }, emptyPattern),
     cur: 0,
     roll: Object.assign({}, ROLL_DEFAULT)
   };
@@ -589,13 +617,16 @@ function demoProject() {
 }
 // controlla e aggiorna un progetto (salvato nel browser o importato da file); null se non è valido
 function normalizeProject(p) {
-  if (!(p && p.fx && Array.isArray(p.tracks) && p.tracks.length === 6 && Array.isArray(p.patterns) && p.patterns.length === 16)) return null;
+  if (!(p && p.fx && Array.isArray(p.tracks) && p.tracks.length === 6 && Array.isArray(p.patterns) && (p.patterns.length === 16 || p.patterns.length === PATTERNS))) return null;
   if (!p.tracks.every((t) => MACHINES.includes(t.machine) && Array.isArray(t.params) && t.params.length === 8)) return null;
+  // ricostruisce gli step vuoti salvati in forma compatta
+  p.patterns = p.patterns.map((pt) => (pt ? pt.map((tr) => (Array.isArray(tr) ? tr.map((s) => (s && typeof s === 'object' ? Object.assign({ locks: {}, cond: null }, s) : emptyStep())) : tr)) : emptyPattern()));
   if (!p.patterns.every((pt) => Array.isArray(pt) && pt.length === 6 && pt.every((tr) => Array.isArray(tr) && tr.length === 16))) return null;
+  while (p.patterns.length < PATTERNS) p.patterns.push(emptyPattern());   // progetti con un solo banco
   if (typeof p.fx.tempo !== 'number') p.fx.tempo = bpmOf(p.fx.bpm ?? 63);   // progetti salvati prima del BPM libero
   delete p.fx.bpm;
   p.roll = Object.assign({}, ROLL_DEFAULT, p.roll || {});
-  p.cur = Math.max(0, Math.min(15, p.cur | 0));
+  p.cur = Math.max(0, Math.min(PATTERNS - 1, p.cur | 0));
   p.tracks.forEach((t) => {
     if (typeof t.sample !== 'string') t.sample = DEMO_SAMPLE;
     t.bus = [0, 1, 2, 3].includes(t.bus) ? t.bus : 0;   // 0 = MAIN, 1..3 = BUS A..C
@@ -617,7 +648,7 @@ let P = loadProject();
 let saveTimer = null;
 function save() {
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => { try { localStorage.setItem(STORE, JSON.stringify(P)); } catch (e) { /* ok */ } }, 400);
+  saveTimer = setTimeout(() => { try { localStorage.setItem(STORE, JSON.stringify(packProject(P))); } catch (e) { /* ok */ } }, 400);
 }
 
 // stato dell'interfaccia
@@ -1341,8 +1372,11 @@ function resolveKnob(id) {
 }
 
 // costruzione una tantum
-const trackBtns = [], machBtns = [], knobEls = [], padBtns = [], stepCells = [], strips = [], rateBtns = [], rpadBtns = [], slotEls = [];
-UI.mixPage = 'ch'; UI.busTab = 0;
+const trackBtns = [], machBtns = [], knobEls = [], padBtns = [], stepCells = [], strips = [], rateBtns = [], rpadBtns = [], slotEls = [], bankBtns = [];
+UI.mixPage = 'ch'; UI.busTab = 0; UI.bank = P.cur >> 4; UI.clip = null; UI.pasteArm = null; UI.flash = '';
+let flashTimer = null, pasteTimer = null;
+function flash(t) { UI.flash = t; drawLcd(); clearTimeout(flashTimer); flashTimer = setTimeout(() => { UI.flash = ''; drawLcd(); }, 1800); }
+const clone = (x) => JSON.parse(JSON.stringify(x));
 (function build() {
   for (const box of ['tracks', 'rtracks']) {
     for (let i = 0; i < 6; i++) {
@@ -1352,6 +1386,12 @@ UI.mixPage = 'ch'; UI.busTab = 0;
       $(box).appendChild(b); trackBtns.push(b);
     }
   }
+  [...BANKS].forEach((name, k) => {
+    const b = document.createElement('button');
+    b.className = 'bankb'; b.dataset.act = 'bank'; b.dataset.b = k; b.setAttribute('role', 'radio');
+    b.setAttribute('aria-label', 'Banco ' + name); b.textContent = name;
+    $('banks').appendChild(b); bankBtns.push(b);
+  });
   RATES.forEach((name, i) => {
     const b = document.createElement('button');
     b.className = 'segb'; b.dataset.act = 'rate'; b.dataset.i = i; b.setAttribute('role', 'radio'); b.textContent = name;
@@ -1424,10 +1464,10 @@ function drawHeader() {
 }
 function drawLcd() {
   const tr = P.tracks[UI.track];
-  const pend = UI.pendingPat !== null ? ' → A' + pad2(UI.pendingPat + 1) : '';
+  const pend = UI.pendingPat !== null ? ' → ' + patName(UI.pendingPat) : '';
   const view = UI.wide ? 'seq' : UI.view;   // nella vista larga il display segue il sequencer
   const where = view === 'mix' ? 'MIXER' : view === 'roll' ? 'ROLL' : UI.fx ? 'FX' : MODE_NAME[UI.mode];
-  $('lcd1').textContent = 'PTN A' + pad2(P.cur + 1) + pend + ' · ' + where;
+  $('lcd1').textContent = 'PTN ' + patName(P.cur) + pend + ' · ' + where;
   $('lcdBpm').textContent = P.fx.tempo.toFixed(1);
   $('bpmCtl').setAttribute('aria-valuenow', String(P.fx.tempo));
   let left, right;
@@ -1440,7 +1480,7 @@ function drawLcd() {
   } else {
     const name = tr.machine === 'SAMPLE' ? tr.sample : tr.machine;
     left = 'T' + (UI.track + 1) + ' ' + name + ' · STEP ' + (UI.head < 0 ? '--' : pad2(UI.head + 1));
-    right = UI.scatter ? 'SCATTER ' + UI.scatter : UI.mode === 'PLOCK' && UI.selStep !== null ? 'LOCK ' + pad2(UI.selStep + 1) : 'SW ' + Math.round(P.fx.swing / 127 * 60) + '%';
+    right = UI.flash ? UI.flash : UI.scatter ? 'SCATTER ' + UI.scatter : UI.mode === 'PLOCK' && UI.selStep !== null ? 'LOCK ' + pad2(UI.selStep + 1) : 'SW ' + Math.round(P.fx.swing / 127 * 60) + '%';
   }
   $('lcd2').textContent = left; $('lcd3').textContent = right;
 }
@@ -1476,7 +1516,7 @@ function drawRoll() {
   rateBtns.forEach((b, i) => b.setAttribute('aria-checked', String(i === R.rate)));
   $('rpads').classList.toggle('kit', kit);
   $('rollLabel').textContent = kit ? 'ROLL · KIT' : 'ROLL · TRACCIA ' + (UI.track + 1);
-  $('rollHint').textContent = UI.rec ? 'REC REGISTRA NEL PATTERN A' + pad2(P.cur + 1) : (UI.wide && UI.lastNote ? 'ULTIMA NOTA ' + UI.lastNote : '');
+  $('rollHint').textContent = UI.rec ? 'REC REGISTRA NEL PATTERN ' + patName(P.cur) : (UI.wide && UI.lastNote ? 'ULTIMA NOTA ' + UI.lastNote : '');
   const base = baseMidi(UI.track), sc = SCALES[R.scale][1];
   rpadBtns.forEach((b, pos) => {
     if (kit) {
@@ -1504,13 +1544,14 @@ function drawSteps() {
   stepCells.forEach((c, s) => {
     const st = pat[s];
     if (isPat) {
-      c.led.className = 'led' + (!patEmpty(P.patterns[s]) ? ' on' : '');
-      c.key.classList.toggle('sel', s === P.cur);
-      c.key.classList.toggle('pending', s === UI.pendingPat);
+      const idx = UI.bank * 16 + s;
+      c.led.className = 'led' + (!patEmpty(P.patterns[idx]) ? ' on' : '');
+      c.key.classList.toggle('sel', idx === P.cur);
+      c.key.classList.toggle('pending', idx === UI.pendingPat);
       c.key.classList.toggle('head', false);
       c.sub.textContent = '';
-      c.key.setAttribute('aria-label', 'Pattern A' + pad2(s + 1));
-      c.key.setAttribute('aria-pressed', String(s === P.cur));
+      c.key.setAttribute('aria-label', 'Pattern ' + patName(idx));
+      c.key.setAttribute('aria-pressed', String(idx === P.cur));
     } else {
       const isHead = s === UI.head;
       c.led.className = 'led' + (st.on ? ' on' : '') + (isHead ? ' head' : '');
@@ -1523,15 +1564,31 @@ function drawSteps() {
       c.key.setAttribute('aria-pressed', String(st.on));
     }
   });
-  $('stepLabel').textContent = isPat ? 'PATTERN · BANCO A' : 'STEP · TRACCIA ' + (UI.track + 1);
-  const hint = $('stepHint'), act = $('stepAct');
+  $('stepLabel').textContent = isPat ? 'PATTERN · ' + patName(P.cur) : 'STEP · TRACCIA ' + (UI.track + 1);
+  const hint = $('stepHint'), act = $('stepAct'), cp = $('copyBtn'), ps = $('pasteBtn');
   act.hidden = true;
-  if (isPat) { hint.textContent = 'TOCCA PER CAMBIARE'; act.hidden = false; act.textContent = 'SVUOTA'; }
+  $('banks').hidden = !isPat;
+  if (isPat) bankBtns.forEach((b, k) => {
+    b.setAttribute('aria-checked', String(k === UI.bank));
+    b.classList.toggle('used', P.patterns.slice(k * 16, k * 16 + 16).some((pt) => !patEmpty(pt)));
+  });
+  // copia/incolla: pattern intero in PATTERN, una traccia in STEP
+  const canCopy = isPat || UI.mode === 'TRIG';
+  cp.hidden = ps.hidden = !canCopy;
+  if (canCopy) {
+    const kind = isPat ? 'pattern' : 'track';
+    cp.textContent = isPat ? 'COPIA' : 'COPIA T' + (UI.track + 1);
+    ps.disabled = !(UI.clip && UI.clip.kind === kind);
+    const armedHere = UI.pasteArm === kind;
+    ps.classList.toggle('armed', armedHere);
+    ps.textContent = armedHere ? 'CONFERMA?' : 'INCOLLA';
+  }
+  hint.textContent = '';
+  if (isPat) { act.hidden = false; act.textContent = 'SVUOTA'; }
   else if (UI.mode === 'PLOCK') {
     if (UI.selStep === null) hint.textContent = 'SCEGLI UNO STEP';
     else { hint.textContent = 'GIRA LE MANOPOLE'; act.hidden = false; act.textContent = 'TOGLI LOCK'; }
   } else if (UI.mode === 'COND') hint.textContent = '% · BATTUTE: TOCCA LO STEP';
-  else hint.textContent = '● = LOCK';
 }
 function drawFn() {
   document.querySelectorAll('#fn [data-act="mode"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.m === UI.mode)));
@@ -1674,7 +1731,7 @@ async function exportProject() {
   for (let i = 0; i < 6; i++) { const rec = await sampleGet(i); if (rec && rec.data) samples[i] = { name: rec.name, b64: bufToB64(rec.data) }; }
   const d = new Date(), stamp = d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + '-' + pad2(d.getHours()) + pad2(d.getMinutes());
   const name = 'pony84-' + stamp + '.pony84';
-  const blob = new Blob([JSON.stringify({ app: 'PONY84', v: 1, saved: d.toISOString(), project: P, samples })], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ app: 'PONY84', v: 2, saved: d.toISOString(), project: packProject(P), samples })], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
@@ -1686,6 +1743,7 @@ async function useProject(p, samples) {
   held.clear();
   P = p;
   UI.track = 0; UI.selStep = null; UI.pendingPat = null; UI.rec = false; UI.fx = false; UI.lastNote = '';
+  UI.bank = P.cur >> 4; UI.pasteArm = null;
   await sampleClearAll();
   for (const [i, s] of Object.entries(samples || {})) {
     const k = Number(i);
@@ -1719,7 +1777,7 @@ projInput.addEventListener('change', async () => {
 let armed = null, armTimer = null;
 function newProject(kind) {
   const p = demoProject();
-  if (kind === 'empty') { p.patterns = Array.from({ length: 16 }, emptyPattern); }
+  if (kind === 'empty') { p.patterns = Array.from({ length: PATTERNS }, emptyPattern); }
   useProject(p, null).then(() => projMsg(kind === 'empty' ? 'NUOVO PROGETTO VUOTO' : 'DEMO CARICATO'));
 }
 
@@ -1761,7 +1819,8 @@ function onMidi(e) {
   if (type === 0x80 || type === 0x90) { padUp('midi' + ch + ':' + d1); return; }
   if (type === 0xB0) { midiCC(ch, d1, d2); return; }
   if (type === 0xC0) {                                                          // program change = pattern
-    const n = d1 % 16;
+    const n = d1 % PATTERNS;
+    UI.bank = n >> 4;
     if (playing && n !== P.cur) UI.pendingPat = n; else { P.cur = n; UI.pendingPat = null; }
     needRender = true;
   }
@@ -1869,7 +1928,33 @@ function onAct(b) {
   }
   if (act === 'load') { wavInput.click(); return; }
   if (act === 'latch') { UI.latch = !UI.latch; if (!UI.latch) scatterOff(); drawPads(); return; }
-  if (act === 'mode') { UI.mode = b.dataset.m; UI.selStep = null; renderAll(); return; }
+  if (act === 'mode') {
+    UI.mode = b.dataset.m; UI.selStep = null; UI.pasteArm = null;
+    if (UI.mode === 'PATTERN') UI.bank = (UI.pendingPat ?? P.cur) >> 4;
+    renderAll(); fit(); return;
+  }
+  if (act === 'bank') { UI.bank = Number(b.dataset.b); drawSteps(); return; }
+  if (act === 'copy') {
+    if (UI.mode === 'PATTERN') { UI.clip = { kind: 'pattern', data: clone(P.patterns[P.cur]) }; flash('COPIATO ' + patName(P.cur)); }
+    else { UI.clip = { kind: 'track', data: clone(P.patterns[P.cur][UI.track]) }; flash('COPIATA T' + (UI.track + 1) + ' DI ' + patName(P.cur)); }
+    UI.pasteArm = null; drawSteps(); return;
+  }
+  if (act === 'paste') {
+    const isPat = UI.mode === 'PATTERN', kind = isPat ? 'pattern' : 'track';
+    if (!UI.clip || UI.clip.kind !== kind) return;
+    const dest = isPat ? (UI.pendingPat ?? P.cur) : P.cur;   // durante la riproduzione: il pattern in arrivo
+    const target = isPat ? P.patterns[dest] : P.patterns[dest][UI.track];
+    const full = isPat ? !patEmpty(target) : target.some((s) => !stepIsEmpty(s));
+    clearTimeout(pasteTimer);
+    if (full && UI.pasteArm !== kind) {   // c'è già qualcosa: secondo tocco per confermare
+      UI.pasteArm = kind; pasteTimer = setTimeout(() => { UI.pasteArm = null; drawSteps(); }, 3000);
+      flash('SOVRASCRIVO? TOCCA ANCORA'); drawSteps(); return;
+    }
+    UI.pasteArm = null;
+    if (isPat) { P.patterns[dest] = clone(UI.clip.data); flash('INCOLLATO SU ' + patName(dest)); }
+    else { P.patterns[dest][UI.track] = clone(UI.clip.data); flash('INCOLLATA SU T' + (UI.track + 1) + ' · ' + patName(dest)); }
+    renderAll(); return;
+  }
   if (act === 'fx') { UI.fx = !UI.fx; renderAll(); return; }
   if (act === 'mute' || act === 'solo') {
     const tr = P.tracks[Number(b.dataset.i)]; tr[act] = !tr[act];
@@ -1892,7 +1977,9 @@ function onAct(b) {
   if (act === 'step') {
     const s = Number(b.dataset.s);
     if (UI.mode === 'PATTERN') {
-      if (playing && s !== P.cur) UI.pendingPat = s; else { P.cur = s; UI.pendingPat = null; }
+      const idx = UI.bank * 16 + s;
+      UI.pasteArm = null;
+      if (playing && idx !== P.cur) UI.pendingPat = idx; else { P.cur = idx; UI.pendingPat = null; }
       renderAll(); return;
     }
     const st = P.patterns[P.cur][UI.track][s];
