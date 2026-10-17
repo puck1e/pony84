@@ -39,7 +39,8 @@ button:focus-visible, [role="slider"]:focus-visible { outline: 2px solid var(--o
   touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
 }
 .label { font-size: 11px; font-weight: 600; letter-spacing: 2.4px; color: var(--muted); }
-.row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 20px; }
+.row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 26px; }
+.invisible { visibility: hidden; }
 .sec { display: flex; flex-direction: column; gap: var(--sec); }
 
 /* header */
@@ -223,6 +224,18 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .slot-knobs .knob.off { visibility: hidden; }
 .slot.empty .slot-knobs { display: none; }
 
+/* editor WAVE (stile MPC) */
+.wave-card { max-width: 760px; }
+.wavebox { position: relative; height: clamp(150px, 30dvh, 260px); background: var(--lcd-bg); border: 2px solid var(--line); border-radius: 10px; overflow: hidden; touch-action: none; }
+.wavebox canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: ew-resize; }
+.wave-read { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.wave-read div { display: flex; flex-direction: column; gap: 2px; }
+.wave-read b { font-family: var(--mono); font-weight: 500; font-size: 14px; color: var(--lcd); font-variant-numeric: tabular-nums; }
+.wave-btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.wave-btns .wave-play { grid-column: 1 / -1; background: var(--orange); color: var(--ink); }
+.wave-lock { color: var(--orange); }
+@media (min-width: 700px) { .wave-btns { grid-template-columns: repeat(5, minmax(0, 1fr)); } .wave-btns .wave-play { grid-column: auto; } .wave-btns .mbtn { font-size: 12px; letter-spacing: .4px; padding: 0 4px; white-space: nowrap; } }
+
 /* pannello PROGETTO & MIDI */
 .sheet { position: fixed; inset: 0; z-index: 30; background: var(--veil); display: flex; align-items: flex-end; justify-content: center;
   padding: env(safe-area-inset-top, 0px) max(10px, env(safe-area-inset-right, 0px)) 0 max(10px, env(safe-area-inset-left, 0px)); }
@@ -328,7 +341,10 @@ a.ghost { display: inline-flex; align-items: center; text-decoration: none; }
     <section class="sec" aria-label="Machine">
       <div class="row-between">
         <span class="label" id="machLabel">MACHINE</span>
-        <button class="ghost" id="loadBtn" data-act="load" hidden>CARICA WAV…</button>
+        <span class="stepbar">
+          <button class="ghost" id="waveBtn" data-act="wave" hidden>WAVE</button>
+          <button class="ghost" id="loadBtn" data-act="load" hidden>CARICA WAV…</button>
+        </span>
         <input type="file" id="wavInput" accept="audio/*,.wav,.aif,.aiff,.mp3" hidden>
       </div>
       <div class="machines" id="machines" role="radiogroup" aria-label="Motore della traccia"></div>
@@ -353,7 +369,7 @@ a.ghost { display: inline-flex; align-items: center; text-decoration: none; }
           <button class="ghost" id="stepAct" data-act="stepAct" hidden></button>
         </span>
       </div>
-      <div class="banks" id="banks" role="radiogroup" aria-label="Banco di pattern" hidden></div>
+      <div class="banks" id="banks" role="radiogroup" aria-label="Banco di pattern"></div>
       <div class="steps" id="steps"></div>
     </section>
 
@@ -479,6 +495,36 @@ a.ghost { display: inline-flex; align-items: center; text-decoration: none; }
         <li><b>Program change</b> 1–16: cambia pattern. <b>Start/Stop</b> MIDI: play e stop.</li>
       </ul>
     </section>
+  </div>
+</div>
+
+<div class="sheet" id="waveEd" hidden role="dialog" aria-modal="true" aria-labelledby="waveTitle">
+  <div class="sheet-card wave-card">
+    <div class="row-between">
+      <b class="sheet-title" id="waveTitle">SAMPLE</b>
+      <button class="ghost" data-act="waveClose">CHIUDI</button>
+    </div>
+    <div class="row-between">
+      <span class="label" id="waveName"></span>
+      <span class="label wave-lock" id="waveLock"></span>
+    </div>
+    <div class="wavebox" id="waveBox">
+      <canvas id="waveCanvas" tabindex="0" role="img" aria-label="Forma d'onda: trascina la maniglia arancione (START) e quella rossa (END)"></canvas>
+    </div>
+    <div class="wave-read">
+      <div><span class="label">START</span><b id="wStart">0.000 s</b></div>
+      <div><span class="label">END</span><b id="wEnd">0.000 s</b></div>
+      <div><span class="label">DURATA</span><b id="wLen">0.000 s</b></div>
+      <div><span class="label">ZOOM</span><b id="wZoom">1×</b></div>
+    </div>
+    <div class="wave-btns">
+      <button class="hw mbtn wave-play" data-act="wavePlay">▶ ASCOLTA</button>
+      <button class="hw mbtn" data-act="waveZoom" data-z="1" aria-label="Ingrandisci">ZOOM +</button>
+      <button class="hw mbtn" data-act="waveZoom" data-z="-1" aria-label="Rimpicciolisci">ZOOM −</button>
+      <button class="hw mbtn" data-act="waveReset">TUTTO IL FILE</button>
+      <button class="hw mbtn" data-act="load">CARICA WAV…</button>
+    </div>
+    <p class="mnote">Trascina la maniglia <b>arancione</b> (START) e quella <b>rossa</b> (END), oppure tocca la forma d'onda per spostare la più vicina. Con ZOOM + lavori di precisione. Se sei in P-LOCK con uno step selezionato, i punti valgono solo per quello step.</p>
   </div>
 </div>
 
@@ -689,18 +735,18 @@ function voiceParams(m, K) {
 const NOTE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const fmtHz = (f) => (f >= 1000 ? (f / 1000).toFixed(1) + 'k' : String(Math.round(f)));
 function fmtParam(m, i, v) {
-  if (i >= 6) return String(v);
+  if (i >= 6) return String(Math.round(v));
   if (m === 'SAMPLE') {
     if (i === 0) { const s = Math.round((v - 64) * 24 / 63); return (s > 0 ? '+' : '') + s + 'st'; }
-    if (i === 3) return v >= 127 ? 'FULL' : String(v);
+    if (i === 3) return v >= 127 ? 'FULL' : String(Math.round(v));
     if (i === 4) return fmtHz(200 * Math.pow(100, v / 127));
-    return String(v);
+    return String(Math.round(v));   // START e LENGTH possono avere decimali (editor WAVE)
   }
   if (i === 0) {
     if (m === 'TONE') { const nn = 24 + Math.round(v / 127 * 60); return NOTE[nn % 12] + (Math.floor(nn / 12) - 1); }
     return fmtHz(voiceParams(m, [v, 64, 64, 64, 64, 64, 0, 0]).freq);
   }
-  return String(v);
+  return String(Math.round(v));
 }
 
 // ===================================================================
@@ -1497,8 +1543,8 @@ function drawTracks() {
 function drawMachine() {
   const tr = P.tracks[UI.track];
   $('machLabel').textContent = UI.fx ? 'EFFETTI · GLOBALI' : 'MACHINE · TRACCIA ' + (UI.track + 1);
-  $('machines').hidden = UI.fx;
-  $('loadBtn').hidden = UI.fx || tr.machine !== 'SAMPLE';
+  $('machines').classList.toggle('invisible', UI.fx);   // in FX la riga resta al suo posto, solo nascosta
+  $('loadBtn').hidden = $('waveBtn').hidden = UI.fx || tr.machine !== 'SAMPLE';
   machBtns.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.m === tr.machine)));
   drawKnobs();
 }
@@ -1567,9 +1613,10 @@ function drawSteps() {
   $('stepLabel').textContent = isPat ? 'PATTERN · ' + patName(P.cur) : 'STEP · TRACCIA ' + (UI.track + 1);
   const hint = $('stepHint'), act = $('stepAct'), cp = $('copyBtn'), ps = $('pasteBtn');
   act.hidden = true;
-  $('banks').hidden = !isPat;
-  if (isPat) bankBtns.forEach((b, k) => {
-    b.setAttribute('aria-checked', String(k === UI.bank));
+  // la fila dei banchi è sempre visibile: il sequencer resta fermo in ogni modalità
+  const shownBank = isPat ? UI.bank : (UI.pendingPat ?? P.cur) >> 4;
+  bankBtns.forEach((b, k) => {
+    b.setAttribute('aria-checked', String(k === shownBank));
     b.classList.toggle('used', P.patterns.slice(k * 16, k * 16 + 16).some((pt) => !patEmpty(pt)));
   });
   // copia/incolla: pattern intero in PATTERN, una traccia in STEP
@@ -1712,7 +1759,132 @@ wavInput.addEventListener('change', async () => {
   }
   wavInput.value = '';
   renderAll();
+  if (!$('waveEd').hidden) { UI.wave.zoom = 1; UI.wave.center = 0.5; drawWave(); }
 });
+
+// ---------- editor WAVE: START / END sulla forma d'onda ----------
+// START = manopola 2, LENGTH = manopola 3 della traccia (o p-lock dello step selezionato)
+UI.wave = { zoom: 1, center: 0.5, drag: null, last: 's', playFrom: 0, playRate: 1, playEnd: 0, playT0: -1 };
+const waveBuf = () => (A.samples && A.samples[UI.track]) || A.demo || null;
+const r2 = (v) => Math.round(v * 100) / 100;
+function wavePoints() {
+  const ks = resolveKnob('m1'), kl = resolveKnob('m2');
+  const s = ks.get() / 127 * 0.99;                   // come in playSample
+  const e = s + kl.get() / 127 * (1 - s);
+  return { s, e, ks, kl };
+}
+function setWavePoint(which, f) {
+  const { s, e, ks, kl } = wavePoints();
+  f = Math.max(0, Math.min(1, f));
+  let ns = s, ne = e;
+  if (which === 's') ns = Math.min(f, e - 0.001, 0.99); else ne = Math.max(f, s + 0.001);
+  ks.set(r2(Math.max(0, ns / 0.99 * 127)));
+  kl.set(r2(Math.max(0, Math.min(127, (ne - ns) / (1 - ns) * 127))));
+  UI.wave.last = which;
+  redrawAfterKnob('m1');
+  drawWave();
+}
+function waveView() {
+  const span = 1 / UI.wave.zoom;
+  const v0 = Math.max(0, Math.min(1 - span, UI.wave.center - span / 2));
+  return { v0, span };
+}
+let waveColors = null;
+function drawWave() {
+  if ($('waveEd').hidden) return;
+  const cv = $('waveCanvas'), box = $('waveBox'), dpr = window.devicePixelRatio || 1;
+  const W = box.clientWidth, H = box.clientHeight;
+  if (!W || !H) return;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const g = cv.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, W, H);
+  if (!waveColors) { const cs = getComputedStyle(document.documentElement); waveColors = ['--cream', '--muted', '--orange', '--red', '--yellow', '--line', '--lcd'].reduce((o, k) => (o[k] = cs.getPropertyValue(k).trim(), o), {}); }
+  const C = waveColors, buf = waveBuf();
+  const { s, e } = wavePoints(), { v0, span } = waveView();
+  const X = (f) => (f - v0) / span * W;
+  g.strokeStyle = C['--line']; g.lineWidth = 1; g.beginPath(); g.moveTo(0, H / 2); g.lineTo(W, H / 2); g.stroke();
+  if (buf) {
+    const chs = [...Array(buf.numberOfChannels).keys()].map((c) => buf.getChannelData(c)), N = chs[0].length;
+    const top = new Float32Array(W), bot = new Float32Array(W);
+    let peak = 0.0001;
+    for (let x = 0; x < W; x++) {
+      const i0 = Math.floor((v0 + x / W * span) * N), i1 = Math.max(i0 + 1, Math.floor((v0 + (x + 1) / W * span) * N));
+      const step = Math.max(1, Math.floor((i1 - i0) / 256));
+      let mn = 0, mx = 0;
+      for (const d of chs) for (let i = i0; i < i1 && i < N; i += step) { const v = d[i]; if (v < mn) mn = v; if (v > mx) mx = v; }
+      top[x] = mx; bot[x] = mn; peak = Math.max(peak, mx, -mn);
+    }
+    const amp = (H / 2 - 6) / Math.max(peak, 0.25);
+    const paint = (col) => { g.fillStyle = col; for (let x = 0; x < W; x++) { const y1 = H / 2 - top[x] * amp, y2 = H / 2 - bot[x] * amp; g.fillRect(x, y1, 1, Math.max(1, y2 - y1)); } };
+    paint(C['--muted']); g.globalAlpha = 0.45; g.fillStyle = '#000'; g.fillRect(0, 0, W, H); g.globalAlpha = 1;   // fuori dalla selezione: spento
+    const xs = Math.max(0, X(s)), xe = Math.min(W, X(e));
+    if (xe > xs) { g.save(); g.beginPath(); g.rect(xs, 0, xe - xs, H); g.clip(); paint(C['--cream']); g.restore(); }
+  }
+  const handle = (f, col, txt) => {
+    const x = X(f); if (x < -2 || x > W + 2) return;
+    g.fillStyle = col; g.fillRect(x - 1, 0, 2, H);
+    g.beginPath(); g.roundRect ? g.roundRect(x - (txt === 'S' ? 0 : 22), 0, 22, 20, 4) : g.rect(x - (txt === 'S' ? 0 : 22), 0, 22, 20); g.fill();
+    g.fillStyle = '#1d1a17'; g.font = '700 12px "Barlow Condensed", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(txt, x + (txt === 'S' ? 11 : -11), 10);
+  };
+  handle(s, C['--orange'], 'S'); handle(e, C['--red'], 'E');
+  if (UI.wave.playT0 >= 0 && ctx) {   // testina durante l'ascolto
+    const pos = UI.wave.playFrom + (ctx.currentTime - UI.wave.playT0) * UI.wave.playRate / (buf ? buf.duration : 1);
+    if (pos <= UI.wave.playEnd) { g.fillStyle = C['--yellow']; g.fillRect(X(pos) - 1, 0, 2, H); requestAnimationFrame(drawWave); } else UI.wave.playT0 = -1;
+  }
+  const dur = buf ? buf.duration : 0;
+  $('wStart').textContent = (s * dur).toFixed(3) + ' s';
+  $('wEnd').textContent = (e * dur).toFixed(3) + ' s';
+  $('wLen').textContent = ((e - s) * dur).toFixed(3) + ' s';
+  $('wZoom').textContent = UI.wave.zoom + '×';
+}
+function openWave() {
+  initAudio(); if (ctx.state === 'suspended') ctx.resume();
+  UI.wave.zoom = 1; UI.wave.center = 0.5; UI.wave.playT0 = -1;
+  $('waveEd').hidden = false;
+  const locked = UI.mode === 'PLOCK' && UI.selStep !== null;
+  $('waveTitle').textContent = 'SAMPLE · TRACCIA ' + (UI.track + 1);
+  $('waveName').textContent = P.tracks[UI.track].sample;
+  $('waveLock').textContent = locked ? 'P-LOCK STEP ' + pad2(UI.selStep + 1) : '';
+  requestAnimationFrame(drawWave);
+  $('waveCanvas').focus({ preventScroll: true });
+}
+function closeWave() { $('waveEd').hidden = true; UI.wave.playT0 = -1; }
+function wavePlay() {
+  if (!ctx) return;
+  const st = UI.mode === 'PLOCK' && UI.selStep !== null ? P.patterns[P.cur][UI.track][UI.selStep] : { locks: {} };
+  const t = ctx.currentTime + 0.01;
+  trigger(UI.track, st, t);
+  const K = P.tracks[UI.track].params.map((v, i) => (st.locks[i] != null ? st.locks[i] : v));
+  const { s, e } = wavePoints();
+  UI.wave.playFrom = s; UI.wave.playEnd = e; UI.wave.playT0 = t;
+  UI.wave.playRate = Math.pow(2, Math.round((K[0] - 64) * 24 / 63) / 12);
+  requestAnimationFrame(drawWave);
+}
+(function waveInput() {
+  const cv = $('waveCanvas');
+  const fracAt = (ev) => { const r = cv.getBoundingClientRect(), { v0, span } = waveView(); return v0 + (ev.clientX - r.left) / r.width * span; };
+  cv.addEventListener('pointerdown', (ev) => {
+    ev.preventDefault(); ev.stopPropagation();
+    const f = fracAt(ev), { s, e } = wavePoints();
+    UI.wave.drag = Math.abs(f - s) <= Math.abs(f - e) ? 's' : 'e';   // la maniglia più vicina
+    try { cv.setPointerCapture(ev.pointerId); } catch (err) { /* ok */ }
+    setWavePoint(UI.wave.drag, f);
+  });
+  cv.addEventListener('pointermove', (ev) => { if (UI.wave.drag) setWavePoint(UI.wave.drag, fracAt(ev)); });
+  const end = () => { UI.wave.drag = null; };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  cv.addEventListener('keydown', (ev) => {   // frecce: sposta l'ultima maniglia; Maiusc = passi più grandi; S/E sceglie la maniglia
+    if (ev.key === 's' || ev.key === 'S') { UI.wave.last = 's'; return; }
+    if (ev.key === 'e' || ev.key === 'E') { UI.wave.last = 'e'; return; }
+    const d = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[ev.key];
+    if (!d) return;
+    ev.preventDefault(); ev.stopPropagation();
+    const { s, e } = wavePoints(), stepF = (ev.shiftKey ? 0.01 : 0.001) / UI.wave.zoom;
+    setWavePoint(UI.wave.last, (UI.wave.last === 's' ? s : e) + d * stepF);
+  });
+})();
 
 // ---------- esporta / importa / nuovo progetto ----------
 function bufToB64(buf) {
@@ -1891,6 +2063,15 @@ function drawMenu() {
 
 function onAct(b) {
   const act = b.dataset.act;
+  if (act === 'wave') { openWave(); return; }
+  if (act === 'waveClose') { closeWave(); return; }
+  if (act === 'wavePlay') { wavePlay(); return; }
+  if (act === 'waveReset') { setWavePoint('s', 0); setWavePoint('e', 1); return; }
+  if (act === 'waveZoom') {   // lo zoom si centra sull'ultima maniglia toccata
+    UI.wave.zoom = Math.max(1, Math.min(64, UI.wave.zoom * (Number(b.dataset.z) > 0 ? 2 : 0.5)));
+    const { s, e } = wavePoints(); UI.wave.center = UI.wave.last === 's' ? s : e;
+    drawWave(); return;
+  }
   if (act === 'menu') { openMenu(); return; }
   if (act === 'menuClose') { closeMenu(); return; }
   if (act === 'export') { exportProject(); return; }
@@ -1933,7 +2114,11 @@ function onAct(b) {
     if (UI.mode === 'PATTERN') UI.bank = (UI.pendingPat ?? P.cur) >> 4;
     renderAll(); fit(); return;
   }
-  if (act === 'bank') { UI.bank = Number(b.dataset.b); drawSteps(); return; }
+  if (act === 'bank') {   // da qualsiasi modalità: apre PATTERN su quel banco
+    UI.bank = Number(b.dataset.b);
+    if (UI.mode !== 'PATTERN') { UI.mode = 'PATTERN'; UI.selStep = null; UI.pasteArm = null; renderAll(); } else drawSteps();
+    return;
+  }
   if (act === 'copy') {
     if (UI.mode === 'PATTERN') { UI.clip = { kind: 'pattern', data: clone(P.patterns[P.cur]) }; flash('COPIATO ' + patName(P.cur)); }
     else { UI.clip = { kind: 'track', data: clone(P.patterns[P.cur][UI.track]) }; flash('COPIATA T' + (UI.track + 1) + ' DI ' + patName(P.cur)); }
@@ -1999,6 +2184,7 @@ function onAct(b) {
 
 document.addEventListener('click', (e) => {
   if (e.target === $('menu')) { closeMenu(); return; }                        // tocco fuori dal pannello
+  if (e.target === $('waveEd')) { closeWave(); return; }
   if (e.detail === 0 && e.target.closest('[data-tap]')) { tap(); return; }   // TAP da tastiera
   const kp = e.detail === 0 && e.target.closest('[data-rpad]');               // pad ROLL da tastiera
   if (kp) { padDown(kp, 'kbd', null); setTimeout(() => padUp('kbd'), 150); return; }
@@ -2075,7 +2261,7 @@ document.addEventListener('pointerdown', (e) => {
 function endPointer(e) {
   padUp(e.pointerId);
   if (padHeld === e.pointerId) { padHeld = null; if (!UI.latch) scatterOff(); }
-  if (swipe && swipe.id === e.pointerId && e.type === 'pointerup' && !UI.wide && $('menu').hidden) {
+  if (swipe && swipe.id === e.pointerId && e.type === 'pointerup' && !UI.wide && $('menu').hidden && $('waveEd').hidden) {
     const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
     if (Math.abs(dx) > 60 && Math.abs(dy) < 50) {
       // swipe a destra = vista successiva (SEQ → MIXER → ROLL → SEQ)
@@ -2116,8 +2302,9 @@ function dragKnob(el, e) {
 }
 document.addEventListener('keydown', (e) => {
   // barra spaziatrice = play/pausa (quando non si è su un tasto)
-  if (e.key === 'Escape') { if (!$('menu').hidden) closeMenu(); else if (UI.learn) setLearn(false); return; }
-  if (e.code === 'Space' && !e.repeat && $('menu').hidden && (e.target === document.body || e.target === document.documentElement)) {
+  if (e.key === 'Escape') { if (!$('waveEd').hidden) closeWave(); else if (!$('menu').hidden) closeMenu(); else if (UI.learn) setLearn(false); return; }
+  if (e.code === 'Space' && !e.repeat && !$('waveEd').hidden && e.target.id === 'waveCanvas') { e.preventDefault(); wavePlay(); return; }
+  if (e.code === 'Space' && !e.repeat && $('menu').hidden && $('waveEd').hidden && (e.target === document.body || e.target === document.documentElement)) {
     e.preventDefault(); play(); return;
   }
   const kn = e.target.closest && e.target.closest('[data-knob]');
@@ -2175,7 +2362,7 @@ requestAnimationFrame(frame);
 let fitTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
-  fitTimer = setTimeout(() => { if (updateWide()) renderAll(); else fit(); if (shows('mix')) drawMixer(); }, 120);
+  fitTimer = setTimeout(() => { if (updateWide()) renderAll(); else fit(); if (shows('mix')) drawMixer(); drawWave(); }, 120);
 });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 })();
