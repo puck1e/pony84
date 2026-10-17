@@ -46,6 +46,8 @@ button:focus-visible, [role="slider"]:focus-visible { outline: 2px solid var(--o
 header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .logo { font-size: clamp(28px, 4.2dvh, 36px); line-height: .9; font-weight: 800; font-style: italic; letter-spacing: -.5px; }
 .logo b { color: var(--orange); font-weight: 800; }
+button.logo { background: none; padding: 0; text-align: left; display: flex; align-items: baseline; gap: 5px; color: var(--cream); font-family: var(--display); }
+.logo .caret { font-size: 13px; font-style: normal; color: var(--muted); }
 .tabs { display: flex; gap: 4px; margin-top: 5px; }
 .tab { height: 24px; padding: 0 8px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--muted); border: 1px solid var(--line); }
 .tab[aria-selected="true"] { background: var(--cream); color: var(--ink); border-color: var(--cream); }
@@ -184,6 +186,28 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .rpad.on { background: var(--orange); color: var(--ink); border-bottom-width: 2px; transform: translateY(3px); box-shadow: 0 0 16px var(--orange); }
 .rpad.on small { color: var(--ink); }
 
+/* pannello PROGETTO & MIDI */
+.sheet { position: fixed; inset: 0; z-index: 30; background: var(--veil); display: flex; align-items: flex-end; justify-content: center;
+  padding: env(safe-area-inset-top, 0px) max(10px, env(safe-area-inset-right, 0px)) 0 max(10px, env(safe-area-inset-left, 0px)); }
+.sheet-card { width: 100%; max-width: 520px; max-height: 94%; overflow: auto; background: var(--body); border: 2px solid var(--line); border-bottom: none; border-radius: 14px 14px 0 0;
+  padding: 16px 16px calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 18px; }
+@media (min-width: 700px) and (min-height: 640px) { .sheet { align-items: center; } .sheet-card { border-radius: 14px; border-bottom: 2px solid var(--line); padding-bottom: 18px; } }
+.sheet-title { font-size: 20px; letter-spacing: 1.5px; }
+.mgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.mbtn { height: 48px; font-size: 13px; letter-spacing: 1px; }
+.mbtn.armed { background: var(--red); color: var(--white); }
+.mbtn.on { background: var(--cream); color: var(--ink); }
+.mnote { margin: 0; font-size: 15px; line-height: 1.35; color: var(--muted); max-width: 60ch; }
+.mnote b { color: var(--cream); font-weight: 700; }
+.mlist { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.mmsg { margin: 0; min-height: 16px; font-family: var(--mono); font-size: 12px; letter-spacing: .5px; color: var(--lcd); }
+.learnbar { position: fixed; left: 50%; transform: translateX(-50%); top: calc(8px + env(safe-area-inset-top, 0px)); z-index: 25; max-width: calc(100% - 24px);
+  background: var(--yellow); color: var(--ink); border-radius: 10px; padding: 8px 8px 8px 14px; display: flex; gap: 12px; align-items: center;
+  font-weight: 700; letter-spacing: 1px; font-size: 13px; box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+.learnbar .ghost { border-color: var(--ink); color: var(--ink); flex: none; }
+.app.learning [data-knob] .cap, .app.learning [data-fader] { outline: 2px dashed var(--yellow); outline-offset: 3px; }
+.app.learning .learn-sel .cap, .app.learning [data-fader].learn-sel { outline: 3px solid var(--yellow); }
+
 /* vista larga (tablet in orizzontale, PC): SEQ | ROLL | MIXER affiancati */
 .app.wide {
   max-width: 1560px; height: 100%; min-height: 0;
@@ -240,7 +264,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 <div class="app" id="app">
   <header>
     <div>
-      <div class="logo">PONY<b>84</b></div>
+      <button class="logo" id="menuBtn" data-act="menu" aria-label="Apri il menu progetto e MIDI">PONY<b>84</b><i class="caret" aria-hidden="true">▾</i></button>
       <div class="tabs" role="tablist" aria-label="Vista">
         <button class="tab" role="tab" id="tabSeq" data-act="view" data-v="seq">SEQ</button>
         <button class="tab" role="tab" id="tabMix" data-act="view" data-v="mix">MIXER</button>
@@ -349,6 +373,49 @@ header { display: flex; align-items: center; justify-content: space-between; gap
   </div>
 </div>
 
+<div class="sheet" id="menu" hidden role="dialog" aria-modal="true" aria-labelledby="menuTitle">
+  <div class="sheet-card">
+    <div class="row-between">
+      <b class="sheet-title" id="menuTitle">PROGETTO &amp; MIDI</b>
+      <button class="ghost" data-act="menuClose">CHIUDI</button>
+    </div>
+
+    <section class="sec" aria-label="Progetto">
+      <span class="label">PROGETTO</span>
+      <div class="mgrid">
+        <button class="hw mbtn" data-act="export">ESPORTA FILE</button>
+        <button class="hw mbtn" data-act="import">IMPORTA FILE</button>
+        <button class="hw mbtn" data-act="newp" data-k="empty">NUOVO VUOTO</button>
+        <button class="hw mbtn" data-act="newp" data-k="demo">NUOVO DA DEMO</button>
+      </div>
+      <input type="file" id="projInput" accept=".pony84,application/json" hidden>
+      <p class="mmsg" id="projMsg" aria-live="polite"></p>
+      <p class="mnote">Il file .pony84 contiene pattern, suoni, mixer, effetti e i WAV caricati: puoi riaprirlo su un altro telefono o sul PC. I WAV caricati ora restano salvati anche quando chiudi PONY84.</p>
+    </section>
+
+    <section class="sec" aria-label="Controller MIDI">
+      <span class="label">CONTROLLER MIDI</span>
+      <div class="mgrid">
+        <button class="hw mbtn" data-act="midiOn" id="midiOnBtn">ATTIVA MIDI</button>
+        <button class="hw mbtn" data-act="learn" id="learnBtn">MIDI LEARN</button>
+        <button class="hw mbtn" data-act="midiReset" id="midiResetBtn">AZZERA MAPPATURE</button>
+      </div>
+      <p class="mmsg" id="midiMsg" aria-live="polite">MIDI SPENTO</p>
+      <ul class="mnote mlist">
+        <li><b>Pad</b> (canale 10, note 36–41): suonano le tracce 1–6.</li>
+        <li><b>Tastiera</b> (altri canali): suona la traccia scelta; C4 = intonazione della traccia.</li>
+        <li><b>Manopole</b> CC 70–77: le 8 manopole della pagina aperta. Con MIDI LEARN assegni qualsiasi manopola o fader.</li>
+        <li><b>Program change</b> 1–16: cambia pattern. <b>Start/Stop</b> MIDI: play e stop.</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<div class="learnbar" id="learnBar" hidden role="status">
+  <span id="learnTxt">MIDI LEARN</span>
+  <button class="ghost" data-act="learn">FINE</button>
+</div>
+
 <div class="power" id="power">
   <div class="card">
     <div class="logo">PONY<b>84</b></div>
@@ -438,19 +505,23 @@ function demoProject() {
   set(5, 3); set(5, 10, { cond: '50%', v: 0.7, locks: { 4: 40 } }); set(5, 14, { tp: 5, cond: '4:4', v: 0.8 });
   return p;
 }
+// controlla e aggiorna un progetto (salvato nel browser o importato da file); null se non è valido
+function normalizeProject(p) {
+  if (!(p && p.fx && Array.isArray(p.tracks) && p.tracks.length === 6 && Array.isArray(p.patterns) && p.patterns.length === 16)) return null;
+  if (!p.tracks.every((t) => MACHINES.includes(t.machine) && Array.isArray(t.params) && t.params.length === 8)) return null;
+  if (!p.patterns.every((pt) => Array.isArray(pt) && pt.length === 6 && pt.every((tr) => Array.isArray(tr) && tr.length === 16))) return null;
+  if (typeof p.fx.tempo !== 'number') p.fx.tempo = bpmOf(p.fx.bpm ?? 63);   // progetti salvati prima del BPM libero
+  delete p.fx.bpm;
+  p.roll = Object.assign({}, ROLL_DEFAULT, p.roll || {});
+  p.cur = Math.max(0, Math.min(15, p.cur | 0));
+  p.tracks.forEach((t) => { if (typeof t.sample !== 'string') t.sample = DEMO_SAMPLE; });
+  return p;
+}
 function loadProject() {
   try {
     const raw = localStorage.getItem(STORE);
-    if (raw) {
-      const p = JSON.parse(raw);
-      if (p && p.fx && Array.isArray(p.tracks) && p.tracks.length === 6 && Array.isArray(p.patterns) && p.patterns.length === 16) {
-        p.tracks.forEach((t) => { t.sample = DEMO_SAMPLE; });   // i WAV non restano salvati: si riparte dal demo
-        if (typeof p.fx.tempo !== 'number') p.fx.tempo = bpmOf(p.fx.bpm ?? 63);   // progetti salvati prima del BPM libero
-        delete p.fx.bpm;
-        p.roll = Object.assign({}, ROLL_DEFAULT, p.roll || {});
-        return p;
-      }
-    }
+    const p = raw && normalizeProject(JSON.parse(raw));
+    if (p) return p;
   } catch (e) { /* storage non disponibile */ }
   return demoProject();
 }
@@ -562,6 +633,7 @@ function initAudio() {
   setupScatter();
   applyFx();
   applyMix();
+  restoreSamples();   // i WAV caricati nelle sessioni precedenti
 }
 
 function makeStab() {
@@ -818,7 +890,7 @@ function recordHit(h, t) {
   const st = P.patterns[P.cur][h.ti][s];
   st.on = true;
   st.v = Math.round(h.vel * 100) / 100;
-  if (P.roll.mode === 'KEYS') st.tp = h.tp;
+  if (!h.kit) st.tp = h.tp;
   needRender = true;
 }
 // ripetizioni a tempo quando il sequencer suona
@@ -852,27 +924,33 @@ function restartRollLoop() {
   held.forEach((h) => { h.next = ctx.currentTime + 0.02; });
   rollLoop();
 }
-function padDown(el, pid, clientY) {
+// una nota tenuta: dai pad sullo schermo o dal controller MIDI (key = id del dito o della nota)
+function holdStart(key, tg, vel, el) {
   initAudio(); if (ctx.state === 'suspended') ctx.resume();
+  padUp(key);
+  const t = ctx.currentTime + 0.005;
+  const h = { ti: tg.ti, tp: tg.tp, kit: !!tg.kit, vel, el, rate: P.roll.rate, t0: t, next: t + RATE_STEPS[P.roll.rate] * stepDur() };
+  held.set(key, h);
+  rollHit(h, t);
+  if (el) el.classList.add('on');
+  UI.lastNote = h.kit ? 'T' + (tg.ti + 1) + ' ' + P.tracks[tg.ti].machine : noteName(baseMidi(tg.ti) + tg.tp);
+  drawLcd();
+  if (UI.wide) $('rollHint').textContent = UI.rec ? $('rollHint').textContent : 'ULTIMA NOTA ' + UI.lastNote;
+  if (h.rate && !playing) rollLoop();
+}
+function padDown(el, pid, clientY) {
   const pos = Number(el.dataset.rpad), tg = padTarget(pos);
   if (!tg) return;
+  tg.kit = P.roll.mode === 'KIT';
   const r = el.getBoundingClientRect();
   const y = clientY == null ? 0.3 : (clientY - r.top) / r.height;
-  const vel = Math.max(0.35, Math.min(1, 1.08 - 0.75 * y));   // in alto = più forte
-  const t = ctx.currentTime + 0.005;
-  const h = { pos, ti: tg.ti, tp: tg.tp, vel, el, rate: P.roll.rate, t0: t, next: t + RATE_STEPS[P.roll.rate] * stepDur() };
-  held.set(pid, h);
-  rollHit(h, t);
-  el.classList.add('on');
-  UI.lastNote = P.roll.mode === 'KIT' ? 'T' + (tg.ti + 1) + ' ' + P.tracks[tg.ti].machine : noteName(baseMidi(tg.ti) + tg.tp);
-  drawLcd();
-  if (h.rate && !playing) rollLoop();
+  holdStart(pid, tg, Math.max(0.35, Math.min(1, 1.08 - 0.75 * y)), el);   // in alto = più forte
 }
 function padUp(pid) {
   const h = held.get(pid);
   if (!h) return;
   held.delete(pid);
-  if (![...held.values()].some((o) => o.el === h.el)) h.el.classList.remove('on');
+  if (h.el && ![...held.values()].some((o) => o.el === h.el)) h.el.classList.remove('on');
 }
 
 // ===================================================================
@@ -1156,6 +1234,45 @@ function renderAll() {
 // ===================================================================
 // INPUT
 // ===================================================================
+// ---------- archivio dei WAV nel browser (IndexedDB): restano anche chiudendo PONY84 ----------
+let dbPromise = null;
+function openDb() {
+  if (!dbPromise) dbPromise = new Promise((res) => {
+    try {
+      const r = indexedDB.open('pony84', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('samples');
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => res(null);
+    } catch (e) { res(null); }
+  });
+  return dbPromise;
+}
+async function idb(mode, fn) {
+  const db = await openDb();
+  if (!db) return null;
+  return new Promise((res) => {
+    try {
+      const tx = db.transaction('samples', mode);
+      const rq = fn(tx.objectStore('samples'));
+      tx.oncomplete = () => res(rq ? rq.result : null);
+      tx.onerror = tx.onabort = () => res(null);
+    } catch (e) { res(null); }
+  });
+}
+const sampleGet = (i) => idb('readonly', (s) => s.get(i));
+const samplePut = (i, rec) => idb('readwrite', (s) => s.put(rec, i));
+const sampleClearAll = () => idb('readwrite', (s) => s.clear());
+async function restoreSamples() {
+  for (let i = 0; i < 6; i++) {
+    const rec = await sampleGet(i);
+    if (rec && rec.data) {
+      try { A.samples[i] = await ctx.decodeAudioData(rec.data.slice(0)); P.tracks[i].sample = rec.name; }
+      catch (e) { A.samples[i] = null; P.tracks[i].sample = DEMO_SAMPLE; }
+    } else { A.samples[i] = null; P.tracks[i].sample = DEMO_SAMPLE; }
+  }
+  renderAll();
+}
+
 const wavInput = $('wavInput');
 wavInput.addEventListener('change', async () => {
   const file = wavInput.files && wavInput.files[0];
@@ -1164,9 +1281,11 @@ wavInput.addEventListener('change', async () => {
   initAudio();
   try {
     const data = await file.arrayBuffer();
+    const copy = data.slice(0);   // decodeAudioData consuma il buffer: ne teniamo una copia da salvare
     const buf = await ctx.decodeAudioData(data);
     A.samples[ti] = buf;
     P.tracks[ti].sample = file.name.toUpperCase().slice(0, 16);
+    await samplePut(ti, { name: P.tracks[ti].sample, data: copy });
   } catch (e) {
     P.tracks[ti].sample = 'FILE NON LETTO';
   }
@@ -1174,8 +1293,189 @@ wavInput.addEventListener('change', async () => {
   renderAll();
 });
 
+// ---------- esporta / importa / nuovo progetto ----------
+function bufToB64(buf) {
+  const u = new Uint8Array(buf); let s = '';
+  for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+function b64ToBuf(b64) {
+  const s = atob(b64), u = new Uint8Array(s.length);
+  for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i);
+  return u.buffer;
+}
+function projMsg(t) { $('projMsg').textContent = t; }
+async function exportProject() {
+  const samples = {};
+  for (let i = 0; i < 6; i++) { const rec = await sampleGet(i); if (rec && rec.data) samples[i] = { name: rec.name, b64: bufToB64(rec.data) }; }
+  const d = new Date(), stamp = d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + '-' + pad2(d.getHours()) + pad2(d.getMinutes());
+  const name = 'pony84-' + stamp + '.pony84';
+  const blob = new Blob([JSON.stringify({ app: 'PONY84', v: 1, saved: d.toISOString(), project: P, samples })], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  projMsg('ESPORTATO: ' + name + ' (CARTELLA DOWNLOAD)');
+}
+async function useProject(p, samples) {
+  if (playing) stop();
+  held.clear();
+  P = p;
+  UI.track = 0; UI.selStep = null; UI.pendingPat = null; UI.rec = false; UI.fx = false; UI.lastNote = '';
+  await sampleClearAll();
+  for (const [i, s] of Object.entries(samples || {})) {
+    const k = Number(i);
+    if (k >= 0 && k < 6 && s && typeof s.b64 === 'string') {
+      try { await samplePut(k, { name: String(s.name || 'SAMPLE').slice(0, 16), data: b64ToBuf(s.b64) }); } catch (e) { /* file danneggiato: si salta */ }
+    }
+  }
+  if (ctx) { await restoreSamples(); applyFx(); applyMix(); }
+  else P.tracks.forEach((t, i) => { if (!(samples && samples[i])) t.sample = DEMO_SAMPLE; });
+  save(); renderAll();
+}
+const projInput = $('projInput');
+projInput.addEventListener('change', async () => {
+  const file = projInput.files && projInput.files[0];
+  projInput.value = '';
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    const p = data && data.app === 'PONY84' ? normalizeProject(data.project) : null;
+    if (!p) { projMsg('QUESTO FILE NON È UN PROGETTO PONY84'); return; }
+    await useProject(p, data.samples);
+    projMsg('CARICATO: ' + file.name.toUpperCase());
+  } catch (e) {
+    projMsg('FILE NON LEGGIBILE: SCEGLI UN FILE .PONY84');
+  }
+});
+let armed = null, armTimer = null;
+function newProject(kind) {
+  const p = demoProject();
+  if (kind === 'empty') { p.patterns = Array.from({ length: 16 }, emptyPattern); }
+  useProject(p, null).then(() => projMsg(kind === 'empty' ? 'NUOVO PROGETTO VUOTO' : 'DEMO CARICATO'));
+}
+
+// ---------- CONTROLLER MIDI (Web MIDI: Chrome su PC e Android) ----------
+const MIDI_STORE = 'pony84-midi';
+const MIDI_DEFAULT_CC = { 70: 'm0', 71: 'm1', 72: 'm2', 73: 'm3', 74: 'm4', 75: 'm5', 76: 'm6', 77: 'm7' };   // manopole Akai MPK Mini
+let midiAccess = null, midiMap = {};
+try { midiMap = JSON.parse(localStorage.getItem(MIDI_STORE) || '{}') || {}; } catch (e) { midiMap = {}; }
+UI.midiMsg = 'MIDI SPENTO'; UI.learn = false; UI.learnTarget = null;
+function saveMidiMap() { try { localStorage.setItem(MIDI_STORE, JSON.stringify(midiMap)); } catch (e) { /* ok */ } }
+function targetName(id) {
+  if (id.startsWith('m')) return 'MANOPOLA ' + (Number(id.slice(1)) + 1);
+  if (id.startsWith('pan')) return 'PAN ' + (Number(id.slice(3)) + 1);
+  if (id.startsWith('dly')) return 'DLY ' + (Number(id.slice(3)) + 1);
+  if (id.startsWith('lvl')) return 'VOLUME ' + (Number(id.slice(3)) + 1);
+  return id.toUpperCase();
+}
+async function midiEnable() {
+  if (!navigator.requestMIDIAccess) { UI.midiMsg = 'QUESTO BROWSER NON SUPPORTA IL MIDI: USA CHROME'; drawMenu(); return; }
+  try {
+    midiAccess = await navigator.requestMIDIAccess();
+    midiAccess.onstatechange = bindMidi;
+    bindMidi();
+  } catch (e) { UI.midiMsg = 'PERMESSO MIDI NEGATO DAL BROWSER'; drawMenu(); }
+}
+function bindMidi() {
+  const names = [];
+  midiAccess.inputs.forEach((inp) => { inp.onmidimessage = onMidi; names.push(inp.name); });
+  UI.midiMsg = names.length ? 'COLLEGATO: ' + names.join(', ').toUpperCase() : 'MIDI ATTIVO · NESSUN CONTROLLER COLLEGATO';
+  drawMenu();
+}
+function onMidi(e) {
+  const st = e.data[0], d1 = e.data[1] || 0, d2 = e.data[2] || 0, type = st & 0xf0, ch = st & 0x0f;
+  if (st === 0xFA || st === 0xFB) { if (!playing && ctx) play(); return; }   // start / continue
+  if (st === 0xFC) { if (playing) stop(); return; }                           // stop
+  if (type === 0x90 && d2 > 0) { midiNoteOn(ch, d1, d2); return; }
+  if (type === 0x80 || type === 0x90) { padUp('midi' + ch + ':' + d1); return; }
+  if (type === 0xB0) { midiCC(ch, d1, d2); return; }
+  if (type === 0xC0) {                                                          // program change = pattern
+    const n = d1 % 16;
+    if (playing && n !== P.cur) UI.pendingPat = n; else { P.cur = n; UI.pendingPat = null; }
+    needRender = true;
+  }
+}
+function midiNoteOn(ch, note, vel) {
+  if (!ctx) { UI.midiMsg = 'TOCCA ACCENDI PER SENTIRE IL CONTROLLER'; drawMenu(); return; }
+  let tg;
+  if (ch === 9) {                                   // canale 10: pad batteria → tracce 1–6
+    const i = (((note - 36) % 8) + 8) % 8;
+    if (i > 5) return;
+    tg = { ti: i, tp: 0, kit: true };
+  } else tg = { ti: UI.track, tp: note - 60, kit: false };   // tastiera: C4 = intonazione della traccia
+  const el = tg.kit && P.roll.mode === 'KIT' && shows('roll') ? rpadBtns[tg.ti] : null;
+  holdStart('midi' + ch + ':' + note, tg, 0.35 + 0.65 * vel / 127, el);
+}
+function midiCC(ch, cc, val) {
+  const key = ch + ':' + cc;
+  if (UI.learn) {
+    if (!UI.learnTarget) { $('learnTxt').textContent = 'PRIMA TOCCA UNA MANOPOLA O UN FADER SULLO SCHERMO'; return; }
+    for (const k of Object.keys(midiMap)) if (midiMap[k] === UI.learnTarget) delete midiMap[k];
+    midiMap[key] = UI.learnTarget; saveMidiMap();
+    $('learnTxt').textContent = 'CC ' + cc + ' → ' + targetName(UI.learnTarget) + ' · TOCCA IL PROSSIMO';
+    setLearnTarget(null);
+    return;
+  }
+  const id = midiMap[key] || MIDI_DEFAULT_CC[cc];
+  if (!id) return;
+  if (id.startsWith('lvl') || id === 'master') { setFader(id, val / 127, 0); return; }
+  const def = resolveKnob(id);
+  def.set(clamp(val)); redrawAfterKnob(id);
+}
+function setLearnTarget(id) {
+  UI.learnTarget = id;
+  document.querySelectorAll('.learn-sel').forEach((el) => el.classList.remove('learn-sel'));
+  if (!id) return;
+  const el = document.querySelector('[data-knob="' + id + '"]') || document.querySelector('[data-fader="' + id + '"]');
+  if (el) el.classList.add('learn-sel');
+  $('learnTxt').textContent = targetName(id) + ': ORA MUOVI UNA MANOPOLA DEL CONTROLLER';
+}
+function setLearn(on) {
+  UI.learn = on;
+  $('app').classList.toggle('learning', on);
+  $('learnBar').hidden = !on;
+  setLearnTarget(null);
+  if (on) {
+    $('learnTxt').textContent = 'MIDI LEARN: TOCCA UNA MANOPOLA O UN FADER';
+    closeMenu();
+    if (!midiAccess) midiEnable();
+  }
+  drawMenu();
+}
+
+// ---------- pannello ----------
+function openMenu() { $('menu').hidden = false; drawMenu(); $('menu').querySelector('[data-act="menuClose"]').focus({ preventScroll: true }); }
+function closeMenu() { $('menu').hidden = true; armed = null; drawMenu(); }
+function drawMenu() {
+  $('midiMsg').textContent = UI.midiMsg;
+  $('midiOnBtn').textContent = midiAccess ? 'AGGIORNA MIDI' : 'ATTIVA MIDI';
+  $('learnBtn').classList.toggle('on', UI.learn);
+  const n = Object.keys(midiMap).length;
+  $('midiResetBtn').textContent = n ? 'AZZERA MAPPATURE (' + n + ')' : 'AZZERA MAPPATURE';
+  document.querySelectorAll('[data-act="newp"]').forEach((b) => {
+    const on = armed === b.dataset.k;
+    b.classList.toggle('armed', on);
+    b.textContent = on ? 'TOCCA PER CONFERMARE' : (b.dataset.k === 'empty' ? 'NUOVO VUOTO' : 'NUOVO DA DEMO');
+  });
+}
+
 function onAct(b) {
   const act = b.dataset.act;
+  if (act === 'menu') { openMenu(); return; }
+  if (act === 'menuClose') { closeMenu(); return; }
+  if (act === 'export') { exportProject(); return; }
+  if (act === 'import') { projInput.click(); return; }
+  if (act === 'newp') {
+    const k = b.dataset.k;
+    clearTimeout(armTimer);
+    if (armed === k) { armed = null; newProject(k); }
+    else { armed = k; armTimer = setTimeout(() => { armed = null; drawMenu(); }, 4000); projMsg('IL PROGETTO ATTUALE VERRÀ SOSTITUITO: ESPORTALO PRIMA SE VUOI TENERLO'); }
+    drawMenu(); return;
+  }
+  if (act === 'midiOn') { midiEnable(); return; }
+  if (act === 'learn') { setLearn(!UI.learn); return; }
+  if (act === 'midiReset') { midiMap = {}; saveMidiMap(); UI.midiMsg = 'MAPPATURE AZZERATE: VALGONO QUELLE PREDEFINITE'; drawMenu(); return; }
   if (act === 'view') { UI.view = b.dataset.v; renderAll(); return; }
   if (act === 'play') { play(); return; }
   if (act === 'stop') { stop(); return; }
@@ -1234,6 +1534,7 @@ function onAct(b) {
 }
 
 document.addEventListener('click', (e) => {
+  if (e.target === $('menu')) { closeMenu(); return; }                        // tocco fuori dal pannello
   if (e.detail === 0 && e.target.closest('[data-tap]')) { tap(); return; }   // TAP da tastiera
   const kp = e.detail === 0 && e.target.closest('[data-rpad]');               // pad ROLL da tastiera
   if (kp) { padDown(kp, 'kbd', null); setTimeout(() => padUp('kbd'), 150); return; }
@@ -1291,9 +1592,9 @@ document.addEventListener('pointerdown', (e) => {
   const bd = e.target.closest('[data-bpm]');
   if (bd) { e.preventDefault(); bd.focus({ preventScroll: true }); dragBpm(bd, e); return; }
   const kn = e.target.closest('[data-knob]');
-  if (kn) { e.preventDefault(); dragKnob(kn, e); return; }
+  if (kn) { e.preventDefault(); if (UI.learn) setLearnTarget(kn.dataset.knob); dragKnob(kn, e); return; }
   const fd = e.target.closest('[data-fader]');
-  if (fd) { e.preventDefault(); dragFader(fd, e); return; }
+  if (fd) { e.preventDefault(); if (UI.learn) { setLearnTarget(fd.dataset.fader); return; } dragFader(fd, e); return; }
   const rp = e.target.closest('[data-rpad]');
   if (rp) { e.preventDefault(); padDown(rp, e.pointerId, e.clientY); return; }
   const pd = e.target.closest('[data-pad]');
@@ -1310,7 +1611,7 @@ document.addEventListener('pointerdown', (e) => {
 function endPointer(e) {
   padUp(e.pointerId);
   if (padHeld === e.pointerId) { padHeld = null; if (!UI.latch) scatterOff(); }
-  if (swipe && swipe.id === e.pointerId && e.type === 'pointerup' && !UI.wide) {
+  if (swipe && swipe.id === e.pointerId && e.type === 'pointerup' && !UI.wide && $('menu').hidden) {
     const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
     if (Math.abs(dx) > 60 && Math.abs(dy) < 50) {
       // swipe a destra = vista successiva (SEQ → MIXER → ROLL → SEQ)
@@ -1343,7 +1644,8 @@ function dragKnob(el, e) {
 }
 document.addEventListener('keydown', (e) => {
   // barra spaziatrice = play/pausa (quando non si è su un tasto)
-  if (e.code === 'Space' && !e.repeat && (e.target === document.body || e.target === document.documentElement)) {
+  if (e.key === 'Escape') { if (!$('menu').hidden) closeMenu(); else if (UI.learn) setLearn(false); return; }
+  if (e.code === 'Space' && !e.repeat && $('menu').hidden && (e.target === document.body || e.target === document.documentElement)) {
     e.preventDefault(); play(); return;
   }
   const kn = e.target.closest && e.target.closest('[data-knob]');
