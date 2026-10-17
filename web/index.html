@@ -47,7 +47,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .logo { font-size: clamp(28px, 4.2dvh, 36px); line-height: .9; font-weight: 800; font-style: italic; letter-spacing: -.5px; }
 .logo b { color: var(--orange); font-weight: 800; }
 .tabs { display: flex; gap: 4px; margin-top: 5px; }
-.tab { height: 24px; padding: 0 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--muted); border: 1px solid var(--line); }
+.tab { height: 24px; padding: 0 8px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--muted); border: 1px solid var(--line); }
 .tab[aria-selected="true"] { background: var(--cream); color: var(--ink); border-color: var(--cream); }
 .transport { display: flex; gap: 8px; }
 .hw { background: var(--key); border-bottom: 3px solid var(--edge); border-radius: 8px; color: var(--cream); font-weight: 700; }
@@ -159,6 +159,38 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .hfader .hcap { position: absolute; top: 6px; width: 22px; height: 22px; margin-left: -11px; border-radius: 4px; background: var(--cream); box-shadow: 0 2px 0 var(--edge); }
 .hint { font-size: 12px; color: var(--muted); line-height: 1.4; }
 
+/* roll */
+.rtop { display: flex; gap: 6px; align-items: center; }
+.seg { display: flex; gap: 4px; }
+.segb { height: 26px; padding: 0 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--muted); border: 1px solid var(--line); }
+.segb[aria-checked="true"] { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+.rates { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.rates .segb { height: clamp(30px, 4dvh, 36px); padding: 0; font-size: 13px; color: var(--cream); }
+.rates .segb[aria-checked="true"] { background: var(--orange); border-color: var(--orange); color: var(--ink); }
+.recb { height: 26px; padding: 0 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--led); border: 1px solid var(--red); }
+.recb[aria-pressed="true"] { background: var(--red); color: var(--white); }
+.rctl { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto; gap: 6px; }
+.rbtn { height: clamp(34px, 4.4dvh, 40px); padding: 0 8px; font-size: 12px; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; overflow: hidden; }
+.rbtn b { color: var(--yellow); font-weight: 700; }
+.rbtn.sq { width: clamp(34px, 4.4dvh, 40px); padding: 0; font-size: 20px; }
+.oct { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: 1px; white-space: nowrap; }
+.oct b { color: var(--yellow); font-family: var(--mono); display: inline-block; min-width: 2ch; text-align: center; }
+.rpads { flex: 1; min-height: 220px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: 8px; }
+.rpads.kit { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.rpad { border-radius: 10px; background: var(--key); color: var(--cream); border-bottom: 5px solid var(--edge); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; touch-action: none; min-height: 0; }
+.rpad b { font-size: 19px; letter-spacing: 1px; }
+.rpad small { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.rpad.root { box-shadow: inset 0 0 0 2px var(--orange); }
+.rpad.on { background: var(--orange); color: var(--ink); border-bottom-width: 2px; transform: translateY(3px); box-shadow: 0 0 16px var(--orange); }
+.rpad.on small { color: var(--ink); }
+
+@media (max-width: 380px) {
+  .tab { padding: 0 6px; }
+  .transport { gap: 6px; }
+  .tbtn { width: 40px; height: 40px; }
+  header { gap: 8px; }
+}
+
 /* power overlay */
 .power { position: fixed; inset: 0; z-index: 20; background: var(--veil); display: flex; align-items: center; justify-content: center; padding: max(24px, env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px)); }
 .power .card { max-width: 340px; display: flex; flex-direction: column; gap: 16px; text-align: center; align-items: center; }
@@ -178,6 +210,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
       <div class="tabs" role="tablist" aria-label="Vista">
         <button class="tab" role="tab" id="tabSeq" data-act="view" data-v="seq">SEQ</button>
         <button class="tab" role="tab" id="tabMix" data-act="view" data-v="mix">MIXER</button>
+        <button class="tab" role="tab" id="tabRoll" data-act="view" data-v="roll">ROLL</button>
       </div>
     </div>
     <div class="transport">
@@ -236,7 +269,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
   <div class="view" id="mixView" hidden>
     <div class="row-between">
       <span class="label">MIXER · 6 CANALI</span>
-      <span class="label">← SWIPE · SEQ</span>
+      <span class="label">SWIPE → ROLL</span>
     </div>
     <div class="strips" id="strips"></div>
     <div class="master">
@@ -245,6 +278,39 @@ header { display: flex; align-items: center; justify-content: space-between; gap
         <div class="track"></div><div class="fill" id="masterFill"></div><div class="hcap" id="masterCap"></div>
       </div>
       <div id="driveKnob"></div>
+    </div>
+  </div>
+
+  <div class="view" id="rollView" hidden>
+    <div class="row-between">
+      <span class="label" id="rollLabel">ROLL</span>
+      <span class="rtop">
+        <span class="seg" role="radiogroup" aria-label="Modalità dei pad">
+          <button class="segb" data-act="rmode" data-m="KEYS" role="radio">KEYS</button>
+          <button class="segb" data-act="rmode" data-m="KIT" role="radio">KIT</button>
+        </span>
+        <button class="recb" id="recBtn" data-act="rec" aria-pressed="false">● REC</button>
+      </span>
+    </div>
+    <nav class="tracks" id="rtracks" aria-label="Traccia da suonare"></nav>
+    <div class="rctl" id="keysCtl">
+      <button class="hw rbtn" data-act="scale" aria-label="Cambia scala">SCALA <b id="scaleName">MINORE</b></button>
+      <button class="hw rbtn" data-act="root" aria-label="Cambia tonica">TONICA <b id="rootName">C</b></button>
+      <span class="oct">
+        <button class="hw rbtn sq" data-act="oct" data-d="-1" aria-label="Ottava giù">−</button>
+        <span>OTT <b id="octVal">0</b></span>
+        <button class="hw rbtn sq" data-act="oct" data-d="1" aria-label="Ottava su">+</button>
+      </span>
+    </div>
+    <div class="row-between">
+      <span class="label">RIPETI · TIENI PREMUTO</span>
+      <span class="label">IN ALTO = PIÙ FORTE</span>
+    </div>
+    <div class="seg rates" id="rates" role="radiogroup" aria-label="Ripetizione"></div>
+    <div class="rpads" id="rpads"></div>
+    <div class="row-between">
+      <span class="label">SWIPE → SEQ</span>
+      <span class="label" id="rollHint"></span>
     </div>
   </div>
 </div>
@@ -278,7 +344,15 @@ const DEF = {
   SAMPLE: [64, 0, 127, 127, 127, 80, 50, 40]
 };
 const CONDS = [null, '50%', '25%', '75%', '1:2', '2:2', '1:4', '4:4'];
-const PADS = [['REPEAT', '1/16'], ['ROLL', '1/8→1/64'], ['REVERSE', '1/8'], ['GATE', '1/32'], ['TAPESTOP', 'NASTRO'], ['RANDOM', 'MIX']];
+const PADS = [['REPEAT', '1/16'], ['STUTTER', '1/8→1/64'], ['REVERSE', '1/8'], ['GATE', '1/32'], ['TAPESTOP', 'NASTRO'], ['RANDOM', 'MIX']];
+const SCALES = [
+  ['MINORE', [0, 2, 3, 5, 7, 8, 10]], ['MAGGIORE', [0, 2, 4, 5, 7, 9, 11]], ['DORICA', [0, 2, 3, 5, 7, 9, 10]],
+  ['PENTA MIN', [0, 3, 5, 7, 10]], ['PENTA MAG', [0, 2, 4, 7, 9]], ['BLUES', [0, 3, 5, 6, 7, 10]],
+  ['CROMATICA', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]]
+];
+const RATES = ['OFF', '1/8', '1/16', '1/32', '1/16T'];
+const RATE_STEPS = [0, 2, 1, 0.5, 2 / 3];   // durata di una ripetizione, in sedicesimi
+const ROLL_DEFAULT = { mode: 'KEYS', scale: 0, root: 0, oct: 0, rate: 0 };
 const DEMO_SAMPLE = 'STAB_01.WAV';
 const STORE = 'pony84-v1';
 const FX_DEFS = [
@@ -308,7 +382,8 @@ function demoProject() {
       pan: [64, 58, 78, 46, 64, 72][i], mute: false, solo: false, sample: DEMO_SAMPLE
     })),
     patterns: Array.from({ length: 16 }, emptyPattern),
-    cur: 0
+    cur: 0,
+    roll: Object.assign({}, ROLL_DEFAULT)
   };
   const pt = p.patterns[0];
   const set = (t, s, locks, cond) => { pt[t][s] = { on: true, locks: locks || {}, cond: cond || null }; };
@@ -330,6 +405,7 @@ function loadProject() {
         p.tracks.forEach((t) => { t.sample = DEMO_SAMPLE; });   // i WAV non restano salvati: si riparte dal demo
         if (typeof p.fx.tempo !== 'number') p.fx.tempo = bpmOf(p.fx.bpm ?? 63);   // progetti salvati prima del BPM libero
         delete p.fx.bpm;
+        p.roll = Object.assign({}, ROLL_DEFAULT, p.roll || {});
         return p;
       }
     }
@@ -344,7 +420,8 @@ function save() {
 }
 
 // stato dell'interfaccia
-const UI = { view: 'seq', track: 0, mode: 'TRIG', fx: false, selStep: null, latch: false, scatter: null, head: -1, pendingPat: null };
+const UI = { view: 'seq', track: 0, mode: 'TRIG', fx: false, selStep: null, latch: false, scatter: null, head: -1, pendingPat: null, rec: false, lastNote: '' };
+const VIEWS = ['seq', 'mix', 'roll'];
 
 // ===================================================================
 // MOTORI: da manopole (0..127) a parametri della voce
@@ -494,17 +571,20 @@ function applyMix() {
   });
 }
 
+// step.tp = trasposizione in semitoni (dai pad KEYS), step.v = intensità 0..1
 function trigger(ti, step, t) {
   const tr = P.tracks[ti];
   const K = tr.params.map((v, i) => (step && step.locks[i] != null ? step.locks[i] : v));
-  if (tr.machine === 'SAMPLE') playSample(ti, K, t);
-  else playFM(ti, voiceParams(tr.machine, K), t);
+  const mul = Math.pow(2, ((step && step.tp) || 0) / 12);
+  const vel = step && step.v != null ? step.v : 1;
+  if (tr.machine === 'SAMPLE') playSample(ti, K, t, mul, vel);
+  else { const v = voiceParams(tr.machine, K); v.freq *= mul; playFM(ti, v, t, vel); }
 }
 
-function playFM(ti, v, t) {
+function playFM(ti, v, t, vel = 1) {
   const out = ctx.createGain();
   out.gain.setValueAtTime(0, t);
-  out.gain.linearRampToValueAtTime(0.8, t + 0.002);
+  out.gain.linearRampToValueAtTime(0.8 * vel, t + 0.002);
   out.gain.setTargetAtTime(0, t + 0.002, v.decay);
   out.connect(A.tr[ti].inp);
   const end = t + v.decay * 6 + 0.05;
@@ -527,18 +607,18 @@ function playFM(ti, v, t) {
   car.onended = () => out.disconnect();
 }
 
-function playSample(ti, K, t) {
+function playSample(ti, K, t, mul = 1, vel = 1) {
   const buf = A.samples[ti] || A.demo;
   if (!buf) return;
   const n = (x) => x / 127;
-  const semis = Math.round((K[0] - 64) * 24 / 63), rate = Math.pow(2, semis / 12);
+  const semis = Math.round((K[0] - 64) * 24 / 63), rate = Math.pow(2, semis / 12) * mul;
   const dur = buf.duration, start = n(K[1]) * dur * 0.99;
   const len = Math.max(0.01, n(K[2]) * (dur - start));
   const real = Math.max(0.012, len / rate);
   const src = ctx.createBufferSource(), lp = ctx.createBiquadFilter(), g = ctx.createGain(), fg = ctx.createGain();
   src.buffer = buf; src.playbackRate.value = rate;
   lp.type = 'lowpass'; lp.frequency.value = 200 * Math.pow(100, n(K[4])); lp.Q.value = 0.7;
-  const gain = n(K[5]) * 1.6;
+  const gain = n(K[5]) * 1.6 * vel;
   g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + 0.003);
   if (K[3] < 127) g.gain.setTargetAtTime(0, t + 0.003, 0.02 + Math.pow(n(K[3]), 2) * 3);
   fg.gain.setValueAtTime(1, t + real - 0.006); fg.gain.linearRampToValueAtTime(0, t + real);
@@ -556,7 +636,7 @@ function setupScatter() {
   let w = 0;
   const S = { target: false, engage: false, req: null, cur: null, mix: 0, start: 0, k: 0, rp: 0, g: 1 };
   A.scatter = S;
-  const pick = () => ['REPEAT', 'ROLL', 'REVERSE', 'GATE', 'TAPESTOP'][Math.floor(Math.random() * 5)];
+  const pick = () => ['REPEAT', 'STUTTER', 'REVERSE', 'GATE', 'TAPESTOP'][Math.floor(Math.random() * 5)];
   const at = (arr, i) => arr[((i % N) + N) % N];
   const atf = (arr, x) => { const i = Math.floor(x), f = x - i; return at(arr, i) * (1 - f) + at(arr, i + 1) * f; };
   A.sp.onaudioprocess = (e) => {
@@ -579,7 +659,7 @@ function setupScatter() {
         if (S.cur === 'REPEAT') {
           const L = step;
           if (k >= L) { const p = k % L, wn = Math.min(1, p / 48, (L - p) / 48); el = at(rL, S.start + p) * wn; er = at(rR, S.start + p) * wn; }
-        } else if (S.cur === 'ROLL') {
+        } else if (S.cur === 'STUTTER') {
           const L0 = 2 * step;
           if (k >= L0) {
             const stage = Math.min(3, Math.floor(k / L0) - 1), L = Math.max(32, L0 >> stage);
@@ -633,6 +713,7 @@ function schedule(n, t) {
   const tt = t + (s % 2 === 1 ? P.fx.swing / 127 * 0.6 * stepDur() : 0);
   const pat = P.patterns[P.cur];
   for (let i = 0; i < 6; i++) { const st = pat[i][s]; if (st.on && condPass(st.cond, bar)) trigger(i, st, tt); }
+  rollHits(n, t);
   uiQ.push({ s, t: tt });
 }
 function tick() {
@@ -642,16 +723,104 @@ function tick() {
 function play() {
   initAudio();
   if (ctx.state === 'suspended') ctx.resume();
-  if (playing) { playing = false; clearTimeout(timer); drawHeader(); return; }
+  if (playing) { playing = false; clearTimeout(timer); restartRollLoop(); drawHeader(); drawLcd(); return; }
   playing = true;
   if (UI.head < 0) count = 0;
   nextTime = ctx.currentTime + 0.06;
-  tick(); drawHeader();
+  tick(); drawHeader(); drawLcd();
 }
 function stop() {
   playing = false; clearTimeout(timer); uiQ.length = 0; count = 0; UI.head = -1;
   if (UI.pendingPat !== null) { P.cur = UI.pendingPat; UI.pendingPat = null; }
+  restartRollLoop();
   renderAll();
+}
+
+// ===================================================================
+// ROLL: pad da suonare (KEYS = note del motore, KIT = le 6 tracce)
+// ===================================================================
+const held = new Map();   // pointerId -> pad tenuto premuto
+let rollTimer = null;
+const keyIdx = (pos) => (3 - Math.floor(pos / 4)) * 4 + (pos % 4);   // la nota più bassa è in basso a sinistra
+function padSemis(idx) {
+  const sc = SCALES[P.roll.scale][1];
+  return P.roll.root + P.roll.oct * 12 + sc[idx % sc.length] + 12 * Math.floor(idx / sc.length);
+}
+function baseMidi(ti) {
+  const tr = P.tracks[ti];
+  if (tr.machine === 'SAMPLE') return 60 + Math.round((tr.params[0] - 64) * 24 / 63);   // il sample è considerato un C4
+  return Math.round(69 + 12 * Math.log2(voiceParams(tr.machine, tr.params).freq / 440));
+}
+const noteName = (m) => NOTE[((m % 12) + 12) % 12] + (Math.floor(m / 12) - 1);
+function padTarget(pos) {
+  if (P.roll.mode === 'KIT') return pos < 6 ? { ti: pos, tp: 0 } : null;
+  return { ti: UI.track, tp: padSemis(keyIdx(pos)) };
+}
+function rollHit(h, t) {
+  trigger(h.ti, { locks: {}, v: h.vel, tp: h.tp }, t);
+  if (UI.rec && playing) recordHit(h, t);
+}
+function recordHit(h, t) {
+  const abs = count + Math.round((t - nextTime) / stepDur());   // step più vicino al colpo
+  const s = ((abs % 16) + 16) % 16;
+  const st = P.patterns[P.cur][h.ti][s];
+  st.on = true;
+  st.v = Math.round(h.vel * 100) / 100;
+  if (P.roll.mode === 'KEYS') st.tp = h.tp;
+  needRender = true;
+}
+// ripetizioni a tempo quando il sequencer suona
+function rollHits(n, t) {
+  if (!held.size) return;
+  const sd = stepDur();
+  held.forEach((h) => {
+    if (!h.rate || t < h.t0 + sd * 0.5) return;   // niente doppio colpo subito dopo la pressione
+    const r = RATES[h.rate];
+    if (r === '1/8') { if (n % 2 === 0) rollHit(h, t); }
+    else if (r === '1/16') rollHit(h, t);
+    else if (r === '1/32') { rollHit(h, t); rollHit(h, t + sd / 2); }
+    else if (r === '1/16T') { if (n % 2 === 0) [0, 2 / 3, 4 / 3].forEach((k) => rollHit(h, t + k * sd)); }
+  });
+}
+// ripetizioni a sequencer fermo
+function rollLoop() {
+  clearTimeout(rollTimer);
+  if (playing || !ctx) return;
+  let any = false;
+  held.forEach((h) => {
+    if (!h.rate) return;
+    any = true;
+    const iv = RATE_STEPS[h.rate] * stepDur();
+    while (h.next < ctx.currentTime + 0.08) { rollHit(h, h.next); h.next += iv; }
+  });
+  if (any) rollTimer = setTimeout(rollLoop, 25);
+}
+function restartRollLoop() {
+  if (!ctx) return;
+  held.forEach((h) => { h.next = ctx.currentTime + 0.02; });
+  rollLoop();
+}
+function padDown(el, pid, clientY) {
+  initAudio(); if (ctx.state === 'suspended') ctx.resume();
+  const pos = Number(el.dataset.rpad), tg = padTarget(pos);
+  if (!tg) return;
+  const r = el.getBoundingClientRect();
+  const y = clientY == null ? 0.3 : (clientY - r.top) / r.height;
+  const vel = Math.max(0.35, Math.min(1, 1.08 - 0.75 * y));   // in alto = più forte
+  const t = ctx.currentTime + 0.005;
+  const h = { pos, ti: tg.ti, tp: tg.tp, vel, el, rate: P.roll.rate, t0: t, next: t + RATE_STEPS[P.roll.rate] * stepDur() };
+  held.set(pid, h);
+  rollHit(h, t);
+  el.classList.add('on');
+  UI.lastNote = P.roll.mode === 'KIT' ? 'T' + (tg.ti + 1) + ' ' + P.tracks[tg.ti].machine : noteName(baseMidi(tg.ti) + tg.tp);
+  drawLcd();
+  if (h.rate && !playing) rollLoop();
+}
+function padUp(pid) {
+  const h = held.get(pid);
+  if (!h) return;
+  held.delete(pid);
+  if (![...held.values()].some((o) => o.el === h.el)) h.el.classList.remove('on');
 }
 
 // ===================================================================
@@ -710,13 +879,26 @@ function resolveKnob(id) {
 }
 
 // costruzione una tantum
-const trackBtns = [], machBtns = [], knobEls = [], padBtns = [], stepCells = [], strips = [];
+const trackBtns = [], machBtns = [], knobEls = [], padBtns = [], stepCells = [], strips = [], rateBtns = [], rpadBtns = [];
 (function build() {
-  for (let i = 0; i < 6; i++) {
+  for (const box of ['tracks', 'rtracks']) {
+    for (let i = 0; i < 6; i++) {
+      const b = document.createElement('button');
+      b.className = 'hw trk'; b.dataset.act = 'track'; b.dataset.i = i;
+      b.innerHTML = '<span class="top"><span class="dot"></span><span>' + (i + 1) + '</span></span><span class="nm"></span>';
+      $(box).appendChild(b); trackBtns.push(b);
+    }
+  }
+  RATES.forEach((name, i) => {
     const b = document.createElement('button');
-    b.className = 'hw trk'; b.dataset.act = 'track'; b.dataset.i = i;
-    b.innerHTML = '<span class="top"><span class="dot"></span><span>' + (i + 1) + '</span></span><span class="nm"></span>';
-    $('tracks').appendChild(b); trackBtns.push(b);
+    b.className = 'segb'; b.dataset.act = 'rate'; b.dataset.i = i; b.setAttribute('role', 'radio'); b.textContent = name;
+    $('rates').appendChild(b); rateBtns.push(b);
+  });
+  for (let pos = 0; pos < 16; pos++) {
+    const b = document.createElement('button');
+    b.className = 'rpad'; b.dataset.rpad = pos;
+    b.innerHTML = '<b></b><small></small>';
+    $('rpads').appendChild(b); rpadBtns.push(b);
   }
   MACHINES.forEach((m) => {
     const b = document.createElement('button');
@@ -760,15 +942,17 @@ const MODE_NAME = { PATTERN: 'PATTERN', TRIG: 'TRIG', PLOCK: 'P-LOCK', COND: 'CO
 function drawHeader() {
   $('tabSeq').setAttribute('aria-selected', String(UI.view === 'seq'));
   $('tabMix').setAttribute('aria-selected', String(UI.view === 'mix'));
+  $('tabRoll').setAttribute('aria-selected', String(UI.view === 'roll'));
   $('seqView').hidden = UI.view !== 'seq';
   $('mixView').hidden = UI.view !== 'mix';
+  $('rollView').hidden = UI.view !== 'roll';
   $('playBtn').classList.toggle('on', playing);
   $('playBtn').setAttribute('aria-label', playing ? 'Pausa' : 'Play');
 }
 function drawLcd() {
   const tr = P.tracks[UI.track];
   const pend = UI.pendingPat !== null ? ' → A' + pad2(UI.pendingPat + 1) : '';
-  const where = UI.view === 'mix' ? 'MIXER' : UI.fx ? 'FX' : MODE_NAME[UI.mode];
+  const where = UI.view === 'mix' ? 'MIXER' : UI.view === 'roll' ? 'ROLL' : UI.fx ? 'FX' : MODE_NAME[UI.mode];
   $('lcd1').textContent = 'PTN A' + pad2(P.cur + 1) + pend + ' · ' + where;
   $('lcdBpm').textContent = P.fx.tempo.toFixed(1);
   $('bpmCtl').setAttribute('aria-valuenow', String(P.fx.tempo));
@@ -776,6 +960,9 @@ function drawLcd() {
   if (UI.view === 'mix') {
     left = 'MUTE ' + P.tracks.map((t, i) => (t.mute ? i + 1 : '·')).join('') + ' SOLO ' + P.tracks.map((t, i) => (t.solo ? i + 1 : '·')).join('');
     right = 'DRV ' + (1 + P.fx.drive / 127 * 5).toFixed(1);
+  } else if (UI.view === 'roll') {
+    left = P.roll.mode === 'KIT' ? 'KIT · 6 TRACCE' : 'T' + (UI.track + 1) + ' ' + tr.machine + ' · ' + NOTE[P.roll.root] + ' ' + SCALES[P.roll.scale][0];
+    right = UI.rec ? (playing ? '● REC' : 'REC: PREMI PLAY') : (UI.lastNote || 'RIP ' + RATES[P.roll.rate]);
   } else {
     const name = tr.machine === 'SAMPLE' ? tr.sample : tr.machine;
     left = 'T' + (UI.track + 1) + ' ' + name + ' · STEP ' + (UI.head < 0 ? '--' : pad2(UI.head + 1));
@@ -784,7 +971,8 @@ function drawLcd() {
   $('lcd2').textContent = left; $('lcd3').textContent = right;
 }
 function drawTracks() {
-  trackBtns.forEach((b, i) => {
+  trackBtns.forEach((b, k) => {
+    const i = k % 6;
     b.classList.toggle('sel', i === UI.track);
     b.classList.toggle('muted', !audible(i));
     b.querySelector('.nm').textContent = P.tracks[i].machine;
@@ -802,6 +990,39 @@ function drawMachine() {
 }
 function drawKnobs() { knobEls.forEach((el, i) => setKnob(el, resolveKnob('m' + i))); }
 function drawPads() { padBtns.forEach((b) => b.classList.toggle('on', b.dataset.pad === UI.scatter)); $('latchBtn').setAttribute('aria-pressed', String(UI.latch)); }
+function drawRoll() {
+  const R = P.roll, kit = R.mode === 'KIT';
+  document.querySelectorAll('[data-act="rmode"]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.m === R.mode)));
+  $('recBtn').setAttribute('aria-pressed', String(UI.rec));
+  $('rtracks').hidden = kit;
+  $('keysCtl').hidden = kit;
+  $('scaleName').textContent = SCALES[R.scale][0];
+  $('rootName').textContent = NOTE[R.root];
+  $('octVal').textContent = (R.oct > 0 ? '+' : '') + R.oct;
+  rateBtns.forEach((b, i) => b.setAttribute('aria-checked', String(i === R.rate)));
+  $('rpads').classList.toggle('kit', kit);
+  $('rollLabel').textContent = kit ? 'ROLL · KIT' : 'ROLL · TRACCIA ' + (UI.track + 1);
+  $('rollHint').textContent = UI.rec ? 'REC REGISTRA NEL PATTERN A' + pad2(P.cur + 1) : '';
+  const base = baseMidi(UI.track), sc = SCALES[R.scale][1];
+  rpadBtns.forEach((b, pos) => {
+    if (kit) {
+      b.hidden = pos >= 6;
+      b.classList.remove('root');
+      if (pos < 6) {
+        b.querySelector('b').textContent = P.tracks[pos].machine;
+        b.querySelector('small').textContent = 'TRACCIA ' + (pos + 1);
+        b.setAttribute('aria-label', 'Suona traccia ' + (pos + 1) + ' ' + P.tracks[pos].machine);
+      }
+    } else {
+      b.hidden = false;
+      const idx = keyIdx(pos), s = padSemis(idx), name = noteName(base + s);
+      b.querySelector('b').textContent = name;
+      b.querySelector('small').textContent = (s > 0 ? '+' : '') + s;
+      b.classList.toggle('root', idx % sc.length === 0);
+      b.setAttribute('aria-label', 'Suona ' + name);
+    }
+  });
+}
 function patEmpty(p) { return p.every((t) => t.every((s) => !s.on)); }
 function drawSteps() {
   const pat = P.patterns[P.cur][UI.track];
@@ -823,7 +1044,7 @@ function drawSteps() {
       c.key.classList.toggle('sel', UI.mode === 'PLOCK' && UI.selStep === s);
       c.key.classList.remove('pending');
       const hasLock = Object.keys(st.locks).length > 0;
-      c.sub.textContent = st.on ? (st.cond || (hasLock ? '●' : '')) : '';
+      c.sub.textContent = st.on ? (st.cond || (st.tp ? (st.tp > 0 ? '+' : '') + st.tp : (hasLock ? '●' : ''))) : '';
       c.key.setAttribute('aria-label', 'Step ' + (s + 1));
       c.key.setAttribute('aria-pressed', String(st.on));
     }
@@ -872,7 +1093,7 @@ function drawMeters() {
 }
 let needRender = false, lastView = null;
 function renderAll() {
-  drawHeader(); drawLcd(); drawTracks(); drawMachine(); drawPads(); drawSteps(); drawFn();
+  drawHeader(); drawLcd(); drawTracks(); drawMachine(); drawPads(); drawSteps(); drawFn(); drawRoll();
   if (UI.view !== lastView) { lastView = UI.view; fit(); }
   if (UI.view === 'mix') drawMixer();
   save();
@@ -925,9 +1146,18 @@ function onAct(b) {
   }
   if (act === 'stepAct') {
     if (UI.mode === 'PATTERN') P.patterns[P.cur] = emptyPattern();
-    else if (UI.mode === 'PLOCK' && UI.selStep !== null) P.patterns[P.cur][UI.track][UI.selStep].locks = {};
+    else if (UI.mode === 'PLOCK' && UI.selStep !== null) {
+      const st = P.patterns[P.cur][UI.track][UI.selStep];
+      st.locks = {}; delete st.tp; delete st.v;
+    }
     renderAll(); return;
   }
+  if (act === 'rmode') { P.roll.mode = b.dataset.m; renderAll(); return; }
+  if (act === 'rec') { UI.rec = !UI.rec; if (UI.rec && !playing) play(); renderAll(); return; }
+  if (act === 'scale') { P.roll.scale = (P.roll.scale + 1) % SCALES.length; renderAll(); return; }
+  if (act === 'root') { P.roll.root = (P.roll.root + 1) % 12; renderAll(); return; }
+  if (act === 'oct') { P.roll.oct = Math.max(-3, Math.min(3, P.roll.oct + Number(b.dataset.d))); renderAll(); return; }
+  if (act === 'rate') { P.roll.rate = Number(b.dataset.i); renderAll(); return; }
   if (act === 'step') {
     const s = Number(b.dataset.s);
     if (UI.mode === 'PATTERN') {
@@ -951,6 +1181,8 @@ function onAct(b) {
 
 document.addEventListener('click', (e) => {
   if (e.detail === 0 && e.target.closest('[data-tap]')) { tap(); return; }   // TAP da tastiera
+  const kp = e.detail === 0 && e.target.closest('[data-rpad]');               // pad ROLL da tastiera
+  if (kp) { padDown(kp, 'kbd', null); setTimeout(() => padUp('kbd'), 150); return; }
   const b = e.target.closest('[data-act]');
   if (b) onAct(b);
 });
@@ -1007,27 +1239,31 @@ document.addEventListener('pointerdown', (e) => {
   if (kn) { e.preventDefault(); dragKnob(kn, e); return; }
   const fd = e.target.closest('[data-fader]');
   if (fd) { e.preventDefault(); dragFader(fd, e); return; }
+  const rp = e.target.closest('[data-rpad]');
+  if (rp) { e.preventDefault(); padDown(rp, e.pointerId, e.clientY); return; }
   const pd = e.target.closest('[data-pad]');
   if (pd) {
     e.preventDefault();
     initAudio(); if (ctx.state === 'suspended') ctx.resume();
     const type = pd.dataset.pad;
     if (UI.latch) { if (UI.scatter === type) scatterOff(); else scatterOn(type); }
-    else { padHeld = type; scatterOn(type); }
+    else { padHeld = e.pointerId; scatterOn(type); }
     return;
   }
-  swipe = { x: e.clientX, y: e.clientY };
+  swipe = { x: e.clientX, y: e.clientY, id: e.pointerId };
 });
 function endPointer(e) {
-  if (padHeld) { padHeld = null; if (!UI.latch) scatterOff(); }
-  if (swipe && e.type === 'pointerup') {
+  padUp(e.pointerId);
+  if (padHeld === e.pointerId) { padHeld = null; if (!UI.latch) scatterOff(); }
+  if (swipe && swipe.id === e.pointerId && e.type === 'pointerup') {
     const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
     if (Math.abs(dx) > 60 && Math.abs(dy) < 50) {
-      UI.view = dx > 0 ? 'mix' : 'seq';
+      // swipe a destra = vista successiva (SEQ → MIXER → ROLL → SEQ)
+      UI.view = VIEWS[(VIEWS.indexOf(UI.view) + (dx > 0 ? 1 : -1) + VIEWS.length) % VIEWS.length];
       renderAll();
     }
   }
-  swipe = null;
+  if (swipe && swipe.id === e.pointerId) swipe = null;
 }
 document.addEventListener('pointerup', endPointer);
 document.addEventListener('pointercancel', endPointer);
