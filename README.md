@@ -6,7 +6,7 @@ Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer
 ## Struttura
 
 - `web/guide/` — la guida completa (italiano/inglese), online su `/guide/`.
-
+- `web/vendor/movewire/` — libreria movewire 0.1.0 di Aureliano Bergese (MIT) per l'Ableton Move.
 - `web/` — la webapp giocabile (un solo file `index.html`, Web Audio API). È la cartella che pubblica Netlify.
 - `prototype/` — il prototipo Python che genera un groove in `groove.wav`.
 - `prototype/samples/` — i WAV per il motore SAMPLE.
@@ -34,6 +34,7 @@ Apri `web/index.html` nel browser, oppure pubblicala con Netlify (vedi sotto) e 
   - **Esporta / Importa**: file `.pony84` con pattern, suoni, mixer, effetti e WAV, da riaprire su qualsiasi dispositivo.
   - **Nuovo vuoto / Nuovo da demo**: due tocchi per confermare.
   - **Controller MIDI** (Chrome su PC e Android, sul telefono con adattatore USB-C OTG): pad sul canale 10 (note 36–41) → tracce 1–6; tastiera sugli altri canali → note della traccia scelta (C4 = intonazione della traccia); CC 70–77 → le 8 manopole della pagina aperta; program change 1–128 → pattern A01–H16; Start/Stop MIDI → play/stop. Con **MIDI LEARN** tocchi una manopola o un fader e muovi un controllo del controller per assegnarlo.
+  - **Ableton Move**: COLLEGA MOVE trasforma la Move nel controller di PONY84 (step, pad, encoder, LED), grazie a [movewire](https://github.com/auridevil/movewire) di Auri, incluso in `web/vendor/movewire/` (licenza MIT). Mappatura completa nella guida.
 
 Il progetto e i WAV caricati vengono salvati nel browser in automatico.
 
