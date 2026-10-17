@@ -33,6 +33,7 @@ Apri `web/index.html` nel browser, oppure pubblicala con Netlify (vedi sotto) e 
 - **Menu PROGETTO & MIDI**: tocca il logo PONY84.
   - **Esporta / Importa**: file `.pony84` con pattern, suoni, mixer, effetti e WAV, da riaprire su qualsiasi dispositivo.
   - **Nuovo vuoto / Nuovo da demo**: due tocchi per confermare.
+  - **Skin**: 808 oppure SAD PONY GIRL (giallo acido, maschere rosa, display VHS in stile weirdcore/nostalgiacore). La scelta resta salvata.
   - **Controller MIDI** (Chrome su PC e Android, sul telefono con adattatore USB-C OTG): pad sul canale 10 (note 36–41) → tracce 1–6; tastiera sugli altri canali → note della traccia scelta (C4 = intonazione della traccia); CC 70–77 → le 8 manopole della pagina aperta; program change 1–128 → pattern A01–H16; Start/Stop MIDI → play/stop. Con **MIDI LEARN** tocchi una manopola o un fader e muovi un controllo del controller per assegnarlo.
   - **Ableton Move**: COLLEGA MOVE trasforma la Move nel controller di PONY84 (step, pad, encoder, LED), grazie a [movewire](https://github.com/auridevil/movewire) di Auri, incluso in `web/vendor/movewire/` (licenza MIT). Mappatura completa nella guida.
 
