@@ -167,7 +167,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .rates { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .rates .segb { height: clamp(30px, 4dvh, 36px); padding: 0; font-size: 13px; color: var(--cream); }
 .rates .segb[aria-checked="true"] { background: var(--orange); border-color: var(--orange); color: var(--ink); }
-.recb { height: 26px; padding: 0 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--led); border: 1px solid var(--red); }
+.recb { white-space: nowrap; height: 26px; padding: 0 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--led); border: 1px solid var(--red); }
 .recb[aria-pressed="true"] { background: var(--red); color: var(--white); }
 .rctl { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto; gap: 6px; }
 .rbtn { height: clamp(34px, 4.4dvh, 40px); padding: 0 8px; font-size: 12px; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; overflow: hidden; }
@@ -183,6 +183,40 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .rpad.root { box-shadow: inset 0 0 0 2px var(--orange); }
 .rpad.on { background: var(--orange); color: var(--ink); border-bottom-width: 2px; transform: translateY(3px); box-shadow: 0 0 16px var(--orange); }
 .rpad.on small { color: var(--ink); }
+
+/* vista larga (tablet in orizzontale, PC): SEQ | ROLL | MIXER affiancati */
+.app.wide {
+  max-width: 1560px; height: 100%; min-height: 0;
+  display: grid; grid-template-columns: minmax(340px, 1.15fr) minmax(270px, 1fr) minmax(290px, 0.95fr);
+  grid-template-rows: auto minmax(0, 1fr); column-gap: clamp(16px, 2vw, 28px); row-gap: var(--gap);
+  padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px));
+}
+.app.wide header { grid-column: 1; grid-row: 1; }
+.app.wide .lcd { grid-column: 2 / 4; grid-row: 1; justify-content: center; }
+.app.wide .lcd .l1 { font-size: 15px; }
+.app.wide .lcd .l2 { font-size: 14px; }
+.app.wide #seqView { grid-column: 1; grid-row: 2; }
+.app.wide #rollView { grid-column: 2; grid-row: 2; }
+.app.wide #mixView { grid-column: 3; grid-row: 2; }
+.app.wide .view { min-height: 0; }
+.app.wide .tabs, .app.wide .swipe-hint { display: none; }
+.app.wide #rollView, .app.wide #mixView { border-left: 1px solid var(--line); padding-left: clamp(16px, 2vw, 28px); margin-left: calc(-1 * clamp(8px, 1vw, 14px)); }
+.app.wide .strips { flex: 1; min-height: 0; }
+.app.wide .strip { min-height: 0; }
+.app.wide .fwrap { flex: 1; height: auto; min-height: 140px; }
+#rollLabel { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.strip .nm { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* vista larga su schermi tra 900 e 1180 px: colonne più strette, testi compatti */
+@media (max-width: 1180px) {
+  .app.wide .rctl { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .app.wide .oct { grid-column: 1 / -1; justify-content: space-between; }
+  .app.wide .rbtn { font-size: 11px; letter-spacing: .5px; padding: 0 6px; }
+  .app.wide .rbtn.sq { font-size: 20px; padding: 0; }
+  .app.wide .segb, .app.wide .recb { padding: 0 7px; letter-spacing: .6px; }
+  .app.wide .vel-hint { display: none; }
+  .app.wide .trk, .app.wide .strip .nm { font-size: 12px; letter-spacing: 0; }
+  .app.wide .mach { font-size: 11px; letter-spacing: 0; }
+}
 
 @media (max-width: 380px) {
   .tab { padding: 0 6px; }
@@ -261,7 +295,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
       <button class="hw fbtn" data-act="mode" data-m="PATTERN" aria-pressed="false">PATTERN</button>
       <button class="hw fbtn" data-act="mode" data-m="TRIG" aria-pressed="true">TRIG</button>
       <button class="hw fbtn" data-act="mode" data-m="PLOCK" aria-pressed="false">P-LOCK</button>
-      <button class="hw fbtn" data-act="mode" data-m="COND" aria-pressed="false">COND</button>
+      <button class="hw fbtn" data-act="mode" data-m="COND" aria-pressed="false">PROB</button>
       <button class="hw fbtn" data-act="fx" aria-pressed="false">FX</button>
     </div>
   </div>
@@ -269,7 +303,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
   <div class="view" id="mixView" hidden>
     <div class="row-between">
       <span class="label">MIXER · 6 CANALI</span>
-      <span class="label">SWIPE → ROLL</span>
+      <span class="label swipe-hint">SWIPE → ROLL</span>
     </div>
     <div class="strips" id="strips"></div>
     <div class="master">
@@ -304,12 +338,12 @@ header { display: flex; align-items: center; justify-content: space-between; gap
     </div>
     <div class="row-between">
       <span class="label">RIPETI · TIENI PREMUTO</span>
-      <span class="label">IN ALTO = PIÙ FORTE</span>
+      <span class="label vel-hint">IN ALTO = PIÙ FORTE</span>
     </div>
     <div class="seg rates" id="rates" role="radiogroup" aria-label="Ripetizione"></div>
     <div class="rpads" id="rpads"></div>
     <div class="row-between">
-      <span class="label">SWIPE → SEQ</span>
+      <span class="label swipe-hint">SWIPE → SEQ</span>
       <span class="label" id="rollHint"></span>
     </div>
   </div>
@@ -343,7 +377,7 @@ const DEF = {
   TONE:   [25, 40, 32, 55, 0, 47, 45, 30],
   SAMPLE: [64, 0, 127, 127, 127, 80, 50, 40]
 };
-const CONDS = [null, '50%', '25%', '75%', '1:2', '2:2', '1:4', '4:4'];
+const CONDS = [null, '75%', '50%', '25%', '1:2', '2:2', '1:4', '4:4'];   // ciclo del tasto PROB
 const PADS = [['REPEAT', '1/16'], ['STUTTER', '1/8→1/64'], ['REVERSE', '1/8'], ['GATE', '1/32'], ['TAPESTOP', 'NASTRO'], ['RANDOM', 'MIX']];
 const SCALES = [
   ['MINORE', [0, 2, 3, 5, 7, 8, 10]], ['MAGGIORE', [0, 2, 4, 5, 7, 9, 11]], ['DORICA', [0, 2, 3, 5, 7, 9, 10]],
@@ -374,26 +408,34 @@ const pad2 = (n) => String(n).padStart(2, '0');
 function emptyPattern() {
   return Array.from({ length: 6 }, () => Array.from({ length: 16 }, () => ({ on: false, locks: {}, cond: null })));
 }
+// Demo della prima apertura (pattern A01): minimal techno a 126 BPM in Do minore.
 function demoProject() {
+  const kit = [
+    // motore, manopole [8], volume, pan
+    ['KICK',   [21, 57, 15, 25, 45, 20, 0, 4],      112, 64],   // cassa corta e asciutta
+    ['PERC',   [96, 23, 70, 79, 10, 10, 38, 28],     58, 52],   // rimshot
+    ['METAL',  [90, 16, 70, 40, 0, 90, 10, 12],      52, 78],   // hi-hat chiuso
+    ['METAL',  [120, 10, 20, 10, 0, 127, 18, 20],    34, 90],   // shaker
+    ['TONE',   [25, 31, 25, 18, 0, 40, 14, 6],       88, 64],   // basso dub
+    ['SAMPLE', [64, 0, 127, 52, 52, 72, 96, 76],     52, 46]    // accordo Cm7 con delay
+  ];
   const p = {
-    fx: { tempo: 120, swing: 32, dlyT: 36, dlyFb: 63, revSize: 50, revMix: 45, drive: 20, master: 110 },
-    tracks: MACHINES.map((m, i) => ({
-      machine: m, params: DEF[m].slice(), level: [105, 88, 50, 55, 75, 60][i],
-      pan: [64, 58, 78, 46, 64, 72][i], mute: false, solo: false, sample: DEMO_SAMPLE
-    })),
+    fx: { tempo: 126, swing: 12, dlyT: 36, dlyFb: 74, revSize: 72, revMix: 34, drive: 26, master: 110 },
+    tracks: kit.map(([m, params, level, pan]) => ({ machine: m, params, level, pan, mute: false, solo: false, sample: DEMO_SAMPLE })),
     patterns: Array.from({ length: 16 }, emptyPattern),
     cur: 0,
     roll: Object.assign({}, ROLL_DEFAULT)
   };
   const pt = p.patterns[0];
-  const set = (t, s, locks, cond) => { pt[t][s] = { on: true, locks: locks || {}, cond: cond || null }; };
-  [0, 4, 8, 12].forEach((s) => set(0, s)); set(0, 14, { 1: 40 }, '50%');
-  set(1, 4); set(1, 12); set(1, 15, { 1: 35 }, '4:4');
-  for (let s = 0; s < 16; s += 2) set(2, s, s % 4 === 2 ? { 2: 80 } : {}, s % 4 === 2 ? '75%' : null);
-  set(2, 11, { 1: 45 });
-  set(3, 3); set(3, 7, { 0: 55 }); set(3, 9); set(3, 13, { 0: 30 }, '50%');
-  set(4, 0); set(4, 3); set(4, 6, { 0: 32 }); set(4, 10, { 0: 40, 2: 64 }); set(4, 13, { 0: 51, 1: 25 }, '1:2'); set(4, 14, { 0: 36 });
-  set(5, 2, { 3: 31 }); set(5, 8, { 0: 51 }, '2:2'); set(5, 11, { 2: 64 }, '50%');
+  const set = (t, s, o = {}) => { pt[t][s] = { on: true, locks: o.locks || {}, cond: o.cond || null, ...(o.v != null ? { v: o.v } : {}), ...(o.tp ? { tp: o.tp } : {}) }; };
+  [0, 4, 8, 12].forEach((s) => set(0, s));                                                     // cassa dritta
+  set(0, 15, { cond: '4:4', v: 0.55, locks: { 1: 30 } });                                       // colpetto a fine giro
+  set(1, 3); set(1, 11, { v: 0.8 }); set(1, 14, { cond: '50%', v: 0.6 }); set(1, 7, { cond: '1:4', v: 0.7 });
+  [2, 6, 10, 14].forEach((s) => set(2, s));                                                    // hi-hat in levare
+  set(2, 15, { cond: '25%', v: 0.5, locks: { 1: 8 } });
+  [1, 3, 5, 7, 9, 11, 13, 15].forEach((s) => set(3, s, { v: s % 4 === 3 ? 0.7 : 0.45, cond: s === 9 ? '75%' : null }));
+  set(4, 2); set(4, 7, { tp: 3, cond: '50%', v: 0.8 }); set(4, 10); set(4, 13, { tp: 7, cond: '1:2' }); set(4, 15, { tp: -2, cond: '25%', v: 0.7 });
+  set(5, 3); set(5, 10, { cond: '50%', v: 0.7, locks: { 4: 40 } }); set(5, 14, { tp: 5, cond: '4:4', v: 0.8 });
   return p;
 }
 function loadProject() {
@@ -422,6 +464,16 @@ function save() {
 // stato dell'interfaccia
 const UI = { view: 'seq', track: 0, mode: 'TRIG', fx: false, selStep: null, latch: false, scatter: null, head: -1, pendingPat: null, rec: false, lastNote: '' };
 const VIEWS = ['seq', 'mix', 'roll'];
+UI.wide = false;
+const shows = (v) => UI.wide || UI.view === v;   // nella vista larga si vedono tutte e tre
+const WIDE_MQ = window.matchMedia('(min-width: 900px) and (min-height: 600px) and (orientation: landscape)');
+function updateWide() {
+  const w = WIDE_MQ.matches;
+  if (w === UI.wide) return false;
+  UI.wide = w;
+  document.getElementById('app').classList.toggle('wide', w);
+  return true;
+}
 
 // ===================================================================
 // MOTORI: da manopole (0..127) a parametri della voce
@@ -938,29 +990,30 @@ const trackBtns = [], machBtns = [], knobEls = [], padBtns = [], stepCells = [],
   $('driveKnob').appendChild(knobEl('drive', true));
 })();
 
-const MODE_NAME = { PATTERN: 'PATTERN', TRIG: 'TRIG', PLOCK: 'P-LOCK', COND: 'COND' };
+const MODE_NAME = { PATTERN: 'PATTERN', TRIG: 'TRIG', PLOCK: 'P-LOCK', COND: 'PROB' };
 function drawHeader() {
   $('tabSeq').setAttribute('aria-selected', String(UI.view === 'seq'));
   $('tabMix').setAttribute('aria-selected', String(UI.view === 'mix'));
   $('tabRoll').setAttribute('aria-selected', String(UI.view === 'roll'));
-  $('seqView').hidden = UI.view !== 'seq';
-  $('mixView').hidden = UI.view !== 'mix';
-  $('rollView').hidden = UI.view !== 'roll';
+  $('seqView').hidden = !shows('seq');
+  $('mixView').hidden = !shows('mix');
+  $('rollView').hidden = !shows('roll');
   $('playBtn').classList.toggle('on', playing);
   $('playBtn').setAttribute('aria-label', playing ? 'Pausa' : 'Play');
 }
 function drawLcd() {
   const tr = P.tracks[UI.track];
   const pend = UI.pendingPat !== null ? ' → A' + pad2(UI.pendingPat + 1) : '';
-  const where = UI.view === 'mix' ? 'MIXER' : UI.view === 'roll' ? 'ROLL' : UI.fx ? 'FX' : MODE_NAME[UI.mode];
+  const view = UI.wide ? 'seq' : UI.view;   // nella vista larga il display segue il sequencer
+  const where = view === 'mix' ? 'MIXER' : view === 'roll' ? 'ROLL' : UI.fx ? 'FX' : MODE_NAME[UI.mode];
   $('lcd1').textContent = 'PTN A' + pad2(P.cur + 1) + pend + ' · ' + where;
   $('lcdBpm').textContent = P.fx.tempo.toFixed(1);
   $('bpmCtl').setAttribute('aria-valuenow', String(P.fx.tempo));
   let left, right;
-  if (UI.view === 'mix') {
+  if (view === 'mix') {
     left = 'MUTE ' + P.tracks.map((t, i) => (t.mute ? i + 1 : '·')).join('') + ' SOLO ' + P.tracks.map((t, i) => (t.solo ? i + 1 : '·')).join('');
     right = 'DRV ' + (1 + P.fx.drive / 127 * 5).toFixed(1);
-  } else if (UI.view === 'roll') {
+  } else if (view === 'roll') {
     left = P.roll.mode === 'KIT' ? 'KIT · 6 TRACCE' : 'T' + (UI.track + 1) + ' ' + tr.machine + ' · ' + NOTE[P.roll.root] + ' ' + SCALES[P.roll.scale][0];
     right = UI.rec ? (playing ? '● REC' : 'REC: PREMI PLAY') : (UI.lastNote || 'RIP ' + RATES[P.roll.rate]);
   } else {
@@ -994,7 +1047,7 @@ function drawRoll() {
   const R = P.roll, kit = R.mode === 'KIT';
   document.querySelectorAll('[data-act="rmode"]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.m === R.mode)));
   $('recBtn').setAttribute('aria-pressed', String(UI.rec));
-  $('rtracks').hidden = kit;
+  $('rtracks').hidden = kit || UI.wide;   // nella vista larga la traccia si sceglie dal sequencer
   $('keysCtl').hidden = kit;
   $('scaleName').textContent = SCALES[R.scale][0];
   $('rootName').textContent = NOTE[R.root];
@@ -1002,7 +1055,7 @@ function drawRoll() {
   rateBtns.forEach((b, i) => b.setAttribute('aria-checked', String(i === R.rate)));
   $('rpads').classList.toggle('kit', kit);
   $('rollLabel').textContent = kit ? 'ROLL · KIT' : 'ROLL · TRACCIA ' + (UI.track + 1);
-  $('rollHint').textContent = UI.rec ? 'REC REGISTRA NEL PATTERN A' + pad2(P.cur + 1) : '';
+  $('rollHint').textContent = UI.rec ? 'REC REGISTRA NEL PATTERN A' + pad2(P.cur + 1) : (UI.wide && UI.lastNote ? 'ULTIMA NOTA ' + UI.lastNote : '');
   const base = baseMidi(UI.track), sc = SCALES[R.scale][1];
   rpadBtns.forEach((b, pos) => {
     if (kit) {
@@ -1056,7 +1109,7 @@ function drawSteps() {
   else if (UI.mode === 'PLOCK') {
     if (UI.selStep === null) hint.textContent = 'SCEGLI UNO STEP';
     else { hint.textContent = 'GIRA LE MANOPOLE'; act.hidden = false; act.textContent = 'TOGLI LOCK'; }
-  } else if (UI.mode === 'COND') hint.textContent = 'TOCCA PER CAMBIARE';
+  } else if (UI.mode === 'COND') hint.textContent = '% · BATTUTE: TOCCA LO STEP';
   else hint.textContent = '● = LOCK';
 }
 function drawFn() {
@@ -1094,8 +1147,9 @@ function drawMeters() {
 let needRender = false, lastView = null;
 function renderAll() {
   drawHeader(); drawLcd(); drawTracks(); drawMachine(); drawPads(); drawSteps(); drawFn(); drawRoll();
-  if (UI.view !== lastView) { lastView = UI.view; fit(); }
-  if (UI.view === 'mix') drawMixer();
+  const layout = UI.view + (UI.wide ? '+wide' : '');
+  if (layout !== lastView) { lastView = layout; fit(); }
+  if (shows('mix')) drawMixer();
   save();
 }
 
@@ -1224,9 +1278,10 @@ function fit() {
   const need = root.scrollHeight, have = window.innerHeight;
   if (need <= have + 1) return;
   const z = Math.max(0.72, have / need);
+  const maxW = UI.wide ? 1560 : 440;
   app.style.zoom = String(z);
-  app.style.maxWidth = (440 / z) + 'px';
-  const want = Math.min(440, root.clientWidth), got = app.getBoundingClientRect().width;
+  app.style.maxWidth = (maxW / z) + 'px';
+  const want = Math.min(maxW, root.clientWidth), got = app.getBoundingClientRect().width;
   if (got < want - 2) app.style.width = (100 * want / got) + '%';
 }
 
@@ -1255,7 +1310,7 @@ document.addEventListener('pointerdown', (e) => {
 function endPointer(e) {
   padUp(e.pointerId);
   if (padHeld === e.pointerId) { padHeld = null; if (!UI.latch) scatterOff(); }
-  if (swipe && swipe.id === e.pointerId && e.type === 'pointerup') {
+  if (swipe && swipe.id === e.pointerId && e.type === 'pointerup' && !UI.wide) {
     const dx = e.clientX - swipe.x, dy = e.clientY - swipe.y;
     if (Math.abs(dx) > 60 && Math.abs(dy) < 50) {
       // swipe a destra = vista successiva (SEQ → MIXER → ROLL → SEQ)
@@ -1287,6 +1342,10 @@ function dragKnob(el, e) {
   el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
 }
 document.addEventListener('keydown', (e) => {
+  // barra spaziatrice = play/pausa (quando non si è su un tasto)
+  if (e.code === 'Space' && !e.repeat && (e.target === document.body || e.target === document.documentElement)) {
+    e.preventDefault(); play(); return;
+  }
   const kn = e.target.closest && e.target.closest('[data-knob]');
   const fd = e.target.closest && e.target.closest('[data-fader]');
   const bd = e.target.closest && e.target.closest('[data-bpm]');
@@ -1330,16 +1389,20 @@ function frame() {
   if (ctx && playing) {
     let changed = false;
     while (uiQ.length && uiQ[0].t <= ctx.currentTime) { UI.head = uiQ.shift().s; changed = true; }
-    if (changed && UI.view === 'seq') { drawSteps(); drawLcd(); }
+    if (changed && shows('seq')) { drawSteps(); drawLcd(); }
   }
-  if (ctx && UI.view === 'mix') drawMeters();
+  if (ctx && shows('mix')) drawMeters();
   if (needRender) { needRender = false; renderAll(); }
   requestAnimationFrame(frame);
 }
+updateWide();
 renderAll();
 requestAnimationFrame(frame);
 let fitTimer = null;
-window.addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(() => { fit(); if (UI.view === 'mix') drawMixer(); }, 120); });
+window.addEventListener('resize', () => {
+  clearTimeout(fitTimer);
+  fitTimer = setTimeout(() => { if (updateWide()) renderAll(); else fit(); if (shows('mix')) drawMixer(); }, 120);
+});
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 })();
 </script>
