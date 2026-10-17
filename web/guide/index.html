@@ -165,6 +165,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       <li><a href="#bus"><span class="it">Bus ed effetti</span><span class="en">Buses and effects</span></a></li>
       <li><a href="#project"><span class="it">Salvare e condividere</span><span class="en">Saving and sharing</span></a></li>
       <li><a href="#midi"><span class="it">Controller MIDI</span><span class="en">MIDI controllers</span></a></li>
+      <li><a href="#move">Ableton Move</a></li>
       <li><a href="#keys"><span class="it">Scorciatoie</span><span class="en">Shortcuts</span></a></li>
       <li><a href="#demo"><span class="it">Il demo</span><span class="en">The demo</span></a></li>
       <li><a href="#trouble"><span class="it">Problemi e soluzioni</span><span class="en">Troubleshooting</span></a></li>
@@ -647,8 +648,57 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
     </section>
 
     <!-- 17 -->
+    <section id="move">
+      <h2 class="sec"><span class="n">17</span>Ableton Move</h2>
+      <div class="it">
+        <p>Una <strong>Ableton Move</strong> può diventare il controller di PONY84: i 16 tasti step programmano il ritmo, i 32 pad suonano, gli encoder girano le manopole e i LED mostrano tutto a colori. In questa modalità la Move non produce suono suo: suona PONY84. Funziona grazie a <a href="https://github.com/auridevil/movewire">movewire</a>, la libreria open source di Auri (Aureliano Bergese) che parla il protocollo con cui la Move dialoga con Ableton Live.</p>
+        <ol>
+          <li>Chiudi Ableton Live (occupa le porte MIDI della Move) e collega la Move via USB-C al PC o al telefono Android (con adattatore OTG).</li>
+          <li>In Chrome o Edge apri il menu <span class="k c">PONY84 ▾</span> e tocca <span class="k">COLLEGA MOVE</span>.</li>
+          <li>Consenti l'accesso MIDI <strong>completo</strong> (SysEx) quando il browser lo chiede. Dopo un istante i LED si accendono e il menu mostra MOVE COLLEGATA.</li>
+          <li>Per finire tocca <span class="k">SCOLLEGA MOVE</span>: la Move torna al suo funzionamento normale. Succede anche chiudendo la pagina.</li>
+        </ol>
+      </div>
+      <div class="en">
+        <p>An <strong>Ableton Move</strong> can become PONY84's controller: the 16 step buttons program the beat, the 32 pads play, the encoders turn the knobs and the LEDs show everything in colour. In this mode the Move makes no sound of its own: PONY84 does. It works thanks to <a href="https://github.com/auridevil/movewire">movewire</a>, the open-source library by Auri (Aureliano Bergese) that speaks the protocol the Move uses with Ableton Live.</p>
+        <ol>
+          <li>Quit Ableton Live (it holds the Move's MIDI ports) and connect the Move over USB-C to a computer or an Android phone (with an OTG adapter).</li>
+          <li>In Chrome or Edge open the <span class="k c">PONY84 ▾</span> menu and tap <span class="k">COLLEGA MOVE</span> (connect Move).</li>
+          <li>Allow <strong>full</strong> MIDI access (SysEx) when the browser asks. After a moment the LEDs light up and the menu says MOVE COLLEGATA.</li>
+          <li>To finish tap <span class="k">SCOLLEGA MOVE</span> (disconnect): the Move goes back to normal. Closing the page does the same.</li>
+        </ol>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>MOVE</th><th>PONY84</th></tr></thead>
+        <tbody>
+          <tr><td><span class="it">16 tasti step</span><span class="en">16 step buttons</span></td><td><span class="it">gli step della traccia selezionata, nella modalità attiva (STEP, P-LOCK, PROB o PATTERN). LED nei colori 808, luce bianca sullo step che suona, blu sullo step in P-LOCK.</span><span class="en">the selected track's steps, in the active mode (STEP, P-LOCK, PROB or PATTERN). LEDs in 808 colours, white on the playing step, blue on the step being p-locked.</span></td></tr>
+          <tr><td>Shift + step</td><td><span class="it">sceglie il pattern nel banco (i LED mostrano i pattern pieni, bianco = in uso)</span><span class="en">picks a pattern in the bank (LEDs show filled patterns, white = current)</span></td></tr>
+          <tr><td>Delete + step</td><td><span class="it">cancella lo step, con p-lock, condizione e nota</span><span class="en">clears the step, with p-locks, condition and note</span></td></tr>
+          <tr><td><span class="it">Pad fila in basso 1–6</span><span class="en">Bottom-row pads 1–6</span></td><td><span class="it">suonano le tracce 1–6 e le selezionano (bianco = traccia selezionata)</span><span class="en">play tracks 1–6 and select them (white = selected track)</span></td></tr>
+          <tr><td><span class="it">Pad fila in basso 7 · 8</span><span class="en">Bottom-row pads 7 · 8</span></td><td><span class="it">SCATTER: STUTTER e TAPESTOP, tenendo premuto (o con LATCH)</span><span class="en">SCATTER: STUTTER and TAPESTOP, while held (or with LATCH)</span></td></tr>
+          <tr><td><span class="it">Le 3 file di pad sopra</span><span class="en">The 3 pad rows above</span></td><td><span class="it">24 note nella scala di ROLL, sulla traccia selezionata; arancione = tonica. Dinamica dal pad, RIPETI e REC come in ROLL.</span><span class="en">24 notes in the ROLL scale on the selected track; orange = root. Velocity from the pad, repeat and REC as in ROLL.</span></td></tr>
+          <tr><td>Encoder 1–8</td><td><span class="it">le 8 manopole della pagina aperta (traccia o FX); con Shift regolazione fine</span><span class="en">the 8 knobs of the open page (track or FX); hold Shift for fine control</span></td></tr>
+          <tr><td>Volume</td><td><span class="it">volume MASTER</span><span class="en">MASTER volume</span></td></tr>
+          <tr><td><span class="it">Rotella · rotella premuta</span><span class="en">Wheel · wheel push</span></td><td><span class="it">BPM (con Shift a decimi) · TAP</span><span class="en">BPM (tenths with Shift) · TAP</span></td></tr>
+          <tr><td>Track 1 · 2 · 3 · 4</td><td>STEP · P-LOCK · PROB · PATTERN</td></tr>
+          <tr><td>◀ ▶</td><td><span class="it">banco precedente / successivo</span><span class="en">previous / next bank</span></td></tr>
+          <tr><td>+ −</td><td><span class="it">ottava delle note sui pad</span><span class="en">octave of the pad notes</span></td></tr>
+          <tr><td>Play · Shift + Play</td><td><span class="it">play/pausa · stop</span><span class="en">play/pause · stop</span></td></tr>
+          <tr><td>Record</td><td><span class="it">REC di ROLL: registra quello che suoni sui pad</span><span class="en">ROLL REC: records what you play on the pads</span></td></tr>
+          <tr><td>Mute</td><td><span class="it">mute della traccia selezionata</span><span class="en">mutes the selected track</span></td></tr>
+          <tr><td>Duplicate · Shift + Duplicate</td><td><span class="it">copia · incolla (pattern in PATTERN, traccia in STEP)</span><span class="en">copy · paste (pattern in PATTERN, track in STEP)</span></td></tr>
+          <tr><td>Loop · Layout · Back</td><td><span class="it">LATCH dello scatter · pagina FX · chiude i pannelli aperti</span><span class="en">scatter LATCH · FX page · closes open panels</span></td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><span class="lbl it">DA SAPERE</span><span class="lbl en">GOOD TO KNOW</span>
+        <p class="it">Il display della Move per ora resta spento: movewire non lo gestisce ancora. Guarda lo schermo di PONY84 per nomi e valori. Il supporto è nuovo: se qualcosa non risponde come descritto, segnalalo.</p>
+        <p class="en">The Move's display stays dark for now: movewire doesn't drive it yet. Use PONY84's screen for names and values. Support is new: if something doesn't respond as described, please report it.</p>
+      </div>
+    </section>
+
+    <!-- 18 -->
     <section id="keys">
-      <h2 class="sec"><span class="n">17</span><span class="it">Scorciatoie da tastiera</span><span class="en">Keyboard shortcuts</span></h2>
+      <h2 class="sec"><span class="n">18</span><span class="it">Scorciatoie da tastiera</span><span class="en">Keyboard shortcuts</span></h2>
       <div class="tbl"><table>
         <thead><tr><th><span class="it">TASTO</span><span class="en">KEY</span></th><th><span class="it">AZIONE</span><span class="en">ACTION</span></th></tr></thead>
         <tbody>
@@ -662,7 +712,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
 
     <!-- 18 -->
     <section id="demo">
-      <h2 class="sec"><span class="n">18</span><span class="it">Il demo</span><span class="en">The demo</span></h2>
+      <h2 class="sec"><span class="n">19</span><span class="it">Il demo</span><span class="en">The demo</span></h2>
       <div class="it">
         <p>Alla prima apertura il pattern <strong>A01</strong> contiene un groove <strong>minimal techno</strong> a 126 BPM in Do minore, da smontare per capire come funziona tutto:</p>
         <ul>
@@ -687,7 +737,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
 
     <!-- 19 -->
     <section id="trouble">
-      <h2 class="sec"><span class="n">19</span><span class="it">Problemi e soluzioni</span><span class="en">Troubleshooting</span></h2>
+      <h2 class="sec"><span class="n">20</span><span class="it">Problemi e soluzioni</span><span class="en">Troubleshooting</span></h2>
       <div class="tbl"><table>
         <thead><tr><th><span class="it">PROBLEMA</span><span class="en">PROBLEM</span></th><th><span class="it">SOLUZIONE</span><span class="en">FIX</span></th></tr></thead>
         <tbody>
@@ -696,6 +746,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <tr><td><span class="it">Il WAV non si carica</span><span class="en">WAV won't load</span></td><td><span class="it">Il display mostra FILE NON LETTO: esporta il file come WAV a 16 o 24 bit e riprova.</span><span class="en">The display shows FILE NON LETTO (file not read): export it as a 16- or 24-bit WAV and try again.</span></td></tr>
           <tr><td><span class="it">Il progetto è sparito</span><span class="en">My project is gone</span></td><td><span class="it">Succede in incognito, cancellando i dati del sito o aprendo PONY84 da un altro browser o dispositivo. Reimporta l'ultimo file .pony84 esportato.</span><span class="en">It happens in incognito, after clearing site data, or when opening PONY84 in another browser or device. Re-import your last exported .pony84 file.</span></td></tr>
           <tr><td><span class="it">Il controller MIDI non appare</span><span class="en">MIDI controller not found</span></td><td><span class="it">Usa Chrome, consenti il MIDI quando richiesto, controlla l'adattatore OTG e tocca AGGIORNA MIDI. Se pad o manopole inviano note o CC diversi, assegnali con MIDI LEARN.</span><span class="en">Use Chrome, allow MIDI when asked, check the OTG adapter and tap AGGIORNA MIDI. If pads or knobs send different notes or CCs, assign them with MIDI LEARN.</span></td></tr>
+          <tr><td><span class="it">La Move non si collega</span><span class="en">The Move won't connect</span></td><td><span class="it">Chiudi Ableton Live, usa Chrome o Edge, consenti il MIDI completo (SysEx). Se avevi negato il permesso, riattivalo nelle impostazioni del sito (icona accanto all'indirizzo) e riprova.</span><span class="en">Quit Ableton Live, use Chrome or Edge, allow full MIDI (SysEx). If you denied it before, re-enable it in the site settings (icon next to the address) and try again.</span></td></tr>
           <tr><td><span class="it">Vedo la versione vecchia</span><span class="en">I still see the old version</span></td><td><span class="it">Chiudi la scheda e riaprila, oppure ricarica la pagina.</span><span class="en">Close the tab and reopen it, or reload the page.</span></td></tr>
           <tr><td><span class="it">Telefono in orizzontale</span><span class="en">Phone in landscape</span></td><td><span class="it">È troppo basso per tre colonne: PONY84 resta in vista telefono, rimpicciolita. Meglio usarlo in verticale.</span><span class="en">It's too short for three columns: PONY84 stays in phone view, scaled down. Portrait works best.</span></td></tr>
         </tbody>
@@ -703,6 +754,8 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
     </section>
 
     <footer>
+      <p class="it">Il supporto per Ableton Move usa <a href="https://github.com/auridevil/movewire">movewire</a> di Auri (licenza MIT). Ableton e Move sono marchi di Ableton AG; PONY84 non è affiliato ad Ableton.</p>
+      <p class="en">Ableton Move support uses <a href="https://github.com/auridevil/movewire">movewire</a> by Auri (MIT licence). Ableton and Move are trademarks of Ableton AG; PONY84 is not affiliated with Ableton.</p>
       <p class="it">PONY84 è un progetto personale, gratuito e open source. Codice e aggiornamenti su <a href="https://github.com/puck1e/pony84">GitHub</a>. <a href="../">Apri l'app →</a></p>
       <p class="en">PONY84 is a free, open-source personal project. Code and updates on <a href="https://github.com/puck1e/pony84">GitHub</a>. <a href="../">Open the app →</a></p>
     </footer>
