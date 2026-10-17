@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#23211e">
+<title>PONY84 · Guida</title>
+<meta name="description" content="Guida completa a PONY84, groovebox FM e sample nel browser: tracce, sequencer, ROLL, scatter, mixer con bus ed effetti, MIDI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,800&family=Barlow:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: indice fisso a sinistra su schermi larghi, in testa su telefono; colonna di lettura ~68ch. */
+:root {
+  --body: #23211e; --panel: #2d2a26; --key: #3a3631; --edge: #141210; --line: #4a453e;
+  --cream: #ece4cf; --text: #d9d0bb; --muted: #a99f8a; --ink: #1d1a17; --white: #fff6ee;
+  --red: #c9372c; --orange: #e07b26; --yellow: #e3b93c; --lcd-bg: #120d07; --lcd: #ffb347;
+  --display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --sans: 'Barlow', 'Segoe UI', Roboto, sans-serif;
+  --mono: 'DM Mono', ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--body); color: var(--text); font-family: var(--sans); font-size: 17px; line-height: 1.6; }
+html[lang="it"] .en, html[lang="en"] .it { display: none !important; }
+a { color: var(--lcd); text-underline-offset: 3px; }
+a:hover { color: var(--yellow); }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* barra in alto */
+.top { position: sticky; top: 0; z-index: 10; background: var(--body); border-bottom: 1px solid var(--line);
+  padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top-in { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.logo { font-family: var(--display); font-size: 30px; line-height: 1; font-weight: 800; font-style: italic; letter-spacing: -.5px; color: var(--cream); text-decoration: none; }
+.logo b { color: var(--orange); font-weight: 800; }
+.logo small { font-style: normal; font-weight: 600; font-size: 13px; letter-spacing: 2.4px; color: var(--muted); margin-left: 8px; vertical-align: middle; }
+.top nav { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-wrap: wrap; }
+.btn { font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: 1.2px; text-decoration: none; color: var(--cream); background: var(--key);
+  border: none; border-bottom: 3px solid var(--edge); border-radius: 6px; padding: 7px 12px; cursor: pointer; }
+.btn.primary { background: var(--orange); color: var(--ink); }
+.btn:hover { color: var(--white); filter: brightness(1.1); }
+.btn.primary:hover { color: var(--ink); }
+.lang { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.lang button { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: 1px; background: none; color: var(--muted); border: none; padding: 7px 10px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
+@media (max-width: 560px) {
+  .top-in { flex-wrap: nowrap; gap: 10px; }
+  .top nav { flex-wrap: nowrap; gap: 6px; }
+  .top nav .btn:not(.primary) { display: none; }
+  .logo { font-size: 26px; }
+  .logo small { display: none; }
+  .btn { padding: 7px 10px; font-size: 13px; }
+}
+
+/* impaginazione */
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
+@media (min-width: 1000px) { .wrap { grid-template-columns: 260px minmax(0, 1fr); gap: 48px; } .toc { position: sticky; top: 76px; max-height: calc(100vh - 96px); overflow: auto; } }
+main { min-width: 0; max-width: 72ch; }
+
+/* intestazione */
+.hero { display: flex; flex-direction: column; gap: 14px; margin-bottom: 8px; }
+.eyebrow { font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: 2.4px; color: var(--muted); text-transform: uppercase; }
+h1 { font-family: var(--display); font-weight: 800; font-style: italic; font-size: clamp(40px, 7vw, 64px); line-height: .95; color: var(--cream); margin: 0; letter-spacing: -.5px; text-wrap: balance; }
+h1 b { color: var(--orange); font-weight: 800; }
+.lead { font-size: 19px; color: var(--cream); margin: 0; max-width: 60ch; }
+.lcd { background: var(--lcd-bg); border: 2px solid var(--line); border-radius: 10px; padding: 10px 14px; font-family: var(--mono); color: var(--lcd); font-size: 13px; letter-spacing: 1px;
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.lcd span { white-space: nowrap; }
+
+/* indice */
+.toc { font-family: var(--display); }
+.toc h2 { font-size: 13px; letter-spacing: 2.4px; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: t; }
+@media (max-width: 999px) { .toc ol { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); } .toc { background: var(--panel); border-radius: 10px; padding: 14px 16px; } }
+.toc li { counter-increment: t; }
+.toc a { display: flex; gap: 10px; padding: 4px 6px; border-radius: 5px; color: var(--text); text-decoration: none; font-size: 16px; font-weight: 600; letter-spacing: .4px; }
+.toc a::before { content: counter(t, decimal-leading-zero); font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 3px; }
+.toc a:hover, .toc a.here { background: var(--key); color: var(--cream); }
+
+/* sezioni */
+section { padding-top: 36px; margin-top: 36px; border-top: 1px solid var(--line); }
+h2.sec { font-family: var(--display); font-weight: 700; font-size: 30px; line-height: 1.1; color: var(--cream); margin: 0 0 14px; letter-spacing: .3px; display: flex; gap: 12px; align-items: baseline; }
+h2.sec .n { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--orange); }
+h3 { font-family: var(--display); font-weight: 700; font-size: 21px; color: var(--cream); margin: 26px 0 8px; letter-spacing: .4px; }
+p { margin: 0 0 14px; }
+ul, ol { margin: 0 0 14px; padding-left: 22px; }
+li { margin-bottom: 6px; }
+li::marker { color: var(--muted); }
+strong { color: var(--cream); font-weight: 600; }
+.note { background: var(--panel); border-radius: 10px; padding: 12px 16px; margin: 0 0 16px; }
+.note.warn { box-shadow: inset 0 0 0 1px var(--orange); }
+.note p:last-child, .note ul:last-child { margin-bottom: 0; }
+.note .lbl { font-family: var(--display); font-weight: 700; letter-spacing: 1.5px; font-size: 13px; color: var(--yellow); display: block; margin-bottom: 4px; }
+
+/* tasti come sull'apparecchio */
+.k { display: inline-block; font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: .8px; line-height: 1.2; padding: 2px 7px 1px;
+  border-radius: 4px; background: var(--key); color: var(--cream); border-bottom: 2px solid var(--edge); white-space: nowrap; vertical-align: 1px; }
+.k.o { background: var(--orange); color: var(--ink); }
+.k.r { background: var(--red); color: var(--white); }
+.k.y { background: var(--yellow); color: var(--ink); }
+.k.c { background: var(--cream); color: var(--ink); }
+code, .m { font-family: var(--mono); font-size: 14px; color: var(--lcd); }
+
+/* tabelle */
+.tbl { overflow-x: auto; margin: 0 0 18px; border-radius: 10px; border: 1px solid var(--line); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--display); font-weight: 700; letter-spacing: 1.2px; font-size: 13px; color: var(--muted); background: var(--panel); white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+td:first-child { white-space: nowrap; }
+
+/* tasti step 808 */
+.steps { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 4px; margin: 6px 0 18px; max-width: 560px; }
+.steps span { height: 30px; border-radius: 4px; border-bottom: 3px solid rgba(0,0,0,.45); font-family: var(--display); font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; color: var(--ink); }
+.steps span:nth-child(-n+4) { background: var(--red); color: var(--white); }
+.steps span:nth-child(n+5):nth-child(-n+8) { background: var(--orange); }
+.steps span:nth-child(n+9):nth-child(-n+12) { background: var(--yellow); }
+.steps span:nth-child(n+13) { background: var(--cream); }
+@media (max-width: 480px) { .steps { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+
+/* schema del segnale */
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 18px; font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: .8px; }
+.flow .b { background: var(--panel); border: 1px solid var(--line); color: var(--cream); border-radius: 6px; padding: 6px 10px; }
+.flow .b.hl { border-color: var(--yellow); }
+.flow .arr { color: var(--muted); }
+
+footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 15px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="../" aria-label="PONY84, apri l'app">PONY<b>84</b><small class="it">GUIDA</small><small class="en">GUIDE</small></a>
+    <nav>
+      <a class="btn primary" href="../"><span class="it">APRI L'APP</span><span class="en">OPEN THE APP</span></a>
+      <a class="btn" href="https://github.com/puck1e/pony84">GITHUB</a>
+      <div class="lang" role="group" aria-label="Lingua / Language">
+        <button type="button" data-lang="it" aria-pressed="true">IT</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="toc" aria-label="Indice">
+    <h2><span class="it">INDICE</span><span class="en">CONTENTS</span></h2>
+    <ol>
+      <li><a href="#start"><span class="it">Prima di iniziare</span><span class="en">Before you start</span></a></li>
+      <li><a href="#tour"><span class="it">L'interfaccia</span><span class="en">The interface</span></a></li>
+      <li><a href="#tracks"><span class="it">Tracce e motori</span><span class="en">Tracks and machines</span></a></li>
+      <li><a href="#sample"><span class="it">Caricare i WAV</span><span class="en">Loading WAVs</span></a></li>
+      <li><a href="#step"><span class="it">STEP: programmare</span><span class="en">STEP: programming</span></a></li>
+      <li><a href="#plock">P-LOCK</a></li>
+      <li><a href="#prob">PROB</a></li>
+      <li><a href="#pattern">PATTERN</a></li>
+      <li><a href="#fx"><span class="it">FX globali</span><span class="en">Global FX</span></a></li>
+      <li><a href="#tempo"><span class="it">BPM e TAP</span><span class="en">BPM and TAP</span></a></li>
+      <li><a href="#scatter">SCATTER</a></li>
+      <li><a href="#roll">ROLL</a></li>
+      <li><a href="#mixer"><span class="it">Mixer: canali</span><span class="en">Mixer: channels</span></a></li>
+      <li><a href="#bus"><span class="it">Bus ed effetti</span><span class="en">Buses and effects</span></a></li>
+      <li><a href="#project"><span class="it">Salvare e condividere</span><span class="en">Saving and sharing</span></a></li>
+      <li><a href="#midi"><span class="it">Controller MIDI</span><span class="en">MIDI controllers</span></a></li>
+      <li><a href="#keys"><span class="it">Scorciatoie</span><span class="en">Shortcuts</span></a></li>
+      <li><a href="#demo"><span class="it">Il demo</span><span class="en">The demo</span></a></li>
+      <li><a href="#trouble"><span class="it">Problemi e soluzioni</span><span class="en">Troubleshooting</span></a></li>
+    </ol>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <span class="eyebrow">FM · SAMPLE · GROOVEBOX</span>
+      <h1><span class="it">Guida a PONY<b>84</b></span><span class="en">PONY<b>84</b> guide</span></h1>
+      <p class="lead it">PONY84 è una groovebox che gira nel browser: 6 tracce con motori FM e sampler, sequencer a 16 step con parameter lock e probabilità, pad da suonare, effetti di performance e un mixer con bus ed effetti. Funziona sul telefono, sul tablet e sul PC, senza installare niente.</p>
+      <p class="lead en">PONY84 is a groovebox that runs in your browser: 6 tracks with FM and sampler machines, a 16-step sequencer with parameter locks and probability, playable pads, performance effects and a mixer with buses and effects. It works on phone, tablet and computer, with nothing to install.</p>
+      <div class="lcd" aria-hidden="true"><span>PTN A01 · STEP</span><span>BPM 126.0</span></div>
+    </div>
+
+    <!-- 1 -->
+    <section id="start">
+      <h2 class="sec"><span class="n">01</span><span class="it">Prima di iniziare</span><span class="en">Before you start</span></h2>
+      <div class="it">
+        <ul>
+          <li><strong>Browser</strong>: usa <strong>Chrome</strong> (Android, Windows, macOS, Linux). Anche Edge va bene. Su iPhone l'audio funziona, il MIDI no.</li>
+          <li><strong>Accensione</strong>: al primo avvio tocca <span class="k o">ACCENDI</span>. I browser fanno partire l'audio solo dopo un tocco.</li>
+          <li><strong>Volume</strong>: sul telefono alza il volume dei contenuti multimediali. Le cuffie con il filo hanno meno ritardo di quelle Bluetooth.</li>
+          <li><strong>Come un'app</strong>: in Chrome apri il menu <span class="k">⋮</span> e scegli <em>Aggiungi a schermata Home</em>. PONY84 si aprirà a tutto schermo come un'app.</li>
+        </ul>
+        <div class="note"><span class="lbl">SALVATAGGIO</span><p>Ogni modifica viene salvata in automatico nel browser, WAV compresi. Per avere una copia di sicurezza o per passare il progetto su un altro dispositivo usa <a href="#project">Esporta</a>.</p></div>
+      </div>
+      <div class="en">
+        <ul>
+          <li><strong>Browser</strong>: use <strong>Chrome</strong> (Android, Windows, macOS, Linux). Edge works too. On iPhone the audio works, MIDI does not.</li>
+          <li><strong>Power on</strong>: on first launch tap <span class="k o">ACCENDI</span> (power on). Browsers only start audio after a tap.</li>
+          <li><strong>Volume</strong>: on a phone turn up the media volume. Wired headphones have less delay than Bluetooth ones.</li>
+          <li><strong>As an app</strong>: in Chrome open the <span class="k">⋮</span> menu and choose <em>Add to Home screen</em>. PONY84 will open full screen like an app.</li>
+        </ul>
+        <div class="note"><span class="lbl">SAVING</span><p>Every change is saved automatically in the browser, WAVs included. For a backup, or to move a project to another device, use <a href="#project">Export</a>.</p></div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section id="tour">
+      <h2 class="sec"><span class="n">02</span><span class="it">L'interfaccia</span><span class="en">The interface</span></h2>
+      <div class="it">
+        <h3>In alto</h3>
+        <ul>
+          <li><span class="k c">PONY84 ▾</span> apre il menu <strong>PROGETTO &amp; MIDI</strong>.</li>
+          <li><span class="k c">SEQ</span> <span class="k">MIXER</span> <span class="k">ROLL</span> cambiano vista. Sul telefono puoi anche fare <strong>swipe verso destra</strong>: SEQ → MIXER → ROLL → SEQ.</li>
+          <li><span class="k">TAP</span> imposta il tempo battendo a ritmo, <span class="k">■</span> ferma e riporta all'inizio, <span class="k o">▶</span> avvia o mette in pausa.</li>
+        </ul>
+        <h3>Il display</h3>
+        <p>Mostra il pattern in uso, la modalità attiva, i <strong>BPM</strong> (trascinabili su e giù), la traccia selezionata e lo step che sta suonando. A destra compaiono swing, scatter attivo o lo step in modifica.</p>
+        <h3>Telefono, tablet e PC</h3>
+        <p>Sul telefono vedi una vista alla volta. Su tablet in orizzontale e su PC (da circa 900×600 pixel) SEQ, ROLL e MIXER sono <strong>affiancati</strong> e il display si allarga in alto.</p>
+      </div>
+      <div class="en">
+        <h3>Top bar</h3>
+        <ul>
+          <li><span class="k c">PONY84 ▾</span> opens the <strong>PROJECT &amp; MIDI</strong> menu.</li>
+          <li><span class="k c">SEQ</span> <span class="k">MIXER</span> <span class="k">ROLL</span> switch views. On a phone you can also <strong>swipe right</strong>: SEQ → MIXER → ROLL → SEQ.</li>
+          <li><span class="k">TAP</span> sets the tempo by tapping along, <span class="k">■</span> stops and rewinds, <span class="k o">▶</span> plays or pauses.</li>
+        </ul>
+        <h3>The display</h3>
+        <p>Shows the current pattern, the active mode, the <strong>BPM</strong> (drag it up or down), the selected track and the playing step. On the right you see swing, the active scatter or the step being edited.</p>
+        <h3>Phone, tablet and computer</h3>
+        <p>On a phone you see one view at a time. On a landscape tablet or a computer (from about 900×600 pixels) SEQ, ROLL and MIXER sit <strong>side by side</strong> and the display widens at the top.</p>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section id="tracks">
+      <h2 class="sec"><span class="n">03</span><span class="it">Tracce e motori</span><span class="en">Tracks and machines</span></h2>
+      <div class="it">
+        <p>Ci sono <strong>6 tracce</strong>. Tocca una traccia per selezionarla, poi scegli il suo <strong>motore</strong> nella riga MACHINE. Ogni traccia può usare qualsiasi motore: puoi avere anche sei KICK diverse. Cambiando motore le manopole tornano ai valori di partenza e i p-lock di quella traccia vengono azzerati.</p>
+        <p>I motori KICK, SNARE, METAL, PERC e TONE sono voci <strong>FM</strong> a due operatori; SAMPLE suona un file audio. Le manopole si girano <strong>trascinando su e giù</strong>.</p>
+      </div>
+      <div class="en">
+        <p>There are <strong>6 tracks</strong>. Tap a track to select it, then pick its <strong>machine</strong> in the MACHINE row. Any track can use any machine: you can even have six different KICKs. Changing machine resets the knobs and clears that track's p-locks.</p>
+        <p>KICK, SNARE, METAL, PERC and TONE are two-operator <strong>FM</strong> voices; SAMPLE plays an audio file. Turn the knobs by <strong>dragging up and down</strong>.</p>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th><span class="it">MANOPOLA</span><span class="en">KNOB</span></th><th>KICK</th><th>SNARE</th><th>METAL</th><th>PERC</th><th>TONE</th></tr></thead>
+        <tbody>
+          <tr><td>PITCH</td><td colspan="4"><span class="it">intonazione (Hz)</span><span class="en">pitch (Hz)</span></td><td><span class="it">nota da C1 a C6</span><span class="en">note from C1 to C6</span></td></tr>
+          <tr><td>DECAY</td><td colspan="5"><span class="it">durata del suono</span><span class="en">length of the sound</span></td></tr>
+          <tr><td>COLOR</td><td colspan="5"><span class="it">quantità di FM: più alto = più armoniche e più grinta</span><span class="en">FM amount: higher = more harmonics and bite</span></td></tr>
+          <tr><td>SHAPE</td><td><span class="it">rapporto FM</span><span class="en">FM ratio</span></td><td><span class="it">quantità di rumore</span><span class="en">noise amount</span></td><td><span class="it">rapporto FM (metallico)</span><span class="en">FM ratio (metallic)</span></td><td><span class="it">rapporto FM</span><span class="en">FM ratio</span></td><td><span class="it">rapporto FM</span><span class="en">FM ratio</span></td></tr>
+          <tr><td>SWEEP</td><td colspan="5"><span class="it">caduta di intonazione all'attacco (il "tump" della cassa)</span><span class="en">pitch drop on the attack (the kick's "thump")</span></td></tr>
+          <tr><td>CONTOUR</td><td><span class="it">velocità dello sweep</span><span class="en">sweep speed</span></td><td><span class="it">brillantezza del rumore</span><span class="en">noise brightness</span></td><td><span class="it">quantità di rumore</span><span class="en">noise amount</span></td><td><span class="it">velocità dello sweep</span><span class="en">sweep speed</span></td><td><span class="it">durata della modulazione</span><span class="en">modulation length</span></td></tr>
+          <tr><td>DELAY</td><td colspan="5"><span class="it">mandata al delay globale</span><span class="en">send to the global delay</span></td></tr>
+          <tr><td>REVERB</td><td colspan="5"><span class="it">mandata al riverbero globale</span><span class="en">send to the global reverb</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 4 -->
+    <section id="sample">
+      <h2 class="sec"><span class="n">04</span><span class="it">Caricare i WAV (motore SAMPLE)</span><span class="en">Loading WAVs (SAMPLE machine)</span></h2>
+      <div class="it">
+        <ol>
+          <li>Seleziona una traccia e scegli il motore <span class="k o">SAMPLE</span>.</li>
+          <li>Tocca <span class="k">CARICA WAV…</span> e scegli un file (WAV, MP3, AIFF: tutto ciò che Chrome sa leggere).</li>
+          <li>Il nome compare sul display. Senza file, SAMPLE suona un accordo di esempio.</li>
+        </ol>
+        <p>I WAV caricati restano salvati anche quando chiudi PONY84, e finiscono dentro il file quando esporti il progetto.</p>
+      </div>
+      <div class="en">
+        <ol>
+          <li>Select a track and choose the <span class="k o">SAMPLE</span> machine.</li>
+          <li>Tap <span class="k">CARICA WAV…</span> (load WAV) and pick a file (WAV, MP3, AIFF: anything Chrome can read).</li>
+          <li>Its name appears on the display. With no file, SAMPLE plays an example chord.</li>
+        </ol>
+        <p>Loaded WAVs stay saved when you close PONY84, and go inside the file when you export the project.</p>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th><span class="it">MANOPOLA</span><span class="en">KNOB</span></th><th>SAMPLE</th></tr></thead>
+        <tbody>
+          <tr><td>PITCH</td><td><span class="it">da −24 a +24 semitoni</span><span class="en">−24 to +24 semitones</span></td></tr>
+          <tr><td>START</td><td><span class="it">punto di partenza nel file</span><span class="en">start point in the file</span></td></tr>
+          <tr><td>LENGTH</td><td><span class="it">quanta parte suonare</span><span class="en">how much of it to play</span></td></tr>
+          <tr><td>DECAY</td><td><span class="it">dissolvenza; al massimo (FULL) suona tutto</span><span class="en">fade out; at maximum (FULL) it plays in full</span></td></tr>
+          <tr><td>FILTER</td><td><span class="it">passa-basso, da 200 Hz a 20 kHz</span><span class="en">low-pass, 200 Hz to 20 kHz</span></td></tr>
+          <tr><td>GAIN</td><td><span class="it">volume del campione</span><span class="en">sample volume</span></td></tr>
+          <tr><td>DELAY · REVERB</td><td><span class="it">mandate agli effetti globali</span><span class="en">sends to the global effects</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 5 -->
+    <section id="step">
+      <h2 class="sec"><span class="n">05</span><span class="it">STEP: programmare il ritmo</span><span class="en">STEP: programming beats</span></h2>
+      <div class="steps" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span></div>
+      <div class="it">
+        <p>Con <span class="k c">STEP</span> attivo, i 16 tasti colorati sono i sedicesimi di una battuta della traccia selezionata. Tocca un tasto per accenderlo (LED rosso) o spegnerlo. A sequencer fermo, accendendo uno step senti subito il suono.</p>
+        <p>Sotto il numero dello step possono comparire tre indicazioni:</p>
+        <ul>
+          <li><code>●</code> lo step ha dei <a href="#plock">p-lock</a>;</li>
+          <li><code>50%</code>, <code>1:2</code>… ha una condizione <a href="#prob">PROB</a>;</li>
+          <li><code>+7</code>, <code>−2</code>… ha una nota registrata con <a href="#roll">ROLL</a> (semitoni rispetto all'intonazione della traccia).</li>
+        </ul>
+      </div>
+      <div class="en">
+        <p>With <span class="k c">STEP</span> active, the 16 coloured keys are the sixteenth notes of one bar of the selected track. Tap a key to turn it on (red LED) or off. While stopped, turning a step on plays its sound straight away.</p>
+        <p>Three markers can appear under the step number:</p>
+        <ul>
+          <li><code>●</code> the step has <a href="#plock">p-locks</a>;</li>
+          <li><code>50%</code>, <code>1:2</code>… it has a <a href="#prob">PROB</a> condition;</li>
+          <li><code>+7</code>, <code>−2</code>… it has a note recorded with <a href="#roll">ROLL</a> (semitones from the track's pitch).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section id="plock">
+      <h2 class="sec"><span class="n">06</span>P-LOCK</h2>
+      <div class="it">
+        <p>I <strong>parameter lock</strong> danno a un singolo step valori diversi da quelli della traccia: una cassa più corta, un hi-hat più aperto, una nota diversa.</p>
+        <ol>
+          <li>Premi <span class="k">P-LOCK</span>.</li>
+          <li>Tocca uno step: si evidenzia (e si accende, se era spento).</li>
+          <li>Gira le manopole. Quelle bloccate hanno l'<strong>anello arancione</strong> e il valore in arancione.</li>
+          <li>Tocca un altro step per bloccarne altri, oppure lo stesso step per uscire.</li>
+        </ol>
+        <p><span class="k">TOGLI LOCK</span> cancella tutti i lock dello step selezionato, comprese le note e l'intensità registrate con ROLL. Si bloccano le prime 6 manopole; DELAY e REVERB valgono per tutta la traccia.</p>
+      </div>
+      <div class="en">
+        <p><strong>Parameter locks</strong> give a single step values that differ from the track's: a shorter kick, a more open hi-hat, a different note.</p>
+        <ol>
+          <li>Press <span class="k">P-LOCK</span>.</li>
+          <li>Tap a step: it gets highlighted (and turned on, if it was off).</li>
+          <li>Turn the knobs. Locked knobs show an <strong>orange ring</strong> and an orange value.</li>
+          <li>Tap another step to lock more, or the same step to leave.</li>
+        </ol>
+        <p><span class="k">TOGLI LOCK</span> (remove lock) clears every lock on the selected step, including notes and intensity recorded with ROLL. The first 6 knobs can be locked; DELAY and REVERB apply to the whole track.</p>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section id="prob">
+      <h2 class="sec"><span class="n">07</span>PROB</h2>
+      <div class="it"><p>Decide <strong>quando</strong> suona uno step. Con <span class="k">PROB</span> attivo, tocca uno step acceso per passare alla condizione successiva (uno step spento si accende al primo tocco). Rende i pattern vivi: le battute non sono mai tutte uguali.</p></div>
+      <div class="en"><p>Decides <strong>when</strong> a step plays. With <span class="k">PROB</span> active, tap a lit step to move to the next condition (an unlit step turns on at the first tap). It keeps patterns alive: no two bars are quite the same.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th><span class="it">CONDIZIONE</span><span class="en">CONDITION</span></th><th><span class="it">SIGNIFICATO</span><span class="en">MEANING</span></th></tr></thead>
+        <tbody>
+          <tr><td>—</td><td><span class="it">suona sempre</span><span class="en">always plays</span></td></tr>
+          <tr><td>75% · 50% · 25%</td><td><span class="it">probabilità di suonare a ogni giro</span><span class="en">chance of playing on each pass</span></td></tr>
+          <tr><td>1:2</td><td><span class="it">solo nella prima battuta di ogni due</span><span class="en">only on the first bar of every two</span></td></tr>
+          <tr><td>2:2</td><td><span class="it">solo nella seconda battuta di ogni due</span><span class="en">only on the second bar of every two</span></td></tr>
+          <tr><td>1:4</td><td><span class="it">solo nella prima battuta di ogni quattro</span><span class="en">only on the first bar of every four</span></td></tr>
+          <tr><td>4:4</td><td><span class="it">solo nella quarta battuta di ogni quattro: perfetto per i fill</span><span class="en">only on the fourth bar of every four: great for fills</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 8 -->
+    <section id="pattern">
+      <h2 class="sec"><span class="n">08</span>PATTERN</h2>
+      <div class="it">
+        <p>Ci sono <strong>128 pattern</strong>: 8 banchi da <span class="k c">A</span> a <span class="k">H</span>, ognuno con 16 pattern (da A01 a H16). Con <span class="k">PATTERN</span> attivo compare la fila dei banchi: scegli il banco, poi tocca uno dei 16 tasti per scegliere il pattern. Il LED acceso indica i pattern che contengono qualcosa, il puntino rosso sul banco indica che quel banco non è vuoto, il tasto contornato è il pattern in uso.</p>
+        <ul>
+          <li>Toccando un pattern mentre suona, il cambio avviene <strong>a fine battuta</strong> (il tasto lampeggia in attesa).</li>
+          <li><span class="k">SVUOTA</span> cancella il pattern in uso.</li>
+          <li>Suoni, mixer ed effetti sono gli stessi per tutti i pattern; cambiano solo gli step.</li>
+        </ul>
+        <h3>Copiare un pattern (es. A01 su A02)</h3>
+        <ol>
+          <li>In <span class="k">PATTERN</span> scegli A01 e premi <span class="k">COPIA</span>.</li>
+          <li>Tocca A02 (o un pattern di un altro banco).</li>
+          <li>Premi <span class="k">INCOLLA</span>. Se il pattern di destinazione non è vuoto, il tasto diventa <span class="k r">CONFERMA?</span>: toccalo di nuovo per sovrascrivere.</li>
+        </ol>
+        <p>Durante la riproduzione INCOLLA scrive sul pattern in attesa (quello che lampeggia), così prepari il prossimo senza fermare la musica.</p>
+        <h3>Copiare una sola traccia</h3>
+        <p>In <span class="k c">STEP</span> il tasto diventa <span class="k">COPIA T1</span> (la traccia selezionata). Passa a un altro pattern, seleziona la traccia di destinazione e premi <span class="k">INCOLLA</span>: utile per tenere la stessa cassa e cambiare il resto.</p>
+      </div>
+      <div class="en">
+        <p>There are <strong>128 patterns</strong>: 8 banks from <span class="k c">A</span> to <span class="k">H</span>, each with 16 patterns (A01 to H16). With <span class="k">PATTERN</span> active the bank row appears: pick the bank, then tap one of the 16 keys to pick the pattern. A lit LED marks patterns that contain something, a red dot on a bank means it isn't empty, and the outlined key is the current pattern.</p>
+        <ul>
+          <li>Picking a pattern while playing switches <strong>at the end of the bar</strong> (the key blinks while waiting).</li>
+          <li><span class="k">SVUOTA</span> (clear) empties the current pattern.</li>
+          <li>Sounds, mixer and effects are shared by all patterns; only the steps change.</li>
+        </ul>
+        <h3>Copying a pattern (e.g. A01 to A02)</h3>
+        <ol>
+          <li>In <span class="k">PATTERN</span> pick A01 and press <span class="k">COPIA</span> (copy).</li>
+          <li>Tap A02 (or a pattern in another bank).</li>
+          <li>Press <span class="k">INCOLLA</span> (paste). If the destination isn't empty the button turns into <span class="k r">CONFERMA?</span> (confirm?): tap it again to overwrite.</li>
+        </ol>
+        <p>While playing, INCOLLA writes to the queued pattern (the blinking one), so you can prepare the next one without stopping the music.</p>
+        <h3>Copying a single track</h3>
+        <p>In <span class="k c">STEP</span> the button becomes <span class="k">COPIA T1</span> (the selected track). Move to another pattern, select the destination track and press <span class="k">INCOLLA</span>: handy for keeping the same kick and changing the rest.</p>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section id="fx">
+      <h2 class="sec"><span class="n">09</span><span class="it">FX globali</span><span class="en">Global FX</span></h2>
+      <div class="it"><p><span class="k">FX</span> trasforma le 8 manopole nei controlli globali; premilo di nuovo per tornare alla traccia.</p></div>
+      <div class="en"><p><span class="k">FX</span> turns the 8 knobs into the global controls; press it again to go back to the track.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th><span class="it">MANOPOLA</span><span class="en">KNOB</span></th><th><span class="it">COSA FA</span><span class="en">WHAT IT DOES</span></th></tr></thead>
+        <tbody>
+          <tr><td>BPM</td><td><span class="it">tempo, da 60 a 180 (dal display e con TAP da 40 a 240)</span><span class="en">tempo, 60 to 180 (40 to 240 from the display and TAP)</span></td></tr>
+          <tr><td>SWING</td><td><span class="it">ritarda gli step pari, fino al 60%</span><span class="en">delays the even steps, up to 60%</span></td></tr>
+          <tr><td>DLY TIME</td><td><span class="it">tempo del delay, da 1/16 a 8/16, sempre a tempo</span><span class="en">delay time, 1/16 to 8/16, always in sync</span></td></tr>
+          <tr><td>DLY FB</td><td><span class="it">ripetizioni del delay</span><span class="en">delay feedback</span></td></tr>
+          <tr><td>REV SIZE</td><td><span class="it">lunghezza del riverbero, da 0,3 a 5 secondi</span><span class="en">reverb length, 0.3 to 5 seconds</span></td></tr>
+          <tr><td>REV MIX</td><td><span class="it">volume del riverbero</span><span class="en">reverb level</span></td></tr>
+          <tr><td>DRIVE</td><td><span class="it">saturazione finale sul mix</span><span class="en">final saturation on the mix</span></td></tr>
+          <tr><td>MASTER</td><td><span class="it">volume generale</span><span class="en">overall volume</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 10 -->
+    <section id="tempo">
+      <h2 class="sec"><span class="n">10</span><span class="it">BPM e TAP</span><span class="en">BPM and TAP</span></h2>
+      <div class="it">
+        <ul>
+          <li><strong>Display</strong>: trascina il numero dei BPM verso l'alto o il basso (4 pixel = 1 BPM).</li>
+          <li><span class="k">TAP</span>: battilo a tempo almeno due volte; PONY84 fa la media degli ultimi tocchi. Dopo 2 secondi di pausa il conteggio riparte.</li>
+        </ul>
+      </div>
+      <div class="en">
+        <ul>
+          <li><strong>Display</strong>: drag the BPM number up or down (4 pixels = 1 BPM).</li>
+          <li><span class="k">TAP</span>: tap it in time at least twice; PONY84 averages the last taps. After a 2-second pause the count starts over.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section id="scatter">
+      <h2 class="sec"><span class="n">11</span>SCATTER</h2>
+      <div class="it"><p>Effetti da performance sul mix: catturano un pezzo di audio e lo manipolano a tempo. <strong>Tieni premuto</strong> un pad per attivarlo e rilascia per tornare al suono normale. Con <span class="k y">LATCH</span> acceso un tocco lo attiva e un altro lo spegne.</p></div>
+      <div class="en"><p>Performance effects on the mix: they grab a slice of audio and twist it in time. <strong>Hold</strong> a pad to engage it and let go to return to the normal sound. With <span class="k y">LATCH</span> on, one tap turns it on and another turns it off.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>PAD</th><th><span class="it">EFFETTO</span><span class="en">EFFECT</span></th></tr></thead>
+        <tbody>
+          <tr><td>REPEAT</td><td><span class="it">ripete in loop un frammento da 1/16</span><span class="en">loops a 1/16 slice</span></td></tr>
+          <tr><td>STUTTER</td><td><span class="it">frammenti sempre più corti, da 1/8 a 1/64: il classico "brrrr"</span><span class="en">ever shorter slices, 1/8 down to 1/64: the classic "brrrr"</span></td></tr>
+          <tr><td>REVERSE</td><td><span class="it">un frammento da 1/8 suonato al contrario</span><span class="en">a 1/8 slice played backwards</span></td></tr>
+          <tr><td>GATE</td><td><span class="it">taglia il suono a 1/32</span><span class="en">chops the sound at 1/32</span></td></tr>
+          <tr><td>TAPESTOP</td><td><span class="it">il nastro rallenta fino a fermarsi in una battuta</span><span class="en">the tape slows down to a stop over one bar</span></td></tr>
+          <tr><td>RANDOM</td><td><span class="it">sceglie un effetto a caso e cambia ogni 4 step</span><span class="en">picks a random effect and changes every 4 steps</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 12 -->
+    <section id="roll">
+      <h2 class="sec"><span class="n">12</span>ROLL</h2>
+      <div class="it">
+        <p>La vista <span class="k">ROLL</span> trasforma lo schermo in pad da suonare dal vivo.</p>
+        <h3>KEYS e KIT</h3>
+        <ul>
+          <li><span class="k c">KEYS</span>: i 16 pad sono note del motore della traccia scelta, dalla più bassa in basso a sinistra. <span class="k">SCALA</span> sceglie la scala (minore, maggiore, dorica, pentatonica minore e maggiore, blues, cromatica), <span class="k">TONICA</span> la nota di partenza, <span class="k">− OTT +</span> l'ottava. I pad con il bordo arancione sono le toniche. Funziona con tutti i motori, anche con cassa e SAMPLE.</li>
+          <li><span class="k c">KIT</span>: 6 pad grandi, uno per traccia, per suonare la batteria con le dita.</li>
+        </ul>
+        <h3>Intensità e ripetizione</h3>
+        <ul>
+          <li>Più in <strong>alto</strong> tocchi il pad, più <strong>forte</strong> suona.</li>
+          <li><strong>RIPETI</strong> <span class="k">1/8</span> <span class="k">1/16</span> <span class="k">1/32</span> <span class="k">1/16T</span>: finché tieni premuto, la nota si ripete a tempo con il sequencer (o con i BPM, a sequencer fermo). <span class="k">OFF</span> suona una sola volta.</li>
+        </ul>
+        <h3>Registrare</h3>
+        <p><span class="k r">● REC</span> fa partire il sequencer e scrive quello che suoni nel pattern in uso, sullo step più vicino, con nota e intensità. In KEYS registra sulla traccia selezionata, in KIT sulla traccia del pad.</p>
+      </div>
+      <div class="en">
+        <p>The <span class="k">ROLL</span> view turns the screen into pads for live playing.</p>
+        <h3>KEYS and KIT</h3>
+        <ul>
+          <li><span class="k c">KEYS</span>: the 16 pads are notes of the selected track's machine, lowest at bottom left. <span class="k">SCALA</span> picks the scale (minor, major, dorian, minor and major pentatonic, blues, chromatic), <span class="k">TONICA</span> the root note, <span class="k">− OTT +</span> the octave. Pads with an orange border are root notes. It works with every machine, kick and SAMPLE included.</li>
+          <li><span class="k c">KIT</span>: 6 big pads, one per track, for finger drumming.</li>
+        </ul>
+        <h3>Intensity and repeat</h3>
+        <ul>
+          <li>The <strong>higher</strong> you hit the pad, the <strong>louder</strong> it plays.</li>
+          <li><strong>RIPETI</strong> (repeat) <span class="k">1/8</span> <span class="k">1/16</span> <span class="k">1/32</span> <span class="k">1/16T</span>: while you hold the pad, the note repeats in time with the sequencer (or with the BPM when stopped). <span class="k">OFF</span> plays once.</li>
+        </ul>
+        <h3>Recording</h3>
+        <p><span class="k r">● REC</span> starts the sequencer and writes what you play into the current pattern, on the nearest step, with note and intensity. In KEYS it records on the selected track, in KIT on each pad's track.</p>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section id="mixer">
+      <h2 class="sec"><span class="n">13</span><span class="it">Mixer: canali</span><span class="en">Mixer: channels</span></h2>
+      <div class="it">
+        <p>Nella pagina <span class="k c">CANALI</span> ogni traccia ha la sua striscia:</p>
+        <ul>
+          <li><strong>uscita</strong>: il tasto sotto il nome sceglie dove va il canale, <span class="k">MAIN</span> → <span class="k y">BUS A</span> → <span class="k y">BUS B</span> → <span class="k y">BUS C</span>;</li>
+          <li><strong>PAN</strong> e <strong>DLY</strong> (mandata al delay, la stessa della manopola DELAY);</li>
+          <li><span class="k r">M</span> mute e <span class="k y">S</span> solo;</li>
+          <li><strong>fader</strong> del volume con VU meter.</li>
+        </ul>
+        <p>In fondo ci sono il fader <strong>MASTER</strong> e il <strong>DRIVE</strong> finale.</p>
+      </div>
+      <div class="en">
+        <p>On the <span class="k c">CANALI</span> (channels) page each track has its strip:</p>
+        <ul>
+          <li><strong>output</strong>: the button under the name chooses where the channel goes, <span class="k">MAIN</span> → <span class="k y">BUS A</span> → <span class="k y">BUS B</span> → <span class="k y">BUS C</span>;</li>
+          <li><strong>PAN</strong> and <strong>DLY</strong> (delay send, the same as the DELAY knob);</li>
+          <li><span class="k r">M</span> mute and <span class="k y">S</span> solo;</li>
+          <li>volume <strong>fader</strong> with VU meter.</li>
+        </ul>
+        <p>At the bottom are the <strong>MASTER</strong> fader and the final <strong>DRIVE</strong>.</p>
+      </div>
+    </section>
+
+    <!-- 14 -->
+    <section id="bus">
+      <h2 class="sec"><span class="n">14</span><span class="it">Bus ed effetti</span><span class="en">Buses and effects</span></h2>
+      <div class="flow" aria-label="Percorso del segnale / Signal path">
+        <span class="b">T1–T6</span><span class="arr">→</span><span class="b hl">MAIN · BUS A · B · C</span><span class="arr">→</span><span class="b">SCATTER</span><span class="arr">→</span><span class="b hl">MASTER FX</span><span class="arr">→</span><span class="b">DRIVE</span><span class="arr">→</span><span class="b">MASTER</span>
+      </div>
+      <div class="it">
+        <p>Nella pagina <span class="k c">BUS · FX</span> trovi <strong>BUS A</strong>, <strong>BUS B</strong>, <strong>BUS C</strong> e <strong>MASTER</strong>. Ognuno ha <strong>3 slot</strong> in serie: scegli l'effetto dal menu e regolalo con le sue 3 manopole. I bus hanno anche volume e mute, e mostrano quali tracce ricevono. Il MASTER lavora su tutto il mix, dopo lo scatter. Delay e riverbero globali restano mandate separate, condivise da tutte le tracce.</p>
+      </div>
+      <div class="en">
+        <p>On the <span class="k c">BUS · FX</span> page you find <strong>BUS A</strong>, <strong>BUS B</strong>, <strong>BUS C</strong> and <strong>MASTER</strong>. Each has <strong>3 slots</strong> in series: pick an effect from the menu and set it with its 3 knobs. Buses also have volume and mute, and show which tracks they receive. MASTER works on the whole mix, after the scatter. The global delay and reverb remain separate sends shared by all tracks.</p>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th><span class="it">EFFETTO</span><span class="en">EFFECT</span></th><th><span class="it">MANOPOLE</span><span class="en">KNOBS</span></th><th><span class="it">NOTE</span><span class="en">NOTES</span></th></tr></thead>
+        <tbody>
+          <tr><td>FILTER</td><td>FREQ · RESO · LFO</td><td><span class="it">filtro DJ: sotto metà passa-basso, sopra passa-alto, al centro aperto. LFO a 2 battute.</span><span class="en">DJ filter: below centre low-pass, above high-pass, centre open. 2-bar LFO.</span></td></tr>
+          <tr><td>SIDECHAIN</td><td>DEPTH · RELEASE · SOURCE</td><td><span class="it">il bus si abbassa a ogni colpo della traccia SOURCE (T1–T6) e risale: il "pompaggio" della techno.</span><span class="en">the bus ducks on every hit of the SOURCE track (T1–T6) and swells back: techno pumping.</span></td></tr>
+          <tr><td>LO-FI</td><td>BITS · RATE · MIX</td><td><span class="it">meno bit e campionamento ridotto, per il suono sporco anni '90.</span><span class="en">fewer bits and lower sample rate for that gritty 90s sound.</span></td></tr>
+          <tr><td>VINYL</td><td>TONE · CRACKLE · MIX</td><td><span class="it">banda stretta, fruscio e crepitii.</span><span class="en">narrow band, hiss and crackle.</span></td></tr>
+          <tr><td>DRIVE</td><td>DRIVE · TONE · MIX</td><td><span class="it">saturazione calda o distorsione.</span><span class="en">warm saturation or distortion.</span></td></tr>
+          <tr><td>CHORUS</td><td>RATE · DEPTH · MIX</td><td><span class="it">movimento e allargamento stereo.</span><span class="en">movement and stereo width.</span></td></tr>
+          <tr><td>TAPE ECHO</td><td>TIME · FEEDBK · MIX</td><td><span class="it">eco a tempo (1–8/16) che si scurisce e si sporca a ogni ripetizione.</span><span class="en">tempo-synced echo (1–8/16) that darkens and degrades on each repeat.</span></td></tr>
+          <tr><td>ISOLATOR</td><td>LOW · MID · HIGH</td><td><span class="it">EQ a 3 bande: al centro piatto, tutto a sinistra la banda sparisce (KILL).</span><span class="en">3-band EQ: centre is flat, fully left kills the band.</span></td></tr>
+          <tr><td>REVERB</td><td>SIZE · TONE · MIX</td><td><span class="it">riverbero dedicato al bus, da 0,4 a 5 secondi.</span><span class="en">reverb just for this bus, 0.4 to 5 seconds.</span></td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><span class="lbl it">IDEA</span><span class="lbl en">TRY THIS</span>
+        <p class="it">Manda il basso al BUS B con SIDECHAIN (SOURCE = T1, la cassa) e le percussioni al BUS A con FILTER: girando FREQ fai sparire e rientrare tutte le percussioni insieme.</p>
+        <p class="en">Send the bass to BUS B with SIDECHAIN (SOURCE = T1, the kick) and the percussion to BUS A with FILTER: turning FREQ makes all the percussion drop out and come back together.</p>
+      </div>
+    </section>
+
+    <!-- 15 -->
+    <section id="project">
+      <h2 class="sec"><span class="n">15</span><span class="it">Salvare e condividere</span><span class="en">Saving and sharing</span></h2>
+      <div class="it">
+        <p>Tocca il logo <span class="k c">PONY84 ▾</span> per aprire <strong>PROGETTO &amp; MIDI</strong>.</p>
+        <ul>
+          <li><strong>Salvataggio automatico</strong>: pattern, suoni, mixer, effetti, impostazioni di ROLL e WAV vengono salvati nel browser mezzo secondo dopo ogni modifica.</li>
+          <li><span class="k">ESPORTA FILE</span>: scarica un file <code>.pony84</code> (cartella Download) con tutto il progetto, WAV compresi.</li>
+          <li><span class="k">IMPORTA FILE</span>: apre un file <code>.pony84</code>, anche creato su un altro dispositivo.</li>
+          <li><span class="k">NUOVO VUOTO</span>: tiene suoni ed effetti del demo, con tutti i pattern vuoti. <span class="k">NUOVO DA DEMO</span>: ricarica il demo. Entrambi chiedono un secondo tocco per conferma.</li>
+        </ul>
+        <div class="note warn"><span class="lbl">ATTENZIONE</span><p>Il salvataggio automatico vale per un browser su un dispositivo. In una scheda in incognito o cancellando i dati del sito il progetto si perde: esporta spesso i progetti a cui tieni.</p></div>
+      </div>
+      <div class="en">
+        <p>Tap the <span class="k c">PONY84 ▾</span> logo to open <strong>PROJECT &amp; MIDI</strong>.</p>
+        <ul>
+          <li><strong>Autosave</strong>: patterns, sounds, mixer, effects, ROLL settings and WAVs are saved in the browser half a second after every change.</li>
+          <li><span class="k">ESPORTA FILE</span> (export): downloads a <code>.pony84</code> file (Downloads folder) with the whole project, WAVs included.</li>
+          <li><span class="k">IMPORTA FILE</span> (import): opens a <code>.pony84</code> file, even one made on another device.</li>
+          <li><span class="k">NUOVO VUOTO</span> (new empty): keeps the demo sounds and effects with all patterns empty. <span class="k">NUOVO DA DEMO</span> (new from demo): reloads the demo. Both ask for a second tap to confirm.</li>
+        </ul>
+        <div class="note warn"><span class="lbl">WATCH OUT</span><p>Autosave works for one browser on one device. In an incognito tab, or if you clear the site's data, the project is lost: export the projects you care about often.</p></div>
+      </div>
+    </section>
+
+    <!-- 16 -->
+    <section id="midi">
+      <h2 class="sec"><span class="n">16</span><span class="it">Controller MIDI</span><span class="en">MIDI controllers</span></h2>
+      <div class="it">
+        <ol>
+          <li>Collega il controller via USB. Sul telefono Android serve un <strong>adattatore USB-C OTG</strong>.</li>
+          <li>Apri il menu <span class="k c">PONY84 ▾</span> e tocca <span class="k">ATTIVA MIDI</span>; consenti l'accesso quando Chrome lo chiede.</li>
+          <li>Sotto il tasto compare il nome del controller. Se lo colleghi dopo, tocca <span class="k">AGGIORNA MIDI</span>.</li>
+        </ol>
+        <p>Funziona subito con un <strong>Akai MPK Mini</strong> e con i controller che usano le stesse impostazioni di fabbrica:</p>
+      </div>
+      <div class="en">
+        <ol>
+          <li>Plug the controller in over USB. On an Android phone you need a <strong>USB-C OTG adapter</strong>.</li>
+          <li>Open the <span class="k c">PONY84 ▾</span> menu and tap <span class="k">ATTIVA MIDI</span> (enable MIDI); allow access when Chrome asks.</li>
+          <li>The controller's name appears below the button. If you plug it in later, tap <span class="k">AGGIORNA MIDI</span> (refresh MIDI).</li>
+        </ol>
+        <p>It works out of the box with an <strong>Akai MPK Mini</strong> and with controllers that use the same factory settings:</p>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>MIDI</th><th>PONY84</th></tr></thead>
+        <tbody>
+          <tr><td><span class="it">Note sul canale 10 (pad)</span><span class="en">Notes on channel 10 (pads)</span></td><td><span class="it">36–41 suonano le tracce 1–6</span><span class="en">36–41 play tracks 1–6</span></td></tr>
+          <tr><td><span class="it">Note sugli altri canali (tastiera)</span><span class="en">Notes on other channels (keys)</span></td><td><span class="it">suonano la traccia selezionata; C4 = intonazione della traccia</span><span class="en">play the selected track; C4 = the track's pitch</span></td></tr>
+          <tr><td>CC 70–77</td><td><span class="it">le 8 manopole della pagina aperta (traccia o FX)</span><span class="en">the 8 knobs of the open page (track or FX)</span></td></tr>
+          <tr><td>Program change 1–128</td><td><span class="it">pattern da A01 a H16</span><span class="en">patterns A01 to H16</span></td></tr>
+          <tr><td>Start · Stop</td><td>▶ · ■</td></tr>
+        </tbody>
+      </table></div>
+      <div class="it">
+        <p>Le note dal controller rispettano RIPETI di ROLL e vengono registrate da REC.</p>
+        <h3>MIDI LEARN</h3>
+        <ol>
+          <li>Nel menu tocca <span class="k">MIDI LEARN</span>: in alto compare una barra gialla e i controlli assegnabili hanno un bordo tratteggiato.</li>
+          <li>Tocca una manopola o un fader sullo schermo (anche quelle degli effetti dei bus).</li>
+          <li>Muovi una manopola o un fader del controller: è assegnato. Passa al successivo.</li>
+          <li>Premi <span class="k y">FINE</span>. Le assegnazioni restano salvate; <span class="k">AZZERA MAPPATURE</span> le cancella.</li>
+        </ol>
+      </div>
+      <div class="en">
+        <p>Notes from the controller follow ROLL's repeat setting and are recorded by REC.</p>
+        <h3>MIDI LEARN</h3>
+        <ol>
+          <li>In the menu tap <span class="k">MIDI LEARN</span>: a yellow bar appears at the top and assignable controls get a dashed outline.</li>
+          <li>Tap a knob or fader on screen (bus effect knobs too).</li>
+          <li>Move a knob or fader on the controller: it's assigned. Move on to the next one.</li>
+          <li>Press <span class="k y">FINE</span> (done). Assignments stay saved; <span class="k">AZZERA MAPPATURE</span> (reset mappings) clears them.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 17 -->
+    <section id="keys">
+      <h2 class="sec"><span class="n">17</span><span class="it">Scorciatoie da tastiera</span><span class="en">Keyboard shortcuts</span></h2>
+      <div class="tbl"><table>
+        <thead><tr><th><span class="it">TASTO</span><span class="en">KEY</span></th><th><span class="it">AZIONE</span><span class="en">ACTION</span></th></tr></thead>
+        <tbody>
+          <tr><td><span class="it">Spazio</span><span class="en">Space</span></td><td><span class="it">play / pausa</span><span class="en">play / pause</span></td></tr>
+          <tr><td>↑ ↓ ← →</td><td><span class="it">regolano manopola, fader o BPM selezionati (con Maiusc a passi di 10)</span><span class="en">adjust the focused knob, fader or BPM (with Shift in steps of 10)</span></td></tr>
+          <tr><td>Tab · Invio</td><td><span class="it">si spostano tra i tasti e li premono; Invio su un pad di ROLL lo suona</span><span class="en">move between buttons and press them; Enter on a ROLL pad plays it</span></td></tr>
+          <tr><td>Esc</td><td><span class="it">chiude il menu o termina il MIDI LEARN</span><span class="en">closes the menu or ends MIDI LEARN</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 18 -->
+    <section id="demo">
+      <h2 class="sec"><span class="n">18</span><span class="it">Il demo</span><span class="en">The demo</span></h2>
+      <div class="it">
+        <p>Alla prima apertura il pattern <strong>A01</strong> contiene un groove <strong>minimal techno</strong> a 126 BPM in Do minore, da smontare per capire come funziona tutto:</p>
+        <ul>
+          <li><strong>T1 KICK</strong>: cassa dritta, con un colpo in più a fine giro (4:4);</li>
+          <li><strong>T2 PERC</strong>: rimshot sincopato con probabilità;</li>
+          <li><strong>T3 METAL</strong>: hi-hat in levare; <strong>T4 METAL</strong>: shaker leggero;</li>
+          <li><strong>T5 TONE</strong>: basso dub con note registrate e condizioni, in sidechain sulla cassa (BUS B);</li>
+          <li><strong>T6 SAMPLE</strong>: accordo Cm7 con delay, riverbero e un filtro che respira (BUS C).</li>
+        </ul>
+      </div>
+      <div class="en">
+        <p>On first launch pattern <strong>A01</strong> holds a 126 BPM <strong>minimal techno</strong> groove in C minor, ready to take apart to see how everything works:</p>
+        <ul>
+          <li><strong>T1 KICK</strong>: four-on-the-floor, with an extra hit at the end of the loop (4:4);</li>
+          <li><strong>T2 PERC</strong>: syncopated rimshot with probability;</li>
+          <li><strong>T3 METAL</strong>: off-beat hi-hat; <strong>T4 METAL</strong>: light shaker;</li>
+          <li><strong>T5 TONE</strong>: dub bass with recorded notes and conditions, sidechained to the kick (BUS B);</li>
+          <li><strong>T6 SAMPLE</strong>: Cm7 chord with delay, reverb and a breathing filter (BUS C).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 19 -->
+    <section id="trouble">
+      <h2 class="sec"><span class="n">19</span><span class="it">Problemi e soluzioni</span><span class="en">Troubleshooting</span></h2>
+      <div class="tbl"><table>
+        <thead><tr><th><span class="it">PROBLEMA</span><span class="en">PROBLEM</span></th><th><span class="it">SOLUZIONE</span><span class="en">FIX</span></th></tr></thead>
+        <tbody>
+          <tr><td><span class="it">Non si sente niente</span><span class="en">No sound</span></td><td><span class="it">Tocca ACCENDI, alza il volume multimediale del telefono, controlla che il MASTER non sia a zero e che le tracce non siano in mute o in solo.</span><span class="en">Tap ACCENDI, turn up the phone's media volume, check that MASTER isn't at zero and that tracks aren't muted or soloed.</span></td></tr>
+          <tr><td><span class="it">Click o suono a scatti</span><span class="en">Clicks or stuttering</span></td><td><span class="it">Chiudi le altre app e schede, usa Chrome aggiornato, togli qualche effetto REVERB dai bus. Le cuffie Bluetooth aggiungono ritardo: per suonare dal vivo meglio quelle con il filo.</span><span class="en">Close other apps and tabs, use an up-to-date Chrome, remove some REVERB effects from the buses. Bluetooth headphones add delay: for live playing, wired ones are better.</span></td></tr>
+          <tr><td><span class="it">Il WAV non si carica</span><span class="en">WAV won't load</span></td><td><span class="it">Il display mostra FILE NON LETTO: esporta il file come WAV a 16 o 24 bit e riprova.</span><span class="en">The display shows FILE NON LETTO (file not read): export it as a 16- or 24-bit WAV and try again.</span></td></tr>
+          <tr><td><span class="it">Il progetto è sparito</span><span class="en">My project is gone</span></td><td><span class="it">Succede in incognito, cancellando i dati del sito o aprendo PONY84 da un altro browser o dispositivo. Reimporta l'ultimo file .pony84 esportato.</span><span class="en">It happens in incognito, after clearing site data, or when opening PONY84 in another browser or device. Re-import your last exported .pony84 file.</span></td></tr>
+          <tr><td><span class="it">Il controller MIDI non appare</span><span class="en">MIDI controller not found</span></td><td><span class="it">Usa Chrome, consenti il MIDI quando richiesto, controlla l'adattatore OTG e tocca AGGIORNA MIDI. Se pad o manopole inviano note o CC diversi, assegnali con MIDI LEARN.</span><span class="en">Use Chrome, allow MIDI when asked, check the OTG adapter and tap AGGIORNA MIDI. If pads or knobs send different notes or CCs, assign them with MIDI LEARN.</span></td></tr>
+          <tr><td><span class="it">Vedo la versione vecchia</span><span class="en">I still see the old version</span></td><td><span class="it">Chiudi la scheda e riaprila, oppure ricarica la pagina.</span><span class="en">Close the tab and reopen it, or reload the page.</span></td></tr>
+          <tr><td><span class="it">Telefono in orizzontale</span><span class="en">Phone in landscape</span></td><td><span class="it">È troppo basso per tre colonne: PONY84 resta in vista telefono, rimpicciolita. Meglio usarlo in verticale.</span><span class="en">It's too short for three columns: PONY84 stays in phone view, scaled down. Portrait works best.</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <footer>
+      <p class="it">PONY84 è un progetto personale, gratuito e open source. Codice e aggiornamenti su <a href="https://github.com/puck1e/pony84">GitHub</a>. <a href="../">Apri l'app →</a></p>
+      <p class="en">PONY84 is a free, open-source personal project. Code and updates on <a href="https://github.com/puck1e/pony84">GitHub</a>. <a href="../">Open the app →</a></p>
+    </footer>
+  </main>
+</div>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const btns = document.querySelectorAll('[data-lang]');
+  function setLang(l) {
+    root.lang = l;
+    btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === l)));
+    document.title = l === 'it' ? 'PONY84 · Guida' : 'PONY84 · Guide';
+    try { localStorage.setItem('pony84-guide-lang', l); } catch (e) { /* ok */ }
+  }
+  let start = 'it';
+  try { start = localStorage.getItem('pony84-guide-lang') || ((navigator.language || 'it').toLowerCase().startsWith('it') ? 'it' : 'en'); } catch (e) { /* ok */ }
+  setLang(start);
+  btns.forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
+
+  // evidenzia nell'indice la sezione che si sta leggendo
+  const links = [...document.querySelectorAll('.toc a')];
+  const byId = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) { links.forEach((a) => a.classList.remove('here')); const a = byId.get(en.target.id); if (a) a.classList.add('here'); }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('main section[id]').forEach((s) => io.observe(s));
+  }
+})();
+</script>
+</body>
+</html>
