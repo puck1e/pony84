@@ -27,43 +27,53 @@ body { font-family: var(--display); }
 button { font-family: inherit; color: inherit; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 button:focus-visible, [role="slider"]:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
 
+/* Le misure si adattano all'altezza dello schermo (dvh), così su un telefono sta tutto senza scorrere. */
 .app {
+  --gap: clamp(5px, 1dvh, 10px);
+  --sec: clamp(4px, 0.7dvh, 8px);
   max-width: 440px; margin: 0 auto; min-height: 100%;
-  padding-block: 14px 18px;
+  padding-block: clamp(6px, 1.2dvh, 14px) clamp(8px, 1.4dvh, 18px);
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  display: flex; flex-direction: column; gap: 10px;
+  display: flex; flex-direction: column; gap: var(--gap);
   touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
 }
 .label { font-size: 11px; font-weight: 600; letter-spacing: 2.4px; color: var(--muted); }
-.row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 22px; }
+.row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 20px; }
+.sec { display: flex; flex-direction: column; gap: var(--sec); }
 
 /* header */
 header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.logo { font-size: 36px; line-height: .9; font-weight: 800; font-style: italic; letter-spacing: -.5px; }
+.logo { font-size: clamp(28px, 4.2dvh, 36px); line-height: .9; font-weight: 800; font-style: italic; letter-spacing: -.5px; }
 .logo b { color: var(--orange); font-weight: 800; }
 .tabs { display: flex; gap: 4px; margin-top: 5px; }
 .tab { height: 24px; padding: 0 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--muted); border: 1px solid var(--line); }
 .tab[aria-selected="true"] { background: var(--cream); color: var(--ink); border-color: var(--cream); }
 .transport { display: flex; gap: 8px; }
 .hw { background: var(--key); border-bottom: 3px solid var(--edge); border-radius: 8px; color: var(--cream); font-weight: 700; }
-.tbtn { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+.tbtn { width: clamp(42px, 5.4dvh, 48px); height: clamp(42px, 5.4dvh, 48px); display: flex; align-items: center; justify-content: center; }
 .tbtn.on { background: var(--orange); }
 .tbtn svg { fill: var(--cream); }
 .tbtn.on svg { fill: var(--ink); }
+.tap { font-size: 14px; letter-spacing: 1px; touch-action: none; }
+.tap.on { background: var(--cream); color: var(--ink); }
 
 /* lcd */
-.lcd { background: var(--lcd-bg); border: 2px solid var(--line); border-radius: 10px; padding: 9px 14px; font-family: var(--mono); color: var(--lcd); display: flex; flex-direction: column; gap: 5px; font-variant-numeric: tabular-nums; }
-.lcd .l1 { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; letter-spacing: 1px; }
-.lcd .bpm { font-size: 24px; font-weight: 500; }
+.lcd { background: var(--lcd-bg); border: 2px solid var(--line); border-radius: 10px; padding: clamp(5px, 0.9dvh, 9px) 14px; font-family: var(--mono); color: var(--lcd); display: flex; flex-direction: column; gap: clamp(2px, 0.5dvh, 5px); font-variant-numeric: tabular-nums; }
+.lcd .l1 { display: flex; justify-content: space-between; align-items: center; font-size: 13px; letter-spacing: 1px; }
+.lcd .bpm { display: flex; align-items: baseline; gap: 6px; padding: 2px 6px; margin: -2px -6px; border-radius: 6px; touch-action: none; cursor: ns-resize; }
+.lcd .bpm small { font-size: 11px; opacity: .7; }
+.lcd .bpm b { font-size: clamp(20px, 2.8dvh, 24px); font-weight: 500; }
+.lcd .bpm:focus-visible { outline: 2px solid var(--lcd); outline-offset: 2px; }
+.lcd .bpm.drag { background: var(--key); }
 .lcd .l2 { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; letter-spacing: 1px; opacity: .88; white-space: nowrap; overflow: hidden; }
 .lcd .l2 span { overflow: hidden; text-overflow: ellipsis; }
 
-.view { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.view { display: flex; flex-direction: column; gap: var(--gap); flex: 1; }
 
 /* tracks */
 .tracks { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
-.trk { height: 46px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 13px; font-weight: 700; letter-spacing: .3px; }
+.trk { height: clamp(38px, 5dvh, 46px); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 13px; font-weight: 700; letter-spacing: .3px; }
 .trk .top { display: flex; align-items: center; gap: 4px; font-family: var(--mono); font-size: 10px; font-weight: 400; }
 .trk.sel { background: var(--cream); color: var(--ink); }
 .trk.muted { opacity: .4; }
@@ -72,17 +82,17 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 
 /* machine */
 .machines { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
-.mach { height: 34px; border-radius: 5px; font-size: 12px; font-weight: 700; letter-spacing: .5px; color: var(--cream); border: 1px solid var(--line); }
+.mach { height: clamp(28px, 3.8dvh, 34px); border-radius: 5px; font-size: 12px; font-weight: 700; letter-spacing: .5px; color: var(--cream); border: 1px solid var(--line); }
 .mach[aria-checked="true"] { background: var(--orange); border-color: var(--orange); color: var(--ink); }
 .ghost { height: 26px; padding: 0 10px; border-radius: 5px; border: 1px solid var(--orange); color: var(--orange); font-size: 11px; font-weight: 700; letter-spacing: 1.2px; }
-.knobs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 8px; column-gap: 8px; margin-top: 2px; }
+.knobs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: clamp(4px, 0.8dvh, 8px); column-gap: 8px; margin-top: 2px; }
 
-.knob { display: flex; flex-direction: column; align-items: center; gap: 3px; touch-action: none; cursor: ns-resize; outline: none; }
-.knob .cap { position: relative; width: 42px; height: 42px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, var(--cap-hi) 0%, var(--cap-mid) 60%, var(--cap-lo) 100%); box-shadow: 0 3px 0 var(--edge), 0 0 0 4px var(--ring); }
+.knob { display: flex; flex-direction: column; align-items: center; gap: 2px; touch-action: none; cursor: ns-resize; outline: none; }
+.knob .cap { position: relative; width: clamp(32px, 4.6dvh, 42px); height: clamp(32px, 4.6dvh, 42px); border-radius: 50%; background: radial-gradient(circle at 40% 35%, var(--cap-hi) 0%, var(--cap-mid) 60%, var(--cap-lo) 100%); box-shadow: 0 3px 0 var(--edge), 0 0 0 4px var(--ring); }
 .knob .rot { position: absolute; inset: 0; }
 .knob .rot i { position: absolute; left: calc(50% - 2px); top: 4px; width: 4px; height: 31%; border-radius: 2px; background: var(--red); }
-.knob .lbl { font-size: 12px; font-weight: 600; letter-spacing: 1.2px; margin-top: 3px; white-space: nowrap; }
-.knob .val { font-family: var(--mono); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.knob .lbl { font-size: 12px; line-height: 1.1; font-weight: 600; letter-spacing: 1.2px; margin-top: 3px; white-space: nowrap; }
+.knob .val { font-family: var(--mono); font-size: 11px; line-height: 1.1; color: var(--muted); font-variant-numeric: tabular-nums; }
 .knob.locked .cap { box-shadow: 0 3px 0 var(--edge), 0 0 0 4px var(--orange); }
 .knob.locked .val { color: var(--orange); }
 .knob:focus-visible .cap { outline: 2px solid var(--orange); outline-offset: 6px; }
@@ -94,18 +104,18 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .latch { height: 24px; padding: 0 10px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: var(--muted); border: 1px solid var(--line); }
 .latch[aria-pressed="true"] { color: var(--ink); background: var(--yellow); border-color: var(--yellow); }
 .pads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.pad { height: 50px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; background: var(--key); border-bottom: 4px solid var(--edge); touch-action: none; }
+.pad { height: clamp(38px, 5.2dvh, 50px); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; background: var(--key); border-bottom: 4px solid var(--edge); touch-action: none; }
 .pad b { font-size: 16px; letter-spacing: 1px; }
 .pad small { font-family: var(--mono); font-size: 10px; opacity: .8; }
 .pad.on { background: var(--orange); color: var(--ink); border-bottom-width: 2px; transform: translateY(2px); box-shadow: 0 0 14px var(--orange); }
 
 /* steps */
-.steps { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); row-gap: 8px; column-gap: 6px; }
-.cell { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; }
+.steps { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); row-gap: clamp(4px, 0.8dvh, 8px); column-gap: 6px; }
+.cell { display: flex; flex-direction: column; align-items: center; gap: clamp(3px, 0.5dvh, 5px); min-width: 0; }
 .led { width: 8px; height: 8px; border-radius: 50%; background: var(--led-off); }
 .led.on { background: var(--led); box-shadow: 0 0 7px var(--led); }
 .led.head { outline: 2px solid var(--cream); outline-offset: 2px; }
-.key { width: 100%; height: 46px; border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border-bottom: 5px solid var(--shade); color: var(--ink); }
+.key { width: 100%; height: clamp(34px, 4.8dvh, 46px); border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border-bottom: 5px solid var(--shade); color: var(--ink); }
 .key .n { font-size: 12px; font-weight: 700; }
 .key .s { font-family: var(--mono); font-size: 9px; line-height: 1; min-height: 9px; }
 .g0 { background: var(--red); color: var(--white); }
@@ -117,7 +127,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .key.pending { animation: blink .5s steps(2) infinite; }
 @keyframes blink { 50% { filter: brightness(.6); } }
 .fn { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: auto; }
-.fbtn { height: 46px; border-radius: 6px; font-size: 12px; letter-spacing: 1px; }
+.fbtn { height: clamp(38px, 5dvh, 46px); border-radius: 6px; font-size: 12px; letter-spacing: 1px; }
 .fbtn[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
 
 /* mixer */
@@ -129,7 +139,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .ms button { height: 30px; border-radius: 4px; background: var(--key); font-size: 13px; font-weight: 700; }
 .ms .mute[aria-pressed="true"] { background: var(--red); color: var(--white); }
 .ms .solo[aria-pressed="true"] { background: var(--yellow); color: var(--ink); }
-.fwrap { display: flex; gap: 6px; height: 200px; }
+.fwrap { display: flex; gap: 6px; height: clamp(120px, 24dvh, 200px); }
 .meter { display: flex; flex-direction: column-reverse; gap: 2px; width: 6px; }
 .meter span { flex: 1; border-radius: 1px; background: var(--key); }
 .meter span.on.c0 { background: var(--cream); box-shadow: 0 0 4px var(--cream); }
@@ -171,20 +181,21 @@ header { display: flex; align-items: center; justify-content: space-between; gap
       </div>
     </div>
     <div class="transport">
+      <button class="hw tbtn tap" id="tapBtn" data-tap aria-label="Tap tempo: tocca a tempo per impostare i BPM">TAP</button>
       <button class="hw tbtn" id="stopBtn" data-act="stop" aria-label="Stop"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect width="14" height="14" rx="1.5"></rect></svg></button>
       <button class="hw tbtn" id="playBtn" data-act="play" aria-label="Play"><svg width="15" height="16" viewBox="0 0 15 16" aria-hidden="true"><path d="M1 1.2v13.6c0 .8.9 1.3 1.5.8l11-6.8c.6-.4.6-1.2 0-1.6l-11-6.8C1.9-.1 1 .4 1 1.2z"></path></svg></button>
     </div>
   </header>
 
   <section class="lcd" aria-live="off" aria-label="Display">
-    <div class="l1"><span id="lcd1"></span><span class="bpm" id="lcdBpm">120.0</span></div>
+    <div class="l1"><span id="lcd1"></span><span class="bpm" id="bpmCtl" data-bpm role="slider" tabindex="0" aria-label="BPM: trascina su o giù" aria-valuemin="40" aria-valuemax="240"><small>BPM</small><b id="lcdBpm">120.0</b></span></div>
     <div class="l2"><span id="lcd2"></span><span id="lcd3"></span></div>
   </section>
 
   <div class="view" id="seqView">
     <nav class="tracks" id="tracks" aria-label="Tracce"></nav>
 
-    <section style="display:flex;flex-direction:column;gap:8px" aria-label="Machine">
+    <section class="sec" aria-label="Machine">
       <div class="row-between">
         <span class="label" id="machLabel">MACHINE</span>
         <button class="ghost" id="loadBtn" data-act="load" hidden>CARICA WAV…</button>
@@ -194,7 +205,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
       <div class="knobs" id="knobs"></div>
     </section>
 
-    <section style="display:flex;flex-direction:column;gap:8px" aria-label="Scatter">
+    <section class="sec" aria-label="Scatter">
       <div class="row-between">
         <span class="label">SCATTER · TIENI PREMUTO</span>
         <button class="latch" id="latchBtn" data-act="latch" aria-pressed="false">LATCH</button>
@@ -202,7 +213,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
       <div class="pads" id="pads"></div>
     </section>
 
-    <section style="display:flex;flex-direction:column;gap:8px" aria-label="Sequencer">
+    <section class="sec" aria-label="Sequencer">
       <div class="row-between">
         <span class="label" id="stepLabel">STEP</span>
         <span style="display:flex;gap:8px;align-items:center">
@@ -271,7 +282,7 @@ const PADS = [['REPEAT', '1/16'], ['ROLL', '1/8→1/64'], ['REVERSE', '1/8'], ['
 const DEMO_SAMPLE = 'STAB_01.WAV';
 const STORE = 'pony84-v1';
 const FX_DEFS = [
-  { k: 'bpm', label: 'BPM', fmt: (v) => String(bpmOf(v)) },
+  { k: 'tempo', label: 'BPM', fmt: () => P.fx.tempo.toFixed(1) },
   { k: 'swing', label: 'SWING', fmt: (v) => Math.round(v / 127 * 60) + '%' },
   { k: 'dlyT', label: 'DLY TIME', fmt: (v) => dlySteps(v) + '/16' },
   { k: 'dlyFb', label: 'DLY FB', fmt: (v) => Math.round(v / 127 * 90) + '%' },
@@ -291,7 +302,7 @@ function emptyPattern() {
 }
 function demoProject() {
   const p = {
-    fx: { bpm: 63, swing: 32, dlyT: 36, dlyFb: 63, revSize: 50, revMix: 45, drive: 20, master: 110 },
+    fx: { tempo: 120, swing: 32, dlyT: 36, dlyFb: 63, revSize: 50, revMix: 45, drive: 20, master: 110 },
     tracks: MACHINES.map((m, i) => ({
       machine: m, params: DEF[m].slice(), level: [105, 88, 50, 55, 75, 60][i],
       pan: [64, 58, 78, 46, 64, 72][i], mute: false, solo: false, sample: DEMO_SAMPLE
@@ -317,6 +328,8 @@ function loadProject() {
       const p = JSON.parse(raw);
       if (p && p.fx && Array.isArray(p.tracks) && p.tracks.length === 6 && Array.isArray(p.patterns) && p.patterns.length === 16) {
         p.tracks.forEach((t) => { t.sample = DEMO_SAMPLE; });   // i WAV non restano salvati: si riparte dal demo
+        if (typeof p.fx.tempo !== 'number') p.fx.tempo = bpmOf(p.fx.bpm ?? 63);   // progetti salvati prima del BPM libero
+        delete p.fx.bpm;
         return p;
       }
     }
@@ -380,7 +393,7 @@ const audible = (i) => {
   const anySolo = P.tracks.some((t) => t.solo);
   return !P.tracks[i].mute && (!anySolo || P.tracks[i].solo);
 };
-const stepDur = () => 60 / bpmOf(P.fx.bpm) / 4;
+const stepDur = () => 60 / P.fx.tempo / 4;
 
 function initAudio() {
   if (ctx) return;
@@ -668,6 +681,10 @@ function resolveKnob(id) {
     const i = Number(id.slice(1));
     if (UI.fx) {
       const d = FX_DEFS[i];
+      if (d.k === 'tempo') {
+        // la manopola copre 60–180 BPM; display e TAP arrivano a 40–240
+        return { label: d.label, get: () => clamp((P.fx.tempo - 60) / 120 * 127), set: (v) => setTempo(Math.round(60 + v / 127 * 120)), fmt: d.fmt };
+      }
       return { label: d.label, get: () => P.fx[d.k], set: (v) => { P.fx[d.k] = v; applyFx(); }, fmt: d.fmt };
     }
     const tr = P.tracks[UI.track];
@@ -753,7 +770,8 @@ function drawLcd() {
   const pend = UI.pendingPat !== null ? ' → A' + pad2(UI.pendingPat + 1) : '';
   const where = UI.view === 'mix' ? 'MIXER' : UI.fx ? 'FX' : MODE_NAME[UI.mode];
   $('lcd1').textContent = 'PTN A' + pad2(P.cur + 1) + pend + ' · ' + where;
-  $('lcdBpm').textContent = bpmOf(P.fx.bpm).toFixed(1);
+  $('lcdBpm').textContent = P.fx.tempo.toFixed(1);
+  $('bpmCtl').setAttribute('aria-valuenow', String(P.fx.tempo));
   let left, right;
   if (UI.view === 'mix') {
     left = 'MUTE ' + P.tracks.map((t, i) => (t.mute ? i + 1 : '·')).join('') + ' SOLO ' + P.tracks.map((t, i) => (t.solo ? i + 1 : '·')).join('');
@@ -852,9 +870,10 @@ function drawMeters() {
     s.segs.forEach((g, j) => g.classList.toggle('on', j < lit));
   });
 }
-let needRender = false;
+let needRender = false, lastView = null;
 function renderAll() {
   drawHeader(); drawLcd(); drawTracks(); drawMachine(); drawPads(); drawSteps(); drawFn();
+  if (UI.view !== lastView) { lastView = UI.view; fit(); }
   if (UI.view === 'mix') drawMixer();
   save();
 }
@@ -931,12 +950,59 @@ function onAct(b) {
 }
 
 document.addEventListener('click', (e) => {
+  if (e.detail === 0 && e.target.closest('[data-tap]')) { tap(); return; }   // TAP da tastiera
   const b = e.target.closest('[data-act]');
   if (b) onAct(b);
 });
 
+// ---------- BPM: TAP TEMPO e trascinamento sul display ----------
+function setTempo(t) {
+  P.fx.tempo = Math.round(Math.max(40, Math.min(240, t)) * 10) / 10;
+  applyFx(); drawLcd();
+  if (UI.fx) drawKnobs();
+  save();
+}
+let taps = [], tapFlash = null;
+function tap() {
+  const now = performance.now();
+  if (taps.length && now - taps[taps.length - 1] > 2000) taps = [];   // pausa lunga: si ricomincia
+  taps.push(now);
+  if (taps.length > 6) taps.shift();
+  if (taps.length >= 2) setTempo(60000 / ((taps[taps.length - 1] - taps[0]) / (taps.length - 1)));
+  const b = $('tapBtn');
+  b.classList.add('on'); clearTimeout(tapFlash);
+  tapFlash = setTimeout(() => b.classList.remove('on'), 90);
+}
+function dragBpm(el, e) {
+  const y0 = e.clientY, t0 = Math.round(P.fx.tempo);
+  el.classList.add('drag');
+  try { el.setPointerCapture(e.pointerId); } catch (err) { /* ok */ }
+  const move = (ev) => setTempo(t0 + Math.round((y0 - ev.clientY) / 4));   // 4 px = 1 BPM
+  const up = () => {
+    el.classList.remove('drag');
+    el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up);
+  };
+  el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+}
+
+// ---------- adatta l'interfaccia all'altezza dello schermo ----------
+function fit() {
+  const app = $('app'), root = document.documentElement;
+  app.style.zoom = ''; app.style.width = ''; app.style.maxWidth = '';
+  const need = root.scrollHeight, have = window.innerHeight;
+  if (need <= have + 1) return;
+  const z = Math.max(0.72, have / need);
+  app.style.zoom = String(z);
+  app.style.maxWidth = (440 / z) + 'px';
+  const want = Math.min(440, root.clientWidth), got = app.getBoundingClientRect().width;
+  if (got < want - 2) app.style.width = (100 * want / got) + '%';
+}
+
 let swipe = null, padHeld = null;
 document.addEventListener('pointerdown', (e) => {
+  if (e.target.closest('[data-tap]')) { e.preventDefault(); tap(); return; }
+  const bd = e.target.closest('[data-bpm]');
+  if (bd) { e.preventDefault(); bd.focus({ preventScroll: true }); dragBpm(bd, e); return; }
   const kn = e.target.closest('[data-knob]');
   if (kn) { e.preventDefault(); dragKnob(kn, e); return; }
   const fd = e.target.closest('[data-fader]');
@@ -987,10 +1053,12 @@ function dragKnob(el, e) {
 document.addEventListener('keydown', (e) => {
   const kn = e.target.closest && e.target.closest('[data-knob]');
   const fd = e.target.closest && e.target.closest('[data-fader]');
+  const bd = e.target.closest && e.target.closest('[data-bpm]');
   const dir = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1 }[e.key];
-  if (!dir || (!kn && !fd)) return;
+  if (!dir || (!kn && !fd && !bd)) return;
   e.preventDefault();
   const delta = dir * (e.shiftKey ? 10 : 1);
+  if (bd) { setTempo(Math.round(P.fx.tempo) + delta); return; }
   if (kn) { const def = resolveKnob(kn.dataset.knob); def.set(clamp(def.get() + delta)); redrawAfterKnob(kn.dataset.knob); }
   else setFader(fd.dataset.fader, null, delta);
 });
@@ -1034,6 +1102,9 @@ function frame() {
 }
 renderAll();
 requestAnimationFrame(frame);
+let fitTimer = null;
+window.addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(() => { fit(); if (UI.view === 'mix') drawMixer(); }, 120); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 })();
 </script>
 
