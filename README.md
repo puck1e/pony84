@@ -16,6 +16,7 @@ Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer
 Apri `web/index.html` nel browser, oppure pubblicala con Netlify (vedi sotto) e aprila dal telefono.
 
 - **Tracce**: 6 tracce, ognuna assegnabile a KICK, SNARE, METAL, PERC, TONE o SAMPLE.
+- **WAVE** (motore SAMPLE): editor della forma d'onda con maniglie START/END, zoom fino a 64× e ascolto; in P-LOCK i punti valgono per il singolo step. Su Android, CARICA WAV permette anche di registrare un audio al momento.
 - **STEP**: tocca gli step per accenderli.
 - **P-LOCK**: scegli uno step e gira le manopole per dargli valori propri.
 - **PROB**: tocca uno step acceso per cambiare quando suona: sempre → 75% → 50% → 25% → 1:2 → 2:2 → 1:4 → 4:4 (1:2 = prima battuta ogni due, 4:4 = quarta battuta ogni quattro).
