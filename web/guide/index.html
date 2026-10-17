@@ -267,7 +267,20 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li>Tocca <span class="k">CARICA WAV…</span> e scegli un file (WAV, MP3, AIFF: tutto ciò che Chrome sa leggere).</li>
           <li>Il nome compare sul display. Senza file, SAMPLE suona un accordo di esempio.</li>
         </ol>
+        <div class="note"><span class="lbl">REGISTRA AL VOLO (ANDROID)</span>
+          <p>Sul telefono Android, toccando <span class="k">CARICA WAV…</span> puoi anche scegliere di <strong>registrare un audio</strong> con il microfono: voce, un oggetto percosso, un giro di chitarra. Quando confermi, la registrazione finisce direttamente sulla traccia. Poi apri <span class="k">WAVE</span> per tagliare l'inizio e la fine, e magari mettila in P-LOCK su step diversi. Se un formato non viene letto (il display mostra FILE NON LETTO), prova con un'altra app di registrazione.</p>
+        </div>
         <p>I WAV caricati restano salvati anche quando chiudi PONY84, e finiscono dentro il file quando esporti il progetto.</p>
+        <h3>Editor WAVE: start ed end sulla forma d'onda</h3>
+        <p>Con il motore SAMPLE compare il tasto <span class="k">WAVE</span>, che apre il campione disegnato per intero.</p>
+        <ul>
+          <li>Trascina la maniglia <strong>arancione S</strong> (START) e quella <strong>rossa E</strong> (END), oppure tocca la forma d'onda per spostare la più vicina. La parte che suona resta chiara, il resto si spegne.</li>
+          <li><span class="k">ZOOM +</span> / <span class="k">ZOOM −</span> ingrandiscono fino a 64× attorno all'ultima maniglia toccata, per tagliare con precisione.</li>
+          <li><span class="k o">▶ ASCOLTA</span> suona la porzione scelta e mostra la testina gialla. <span class="k">TUTTO IL FILE</span> riporta START ed END agli estremi.</li>
+          <li>Sotto vedi START, END e DURATA in secondi. Le maniglie muovono le manopole START e LENGTH della traccia.</li>
+          <li>In <a href="#plock">P-LOCK</a>, con uno step selezionato, i punti valgono solo per quello step: un campione, tante fette diverse.</li>
+          <li>Su PC: frecce per spostare la maniglia (Maiusc = passi più grandi), S ed E per sceglierla, spazio per ascoltare.</li>
+        </ul>
       </div>
       <div class="en">
         <ol>
@@ -275,7 +288,20 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li>Tap <span class="k">CARICA WAV…</span> (load WAV) and pick a file (WAV, MP3, AIFF: anything Chrome can read).</li>
           <li>Its name appears on the display. With no file, SAMPLE plays an example chord.</li>
         </ol>
+        <div class="note"><span class="lbl">RECORD ON THE SPOT (ANDROID)</span>
+          <p>On an Android phone, tapping <span class="k">CARICA WAV…</span> also lets you <strong>record audio</strong> with the microphone: your voice, something you hit, a guitar riff. When you confirm, the recording lands straight on the track. Then open <span class="k">WAVE</span> to trim the start and end, and maybe p-lock it across different steps. If a format can't be read (the display shows FILE NON LETTO), try another recording app.</p>
+        </div>
         <p>Loaded WAVs stay saved when you close PONY84, and go inside the file when you export the project.</p>
+        <h3>WAVE editor: start and end on the waveform</h3>
+        <p>With the SAMPLE machine a <span class="k">WAVE</span> button appears, which opens the whole sample drawn out.</p>
+        <ul>
+          <li>Drag the <strong>orange S</strong> handle (START) and the <strong>red E</strong> handle (END), or tap the waveform to move the nearest one. The part that plays stays bright, the rest is dimmed.</li>
+          <li><span class="k">ZOOM +</span> / <span class="k">ZOOM −</span> zoom up to 64× around the last handle you touched, for precise trimming.</li>
+          <li><span class="k o">▶ ASCOLTA</span> (listen) plays the selection with a yellow playhead. <span class="k">TUTTO IL FILE</span> (whole file) resets START and END to the ends.</li>
+          <li>Below you see START, END and DURATA (duration) in seconds. The handles move the track's START and LENGTH knobs.</li>
+          <li>In <a href="#plock">P-LOCK</a>, with a step selected, the points apply to that step only: one sample, many different slices.</li>
+          <li>On a computer: arrows move the handle (Shift = bigger steps), S and E pick it, space to listen.</li>
+        </ul>
       </div>
       <div class="tbl"><table>
         <thead><tr><th><span class="it">MANOPOLA</span><span class="en">KNOB</span></th><th>SAMPLE</th></tr></thead>
@@ -362,7 +388,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
     <section id="pattern">
       <h2 class="sec"><span class="n">08</span>PATTERN</h2>
       <div class="it">
-        <p>Ci sono <strong>128 pattern</strong>: 8 banchi da <span class="k c">A</span> a <span class="k">H</span>, ognuno con 16 pattern (da A01 a H16). Con <span class="k">PATTERN</span> attivo compare la fila dei banchi: scegli il banco, poi tocca uno dei 16 tasti per scegliere il pattern. Il LED acceso indica i pattern che contengono qualcosa, il puntino rosso sul banco indica che quel banco non è vuoto, il tasto contornato è il pattern in uso.</p>
+        <p>Ci sono <strong>128 pattern</strong>: 8 banchi da <span class="k c">A</span> a <span class="k">H</span>, ognuno con 16 pattern (da A01 a H16). La fila dei banchi sopra gli step è sempre visibile e mostra il banco in uso; toccando un banco passi direttamente in <span class="k">PATTERN</span>. Scegli il banco, poi tocca uno dei 16 tasti per scegliere il pattern. Il LED acceso indica i pattern che contengono qualcosa, il puntino rosso sul banco indica che quel banco non è vuoto, il tasto contornato è il pattern in uso.</p>
         <ul>
           <li>Toccando un pattern mentre suona, il cambio avviene <strong>a fine battuta</strong> (il tasto lampeggia in attesa).</li>
           <li><span class="k">SVUOTA</span> cancella il pattern in uso.</li>
@@ -379,7 +405,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <p>In <span class="k c">STEP</span> il tasto diventa <span class="k">COPIA T1</span> (la traccia selezionata). Passa a un altro pattern, seleziona la traccia di destinazione e premi <span class="k">INCOLLA</span>: utile per tenere la stessa cassa e cambiare il resto.</p>
       </div>
       <div class="en">
-        <p>There are <strong>128 patterns</strong>: 8 banks from <span class="k c">A</span> to <span class="k">H</span>, each with 16 patterns (A01 to H16). With <span class="k">PATTERN</span> active the bank row appears: pick the bank, then tap one of the 16 keys to pick the pattern. A lit LED marks patterns that contain something, a red dot on a bank means it isn't empty, and the outlined key is the current pattern.</p>
+        <p>There are <strong>128 patterns</strong>: 8 banks from <span class="k c">A</span> to <span class="k">H</span>, each with 16 patterns (A01 to H16). The bank row above the steps is always visible and shows the current bank; tapping a bank takes you straight to <span class="k">PATTERN</span>. Pick the bank, then tap one of the 16 keys to pick the pattern. A lit LED marks patterns that contain something, a red dot on a bank means it isn't empty, and the outlined key is the current pattern.</p>
         <ul>
           <li>Picking a pattern while playing switches <strong>at the end of the bar</strong> (the key blinks while waiting).</li>
           <li><span class="k">SVUOTA</span> (clear) empties the current pattern.</li>
