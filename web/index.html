@@ -492,8 +492,17 @@ a.ghost { display: inline-flex; align-items: center; text-decoration: none; }
         <li><b>Pad</b> (canale 10, note 36–41): suonano le tracce 1–6.</li>
         <li><b>Tastiera</b> (altri canali): suona la traccia scelta; C4 = intonazione della traccia.</li>
         <li><b>Manopole</b> CC 70–77: le 8 manopole della pagina aperta. Con MIDI LEARN assegni qualsiasi manopola o fader.</li>
-        <li><b>Program change</b> 1–16: cambia pattern. <b>Start/Stop</b> MIDI: play e stop.</li>
+        <li><b>Program change</b> 1–128: cambia pattern. <b>Start/Stop</b> MIDI: play e stop.</li>
       </ul>
+    </section>
+
+    <section class="sec" aria-label="Ableton Move">
+      <span class="label">ABLETON MOVE</span>
+      <div class="mgrid">
+        <button class="hw mbtn" data-act="moveOn" id="moveBtn">COLLEGA MOVE</button>
+      </div>
+      <p class="mmsg" id="moveMsg" aria-live="polite">MOVE NON COLLEGATA</p>
+      <p class="mnote">Collega la Move via USB-C (con Ableton Live chiuso) e consenti l'accesso MIDI completo (SysEx). La Move diventa il controller di PONY84: step, pad, encoder e LED. Grazie a <a href="https://github.com/auridevil/movewire" target="_blank" rel="noopener">movewire</a> di Auri. La mappatura completa è nella guida.</p>
     </section>
   </div>
 </div>
@@ -1330,6 +1339,7 @@ function holdStart(key, tg, vel, el) {
   rollHit(h, t);
   if (el) el.classList.add('on');
   UI.lastNote = h.kit ? 'T' + (tg.ti + 1) + ' ' + P.tracks[tg.ti].machine : noteName(baseMidi(tg.ti) + tg.tp);
+  if (move) moveSync();
   drawLcd();
   if (UI.wide) $('rollHint').textContent = UI.rec ? $('rollHint').textContent : 'ULTIMA NOTA ' + UI.lastNote;
   if (h.rate && !playing) rollLoop();
@@ -1347,6 +1357,7 @@ function padUp(pid) {
   if (!h) return;
   held.delete(pid);
   if (h.el && ![...held.values()].some((o) => o.el === h.el)) h.el.classList.remove('on');
+  if (move) moveSync();
 }
 
 // ===================================================================
@@ -1696,6 +1707,7 @@ function renderAll() {
   if (shows('mix')) drawMixer();
   const layout = UI.view + (UI.wide ? '+wide' : '');
   if (layout !== lastView) { lastView = layout; fit(); }   // misura dopo aver riempito la vista
+  if (move) moveSync();
   save();
 }
 
@@ -1979,7 +1991,10 @@ async function midiEnable() {
 }
 function bindMidi() {
   const names = [];
-  midiAccess.inputs.forEach((inp) => { inp.onmidimessage = onMidi; names.push(inp.name); });
+  midiAccess.inputs.forEach((inp) => {
+    if (move && /move/i.test(inp.name || '')) { inp.onmidimessage = null; return; }   // la Move collegata la gestisce movewire
+    inp.onmidimessage = onMidi; names.push(inp.name);
+  });
   UI.midiMsg = names.length ? 'COLLEGATO: ' + names.join(', ').toUpperCase() : 'MIDI ATTIVO · NESSUN CONTROLLER COLLEGATO';
   drawMenu();
 }
@@ -2045,11 +2060,181 @@ function setLearn(on) {
   drawMenu();
 }
 
+// ---------- ABLETON MOVE (movewire di Auri, in vendor/movewire) ----------
+// Mappatura: 16 step = step della traccia (Shift+step = pattern del banco, Delete+step = cancella lo step);
+// pad fila in basso 1–6 = tracce, 7 = STUTTER, 8 = TAPESTOP; 3 file sopra = 24 note nella scala di ROLL;
+// encoder 1–8 = manopole della pagina aperta (Shift = regolazione fine); volume = master; rotella = BPM, premuta = TAP;
+// Track 1–4 = STEP / P-LOCK / PROB / PATTERN; ◀ ▶ = banco; + − = ottava; Play (Shift = stop); Record = REC;
+// Mute = mute traccia; Duplicate = copia (Shift = incolla); Loop = LATCH; Layout = FX; Back = chiude i pannelli.
+let move = null;
+UI.moveMsg = 'MOVE NON COLLEGATA';
+const mv = { shift: false, del: false, col: null };
+async function moveConnect() {
+  initAudio(); if (ctx.state === 'suspended') ctx.resume();
+  UI.moveMsg = 'COLLEGAMENTO IN CORSO…'; drawMenu();
+  try {
+    const [lib, wm] = await Promise.all([import('./vendor/movewire/index.js'), import('./vendor/movewire/web-midi.js')]);
+    const { device, release, sysex } = await wm.openMove();
+    if (!sysex) { release(); UI.moveMsg = 'SERVE IL PERMESSO MIDI COMPLETO (SYSEX): CONSENTILO NELLE IMPOSTAZIONI DEL SITO E RIPROVA'; drawMenu(); return; }
+    move = { device, release, lib };
+    const n = lib.nearestPaletteIndex, C = lib.COLOR;
+    mv.col = { red: n('#ff2000'), orange: n('#ff7000'), yellow: n('#ffc800'), cream: n('#fff0c8'), white: C.WHITE, grey: C.LIGHT_GREY, dim: C.DARK_GREY, off: C.OFF, blue: C.BLUE, green: C.GREEN, rec: C.RED };
+    device.addEventListener('pad', (e) => movePad(e.detail));
+    device.addEventListener('step', (e) => moveStep(e.detail));
+    device.addEventListener('encoder', (e) => moveEncoder(e.detail));
+    device.addEventListener('volume', (e) => { P.fx.master = clamp(P.fx.master + e.detail.delta); applyFx(); if (shows('mix')) drawMixer(); if (UI.fx) drawKnobs(); save(); });
+    device.addEventListener('wheel', (e) => setTempo(P.fx.tempo + e.detail.delta * (mv.shift ? 0.1 : 1)));
+    device.addEventListener('wheelPush', (e) => { if (e.detail.pressed) tap(); });
+    device.addEventListener('button', (e) => moveButton(e.detail));
+    const { identity } = await device.connect();
+    if (!device.inControl) throw new Error('LA MOVE NON È ENTRATA IN MODALITÀ CONTROLLER: RIAVVIALA E RIPROVA');
+    UI.moveMsg = 'MOVE COLLEGATA' + (identity && identity.major != null ? ' · FIRMWARE ' + identity.major + '.' + identity.minor : '');
+    if (midiAccess) bindMidi();
+    moveSync(); drawMenu();
+  } catch (err) {
+    if (move) { try { move.release(); } catch (e) { /* ok */ } move = null; }
+    const m = String(err && err.message || err);
+    UI.moveMsg = /not supported/i.test(m) ? 'QUESTO BROWSER NON SUPPORTA IL MIDI: USA CHROME O EDGE'
+      : /ports not found/i.test(m) ? 'MOVE NON TROVATA: COLLEGALA VIA USB-C E CHIUDI ABLETON LIVE'
+      : /denied|permission|security/i.test(m) ? 'PERMESSO MIDI NEGATO DAL BROWSER'
+      : m.toUpperCase();
+    drawMenu();
+  }
+}
+function moveDisconnect() {
+  if (!move) return;
+  [...held.keys()].filter((k) => String(k).startsWith('mv')).forEach(padUp);
+  try { move.device.disconnect(); } catch (e) { /* ok */ }
+  try { move.release(); } catch (e) { /* ok */ }
+  move = null;
+  UI.moveMsg = 'MOVE SCOLLEGATA: È TORNATA AL SUO FUNZIONAMENTO NORMALE';
+  if (midiAccess) bindMidi();
+  drawMenu();
+}
+window.addEventListener('pagehide', () => { if (move) { try { move.device.disconnect(); } catch (e) { /* ok */ } } });
+function movePad({ index, row, col, on, velocity }) {
+  const key = 'mv' + index;
+  if (!on) {
+    padUp(key);
+    if (padHeld === key) { padHeld = null; if (!UI.latch) scatterOff(); moveSync(); }
+    return;
+  }
+  const vel = 0.35 + 0.65 * (velocity || 100) / 127;
+  if (row === 0) {
+    if (col < 6) {   // tracce 1–6: suona e seleziona
+      if (UI.track !== col) { UI.track = col; UI.selStep = null; renderAll(); }
+      holdStart(key, { ti: col, tp: 0, kit: true }, vel, null);
+    } else {         // 7 = STUTTER, 8 = TAPESTOP (tieni premuto, o LATCH)
+      const type = col === 6 ? 'STUTTER' : 'TAPESTOP';
+      if (UI.latch) { if (UI.scatter === type) scatterOff(); else scatterOn(type); }
+      else { padHeld = key; scatterOn(type); }
+      moveSync();
+    }
+    return;
+  }
+  holdStart(key, { ti: UI.track, tp: padSemis((row - 1) * 8 + col), kit: false }, vel, null);   // 24 note in scala
+}
+function moveStep({ index, on }) {
+  if (!on) return;
+  if (mv.del) {
+    const st = P.patterns[P.cur][UI.track][index];
+    Object.assign(st, emptyStep()); delete st.tp; delete st.v;
+    renderAll(); flash('STEP ' + pad2(index + 1) + ' CANCELLATO'); return;
+  }
+  if (mv.shift) {
+    const idx = (UI.mode === 'PATTERN' ? UI.bank : (UI.pendingPat ?? P.cur) >> 4) * 16 + index;
+    if (playing && idx !== P.cur) UI.pendingPat = idx; else { P.cur = idx; UI.pendingPat = null; }
+    renderAll(); flash('PATTERN ' + patName(idx)); return;
+  }
+  onAct({ dataset: { act: 'step', s: String(index) } });
+}
+function moveEncoder({ index, delta }) {
+  const id = 'm' + index, def = resolveKnob(id);
+  const v = Math.max(0, Math.min(127, def.get() + delta * (mv.shift ? 0.25 : 1)));
+  def.set(mv.shift ? r2(v) : Math.round(v));
+  redrawAfterKnob(id);
+}
+function moveButton({ name, pressed }) {
+  if (name === 'shift') { mv.shift = pressed; moveSync(); return; }
+  if (name === 'delete') { mv.del = pressed; moveSync(); return; }
+  if (!pressed) return;
+  const act = (a, extra) => onAct({ dataset: Object.assign({ act: a }, extra || {}) });
+  switch (name) {
+    case 'play': if (mv.shift) stop(); else play(); break;
+    case 'record': act('rec'); break;
+    case 'track1': act('mode', { m: 'TRIG' }); break;
+    case 'track2': act('mode', { m: 'PLOCK' }); break;
+    case 'track3': act('mode', { m: 'COND' }); break;
+    case 'track4': act('mode', { m: 'PATTERN' }); break;
+    case 'left': case 'right': {
+      const cur = UI.mode === 'PATTERN' ? UI.bank : (UI.pendingPat ?? P.cur) >> 4;
+      act('bank', { b: String(Math.max(0, Math.min(7, cur + (name === 'right' ? 1 : -1)))) }); break;
+    }
+    case 'plus': case 'minus': act('oct', { d: name === 'plus' ? '1' : '-1' }); break;
+    case 'mute': act('mute', { i: String(UI.track) }); break;
+    case 'duplicate': if (UI.mode !== 'PATTERN' && UI.mode !== 'TRIG') act('mode', { m: 'TRIG' }); act(mv.shift ? 'paste' : 'copy'); break;
+    case 'loop': act('latch'); break;
+    case 'layout': act('fx'); break;
+    case 'back': if (!$('waveEd').hidden) closeWave(); else if (!$('menu').hidden) closeMenu(); break;
+    default: break;
+  }
+  moveSync();
+}
+// LED della Move: movewire invia solo i colori che cambiano, quindi si può richiamare spesso
+function moveSync() {
+  if (!move || !move.device.inControl || !mv.col) return;
+  const d = move.device, K = mv.col, isPat = UI.mode === 'PATTERN';
+  const grp = [K.red, K.orange, K.yellow, K.cream], pat = P.patterns[P.cur][UI.track];
+  const bank = isPat ? UI.bank : (UI.pendingPat ?? P.cur) >> 4;
+  for (let s = 0; s < 16; s++) {
+    let c;
+    if (isPat || mv.shift) {
+      const idx = bank * 16 + s;
+      c = idx === P.cur ? K.white : idx === UI.pendingPat ? K.yellow : patEmpty(P.patterns[idx]) ? K.off : grp[s >> 2];
+    } else {
+      c = pat[s].on ? grp[s >> 2] : K.off;
+      if (UI.mode === 'PLOCK' && UI.selStep === s) c = K.blue;
+      if (playing && s === UI.head) c = K.white;
+    }
+    d.setStepColor(s, c);
+  }
+  const trackCol = [K.red, K.orange, K.yellow, K.cream, K.blue, K.green];
+  const pressed = new Set([...held.keys()].filter((k) => String(k).startsWith('mv')).map((k) => Number(String(k).slice(2))));
+  const sc = SCALES[P.roll.scale][1];
+  for (let i = 0; i < 32; i++) {
+    const row = i >> 3, col = i & 7;
+    let c;
+    if (pressed.has(i)) c = K.white;
+    else if (row === 0) {
+      if (col < 6) c = col === UI.track ? K.white : (audible(col) ? trackCol[col] : K.dim);
+      else c = UI.scatter === (col === 6 ? 'STUTTER' : 'TAPESTOP') ? K.white : K.orange;
+    } else c = ((row - 1) * 8 + col) % sc.length === 0 ? K.orange : K.grey;
+    d.setPadColor(i, c);
+  }
+  const B = (nm, c) => { try { d.setButtonColor(nm, c); } catch (e) { /* tasto senza LED */ } };
+  B('play', playing ? K.green : K.dim);
+  B('record', UI.rec ? K.rec : K.dim);
+  B('track1', UI.mode === 'TRIG' ? K.white : K.dim);
+  B('track2', UI.mode === 'PLOCK' ? K.white : K.dim);
+  B('track3', UI.mode === 'COND' ? K.white : K.dim);
+  B('track4', UI.mode === 'PATTERN' ? K.white : K.dim);
+  B('loop', UI.latch ? K.yellow : K.dim);
+  B('mute', P.tracks[UI.track].mute ? K.rec : K.dim);
+  B('layout', UI.fx ? K.white : K.dim);
+  B('shift', mv.shift ? K.white : K.dim);
+  B('delete', mv.del ? K.white : K.dim);
+  B('duplicate', UI.clip ? K.white : K.dim);
+  ['left', 'right', 'plus', 'minus'].forEach((nm) => B(nm, K.dim));
+}
+
 // ---------- pannello ----------
 function openMenu() { $('menu').hidden = false; drawMenu(); $('menu').querySelector('[data-act="menuClose"]').focus({ preventScroll: true }); }
 function closeMenu() { $('menu').hidden = true; armed = null; drawMenu(); }
 function drawMenu() {
   $('midiMsg').textContent = UI.midiMsg;
+  $('moveMsg').textContent = UI.moveMsg;
+  $('moveBtn').textContent = move ? 'SCOLLEGA MOVE' : 'COLLEGA MOVE';
+  $('moveBtn').classList.toggle('on', !!move);
   $('midiOnBtn').textContent = midiAccess ? 'AGGIORNA MIDI' : 'ATTIVA MIDI';
   $('learnBtn').classList.toggle('on', UI.learn);
   const n = Object.keys(midiMap).length;
@@ -2084,6 +2269,7 @@ function onAct(b) {
     drawMenu(); return;
   }
   if (act === 'midiOn') { midiEnable(); return; }
+  if (act === 'moveOn') { if (move) moveDisconnect(); else moveConnect(); return; }
   if (act === 'learn') { setLearn(!UI.learn); return; }
   if (act === 'midiReset') { midiMap = {}; saveMidiMap(); UI.midiMsg = 'MAPPATURE AZZERATE: VALGONO QUELLE PREDEFINITE'; drawMenu(); return; }
   if (act === 'mixPage') { UI.mixPage = b.dataset.p; drawMixer(); fit(); return; }
@@ -2351,6 +2537,7 @@ function frame() {
     let changed = false;
     while (uiQ.length && uiQ[0].t <= ctx.currentTime) { UI.head = uiQ.shift().s; changed = true; }
     if (changed && shows('seq')) { drawSteps(); drawLcd(); }
+    if (changed && move) moveSync();
   }
   if (ctx && shows('mix')) drawMeters();
   if (needRender) { needRender = false; renderAll(); }
