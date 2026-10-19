@@ -238,14 +238,16 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       <h2 class="sec"><span class="n">03</span><span class="it">Tracce e motori</span><span class="en">Tracks and machines</span></h2>
       <div class="it">
         <p>Ci sono <strong>6 tracce</strong>. Tocca una traccia per selezionarla, poi scegli il suo <strong>motore</strong> nella riga MACHINE. Ogni traccia può usare qualsiasi motore: puoi avere anche sei KICK diverse. Cambiando motore le manopole tornano ai valori di partenza e i p-lock di quella traccia vengono azzerati.</p>
-        <p>I motori KICK, SNARE, METAL, PERC e TONE sono voci <strong>FM</strong> a due operatori; SAMPLE suona un file audio. Le manopole si girano <strong>trascinando su e giù</strong>.</p>
+        <p>I motori KICK, SNARE, METAL e PERC sono voci <strong>FM</strong> a due operatori; <strong>SYNTH</strong> è il motore melodico con quattro modelli; SAMPLE suona un file audio. Le manopole si girano <strong>trascinando su e giù</strong>.</p>
+        <p><strong>DECAY</strong> con la manopola a 0 dà un "tic" di pochi millisecondi, perfetto per i suoni glitch; i primi scatti della manopola sono i più fini.</p>
       </div>
       <div class="en">
         <p>There are <strong>6 tracks</strong>. Tap a track to select it, then pick its <strong>machine</strong> in the MACHINE row. Any track can use any machine: you can even have six different KICKs. Changing machine resets the knobs and clears that track's p-locks.</p>
-        <p>KICK, SNARE, METAL, PERC and TONE are two-operator <strong>FM</strong> voices; SAMPLE plays an audio file. Turn the knobs by <strong>dragging up and down</strong>.</p>
+        <p>KICK, SNARE, METAL and PERC are two-operator <strong>FM</strong> voices; <strong>SYNTH</strong> is the melodic machine with four models; SAMPLE plays an audio file. Turn the knobs by <strong>dragging up and down</strong>.</p>
+        <p>With the knob at 0, <strong>DECAY</strong> gives a "tick" of a few milliseconds, perfect for glitchy sounds; the first steps of the knob are the finest.</p>
       </div>
       <div class="tbl"><table>
-        <thead><tr><th><span class="it">MANOPOLA</span><span class="en">KNOB</span></th><th>KICK</th><th>SNARE</th><th>METAL</th><th>PERC</th><th>TONE</th></tr></thead>
+        <thead><tr><th><span class="it">MANOPOLA</span><span class="en">KNOB</span></th><th>KICK</th><th>SNARE</th><th>METAL</th><th>PERC</th><th>SYNTH · FM2</th></tr></thead>
         <tbody>
           <tr><td>PITCH</td><td colspan="4"><span class="it">intonazione (Hz)</span><span class="en">pitch (Hz)</span></td><td><span class="it">nota da C1 a C6</span><span class="en">note from C1 to C6</span></td></tr>
           <tr><td>DECAY</td><td colspan="5"><span class="it">durata del suono</span><span class="en">length of the sound</span></td></tr>
@@ -255,6 +257,36 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <tr><td>CONTOUR</td><td><span class="it">velocità dello sweep</span><span class="en">sweep speed</span></td><td><span class="it">brillantezza del rumore</span><span class="en">noise brightness</span></td><td><span class="it">quantità di rumore</span><span class="en">noise amount</span></td><td><span class="it">velocità dello sweep</span><span class="en">sweep speed</span></td><td><span class="it">durata della modulazione</span><span class="en">modulation length</span></td></tr>
           <tr><td>DELAY</td><td colspan="5"><span class="it">mandata al delay globale</span><span class="en">send to the global delay</span></td></tr>
           <tr><td>REVERB</td><td colspan="5"><span class="it">mandata al riverbero globale</span><span class="en">send to the global reverb</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3><span class="it">SYNTH: i quattro modelli</span><span class="en">SYNTH: the four models</span></h3>
+      <div class="it">
+        <p>Con il motore SYNTH, accanto a MACHINE compaiono i tasti del <strong>modello</strong>. Cambiando modello PITCH, DELAY e REVERB restano, le altre manopole ripartono dai valori del modello.</p>
+        <ul>
+          <li><span class="k">FM2</span>: la FM a due operatori (il vecchio TONE). I progetti salvati prima suonano identici.</li>
+          <li><span class="k">FM4</span>: quattro operatori collegati in 5 modi (ALGO), con feedback: e.piano, campane, bassi "growl", glitch.</li>
+          <li><span class="k">CZ</span>: phase distortion come i Casio CZ: l'onda viene "piegata", e DCW DEC fa l'effetto del filtro che si chiude.</li>
+          <li><span class="k">MOD</span>: modale, oggetti percossi (marimba, campana, metallo, vetro, tamburo).</li>
+        </ul>
+      </div>
+      <div class="en">
+        <p>With the SYNTH machine, the <strong>model</strong> buttons appear next to MACHINE. When you change model, PITCH, DELAY and REVERB stay; the other knobs restart from the model's values.</p>
+        <ul>
+          <li><span class="k">FM2</span>: two-operator FM (the old TONE). Projects saved before sound exactly the same.</li>
+          <li><span class="k">FM4</span>: four operators wired in 5 ways (ALGO), with feedback: e-piano, bells, growl basses, glitches.</li>
+          <li><span class="k">CZ</span>: phase distortion like the Casio CZ: the wave gets "bent", and DCW DEC sounds like a filter closing.</li>
+          <li><span class="k">MOD</span>: modal, struck objects (marimba, bell, metal, glass, drum).</li>
+        </ul>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th><span class="it">MANOPOLA</span><span class="en">KNOB</span></th><th>FM4</th><th>CZ</th><th>MOD</th></tr></thead>
+        <tbody>
+          <tr><td>PITCH</td><td colspan="3"><span class="it">nota da C1 a C6</span><span class="en">note from C1 to C6</span></td></tr>
+          <tr><td>DECAY</td><td colspan="3"><span class="it">durata del suono, da 3 ms a 4 s</span><span class="en">length of the sound, 3 ms to 4 s</span></td></tr>
+          <tr><td>3</td><td><span class="it">ALGO: come sono collegati gli operatori (1–5)</span><span class="en">ALGO: how the operators are wired (1–5)</span></td><td><span class="it">ONDA: SAW, SQUARE, RESO</span><span class="en">ONDA (wave): SAW, SQUARE, RESO</span></td><td><span class="it">MATER.: il materiale</span><span class="en">MATER.: the material</span></td></tr>
+          <tr><td>4</td><td><span class="it">RATIO dell'operatore più alto</span><span class="en">RATIO of the top operator</span></td><td><span class="it">DCW: quanto si piega l'onda</span><span class="en">DCW: how much the wave bends</span></td><td><span class="it">BRILLO: quanti acuti</span><span class="en">BRILLO (brightness): how much treble</span></td></tr>
+          <tr><td>5</td><td><span class="it">BRILLO: quantità di modulazione</span><span class="en">BRILLO: modulation amount</span></td><td><span class="it">DCW DEC: velocità con cui si chiude</span><span class="en">DCW DEC: how fast it closes</span></td><td><span class="it">SMORZA: gli acuti finiscono prima</span><span class="en">SMORZA (damping): the highs die sooner</span></td></tr>
+          <tr><td>6</td><td><span class="it">FEEDBK: grinta e rumore</span><span class="en">FEEDBK: grit and noise</span></td><td><span class="it">DETUNE: seconda voce stonata</span><span class="en">DETUNE: a second, detuned voice</span></td><td><span class="it">DUREZZA: del colpo</span><span class="en">DUREZZA (hardness) of the strike</span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -275,11 +307,13 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <h3>Editor WAVE: start ed end sulla forma d'onda</h3>
         <p>Con il motore SAMPLE compare il tasto <span class="k">WAVE</span>, che apre il campione disegnato per intero.</p>
         <ul>
-          <li>Trascina la maniglia <strong>arancione S</strong> (START) e quella <strong>rossa E</strong> (END), oppure tocca la forma d'onda per spostare la più vicina. La parte che suona resta chiara, il resto si spegne.</li>
-          <li><span class="k">ZOOM +</span> / <span class="k">ZOOM −</span> ingrandiscono fino a 64× attorno all'ultima maniglia toccata, per tagliare con precisione.</li>
-          <li><span class="k o">▶ ASCOLTA</span> suona la porzione scelta e mostra la testina gialla. <span class="k">TUTTO IL FILE</span> riporta START ed END agli estremi.</li>
-          <li>Sotto vedi START, END e DURATA in secondi. Le maniglie muovono le manopole START e LENGTH della traccia.</li>
-          <li>In <a href="#plock">P-LOCK</a>, con uno step selezionato, i punti valgono solo per quello step: un campione, tante fette diverse.</li>
+          <li>Trascina la maniglia <strong>S</strong> (START, bandierina in alto) e la maniglia <strong>E</strong> (END, bandierina in basso). Quando lasci, senti subito il risultato. Un tocco lontano dalle maniglie non sposta niente.</li>
+          <li><strong>E prima di S = suono al contrario</strong>: la parte scelta diventa gialla con la scritta ◀ REVERSE.</li>
+          <li><strong>Due dita</strong> per lo zoom (fino a 64×), <strong>un dito</strong> per scorrere quando sei ingrandito. Ci sono anche <span class="k">ZOOM +</span> e <span class="k">ZOOM −</span>.</li>
+          <li><span class="k">AGGANCIO ZERO</span> sposta il punto dove l'onda passa per lo zero, per non avere clic ai bordi. Spegnilo quando il clic lo vuoi, per i glitch.</li>
+          <li>Sotto la forma d'onda ci sono PITCH, DECAY, FILTER e GAIN, così non devi chiudere l'editor.</li>
+          <li><span class="k o">▶ ASCOLTA</span> suona la porzione scelta. <span class="k">TUTTO IL FILE</span> riporta START ed END agli estremi.</li>
+          <li><span class="k">TRACCIA</span> / <span class="k">STEP</span>: scegli se le modifiche valgono per tutta la traccia o solo per lo step selezionato in <a href="#plock">P-LOCK</a>. Un campione, tante fette diverse, anche al contrario su singoli step.</li>
           <li>Su PC: frecce per spostare la maniglia (Maiusc = passi più grandi), S ed E per sceglierla, spazio per ascoltare.</li>
         </ul>
       </div>
@@ -296,11 +330,13 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <h3>WAVE editor: start and end on the waveform</h3>
         <p>With the SAMPLE machine a <span class="k">WAVE</span> button appears, which opens the whole sample drawn out.</p>
         <ul>
-          <li>Drag the <strong>orange S</strong> handle (START) and the <strong>red E</strong> handle (END), or tap the waveform to move the nearest one. The part that plays stays bright, the rest is dimmed.</li>
-          <li><span class="k">ZOOM +</span> / <span class="k">ZOOM −</span> zoom up to 64× around the last handle you touched, for precise trimming.</li>
-          <li><span class="k o">▶ ASCOLTA</span> (listen) plays the selection with a yellow playhead. <span class="k">TUTTO IL FILE</span> (whole file) resets START and END to the ends.</li>
-          <li>Below you see START, END and DURATA (duration) in seconds. The handles move the track's START and LENGTH knobs.</li>
-          <li>In <a href="#plock">P-LOCK</a>, with a step selected, the points apply to that step only: one sample, many different slices.</li>
+          <li>Drag the <strong>S</strong> handle (START, flag at the top) and the <strong>E</strong> handle (END, flag at the bottom). When you let go, you hear the result. A tap away from the handles moves nothing.</li>
+          <li><strong>E before S = reversed sound</strong>: the selection turns yellow with ◀ REVERSE.</li>
+          <li><strong>Two fingers</strong> to zoom (up to 64×), <strong>one finger</strong> to scroll when zoomed in. <span class="k">ZOOM +</span> and <span class="k">ZOOM −</span> are there too.</li>
+          <li><span class="k">AGGANCIO ZERO</span> (zero snap) moves the point to where the wave crosses zero, so the edges don't click. Turn it off when you want the click, for glitches.</li>
+          <li>PITCH, DECAY, FILTER and GAIN sit under the waveform, so you don't have to close the editor.</li>
+          <li><span class="k o">▶ ASCOLTA</span> (listen) plays the selection. <span class="k">TUTTO IL FILE</span> (whole file) resets START and END to the ends.</li>
+          <li><span class="k">TRACCIA</span> / <span class="k">STEP</span>: choose whether changes apply to the whole track or only to the step selected in <a href="#plock">P-LOCK</a>. One sample, many slices, even reversed on single steps.</li>
           <li>On a computer: arrows move the handle (Shift = bigger steps), S and E pick it, space to listen.</li>
         </ul>
       </div>
@@ -309,7 +345,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <tbody>
           <tr><td>PITCH</td><td><span class="it">da −24 a +24 semitoni</span><span class="en">−24 to +24 semitones</span></td></tr>
           <tr><td>START</td><td><span class="it">punto di partenza nel file</span><span class="en">start point in the file</span></td></tr>
-          <tr><td>LENGTH</td><td><span class="it">quanta parte suonare</span><span class="en">how much of it to play</span></td></tr>
+          <tr><td>END</td><td><span class="it">punto di arrivo nel file; prima di START = al contrario</span><span class="en">end point in the file; before START = reversed</span></td></tr>
           <tr><td>DECAY</td><td><span class="it">dissolvenza; al massimo (FULL) suona tutto</span><span class="en">fade out; at maximum (FULL) it plays in full</span></td></tr>
           <tr><td>FILTER</td><td><span class="it">passa-basso, da 200 Hz a 20 kHz</span><span class="en">low-pass, 200 Hz to 20 kHz</span></td></tr>
           <tr><td>GAIN</td><td><span class="it">volume del campione</span><span class="en">sample volume</span></td></tr>
@@ -721,7 +757,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><strong>T1 KICK</strong>: cassa dritta, con un colpo in più a fine giro (4:4);</li>
           <li><strong>T2 PERC</strong>: rimshot sincopato con probabilità;</li>
           <li><strong>T3 METAL</strong>: hi-hat in levare; <strong>T4 METAL</strong>: shaker leggero;</li>
-          <li><strong>T5 TONE</strong>: basso dub con note registrate e condizioni, in sidechain sulla cassa (BUS B);</li>
+          <li><strong>T5 SYNTH (FM2)</strong>: basso dub con note registrate e condizioni, in sidechain sulla cassa (BUS B);</li>
           <li><strong>T6 SAMPLE</strong>: accordo Cm7 con delay, riverbero e un filtro che respira (BUS C).</li>
         </ul>
       </div>
@@ -731,7 +767,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><strong>T1 KICK</strong>: four-on-the-floor, with an extra hit at the end of the loop (4:4);</li>
           <li><strong>T2 PERC</strong>: syncopated rimshot with probability;</li>
           <li><strong>T3 METAL</strong>: off-beat hi-hat; <strong>T4 METAL</strong>: light shaker;</li>
-          <li><strong>T5 TONE</strong>: dub bass with recorded notes and conditions, sidechained to the kick (BUS B);</li>
+          <li><strong>T5 SYNTH (FM2)</strong>: dub bass with recorded notes and conditions, sidechained to the kick (BUS B);</li>
           <li><strong>T6 SAMPLE</strong>: Cm7 chord with delay, reverb and a breathing filter (BUS C).</li>
         </ul>
       </div>
