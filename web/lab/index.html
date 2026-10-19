@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#23211e">
+<title>PONY84 · Lab motori</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --body: #23211e; --panel: #2d2a26; --key: #3a3631; --edge: #141210; --line: #4a453e;
+  --cream: #ece4cf; --muted: #a99f8a; --ink: #1d1a17; --white: #fff6ee;
+  --red: #c9372c; --orange: #e07b26; --yellow: #e3b93c; --lcd: #ffb347; --lcd-bg: #120d07;
+  --display: 'Barlow Condensed', 'Arial Narrow', sans-serif; --mono: 'DM Mono', ui-monospace, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--body); color: var(--cream); font-family: var(--display); }
+button { font-family: inherit; color: inherit; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+.wrap { max-width: 560px; margin: 0 auto; padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 40px max(16px, env(safe-area-inset-left)); display: flex; flex-direction: column; gap: 18px; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.logo { font-size: 32px; font-weight: 800; font-style: italic; letter-spacing: -.5px; line-height: .9; }
+.logo b { color: var(--orange); }
+.sub { font-size: 12px; font-weight: 700; letter-spacing: 2.4px; color: var(--muted); }
+.label { font-size: 11px; font-weight: 700; letter-spacing: 2.4px; color: var(--muted); }
+section { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.hw { background: var(--key); border-bottom: 3px solid var(--edge); border-radius: 8px; font-weight: 700; letter-spacing: 1px; }
+.btn { height: 44px; padding: 0 14px; font-size: 14px; }
+.btn.on, .seg[aria-checked="true"] { background: var(--cream); color: var(--ink); }
+.play.on { background: var(--orange); color: var(--ink); }
+.lcd { background: var(--lcd-bg); border: 2px solid var(--line); border-radius: 10px; padding: 8px 14px; font-family: var(--mono); color: var(--lcd); font-size: 13px; letter-spacing: 1px; display: flex; justify-content: space-between; gap: 10px; }
+.segs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.seg { height: 46px; font-size: 14px; border-radius: 6px; }
+.seg small { display: block; font-family: var(--mono); font-size: 10px; font-weight: 400; letter-spacing: .5px; opacity: .75; }
+.presets { display: flex; gap: 6px; flex-wrap: wrap; }
+.pre { height: 32px; padding: 0 12px; border-radius: 5px; font-size: 13px; font-weight: 700; letter-spacing: 1px; border: 1px solid var(--line); background: none; color: var(--cream); }
+.pre[aria-pressed="true"] { background: var(--orange); border-color: var(--orange); color: var(--ink); }
+.knobs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+.kn { display: flex; flex-direction: column; gap: 4px; }
+.kn .top { display: flex; justify-content: space-between; align-items: baseline; }
+.kn b { font-size: 13px; letter-spacing: 1.4px; }
+.kn output { font-family: var(--mono); font-size: 12px; color: var(--lcd); }
+input[type=range] { width: 100%; height: 30px; accent-color: var(--orange); }
+.pads { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.pad { height: 58px; border-radius: 10px; background: var(--key); border-bottom: 5px solid var(--edge); font-size: 18px; font-weight: 700; touch-action: none; }
+.pad.root { box-shadow: inset 0 0 0 2px var(--orange); }
+.pad.hit { background: var(--orange); color: var(--ink); transform: translateY(3px); border-bottom-width: 2px; }
+.card { background: var(--panel); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.note { margin: 0; font-size: 15px; line-height: 1.4; color: var(--muted); }
+.note b { color: var(--cream); }
+.ab { display: grid; grid-template-columns: 64px repeat(2, minmax(0, 1fr)); gap: 6px; align-items: center; }
+.ab .btn { height: 40px; font-size: 13px; padding: 0 6px; }
+.ab span { font-size: 14px; font-weight: 700; letter-spacing: 1px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-size: 11px; letter-spacing: 1.6px; color: var(--muted); padding: 4px 0; font-weight: 700; }
+td { padding: 6px 0; border-top: 1px solid var(--line); vertical-align: middle; }
+td.num { font-family: var(--mono); font-size: 13px; text-align: right; white-space: nowrap; padding-left: 8px; }
+.bar { height: 8px; border-radius: 4px; background: var(--key); overflow: hidden; min-width: 60px; }
+.bar i { display: block; height: 100%; background: var(--yellow); }
+.bar i.hot { background: var(--red); }
+.msg { font-family: var(--mono); font-size: 12px; color: var(--lcd); min-height: 16px; margin: 0; }
+a { color: var(--lcd); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="logo">PONY<b>84</b></div>
+      <div class="sub">LAB · MOTORI DI SINTESI</div>
+    </div>
+    <div class="row">
+      <button class="hw btn play" id="playBtn" aria-pressed="false">▶ PLAY</button>
+    </div>
+  </header>
+
+  <div class="lcd" aria-live="off"><span id="lcdL">SPENTO · PREMI PLAY</span><span id="lcdR">VOCI 0</span></div>
+
+  <section aria-label="Trasporto">
+    <div class="row">
+      <span class="label" style="margin-right:auto">BPM <output id="bpmOut">120</output></span>
+      <button class="hw btn on" id="drumBtn" aria-pressed="true">BATTERIA ON</button>
+    </div>
+    <input type="range" id="bpm" min="70" max="170" value="120" aria-label="BPM">
+  </section>
+
+  <section aria-label="Motore">
+    <span class="label">MOTORE (STESSO PATTERN, CAMBIA SOLO IL SUONO)</span>
+    <div class="segs" role="radiogroup" id="engines"></div>
+    <span class="label">PRESET</span>
+    <div class="presets" id="presets"></div>
+    <div class="knobs" id="knobs"></div>
+    <p class="note" id="engNote"></p>
+  </section>
+
+  <section aria-label="Pad">
+    <span class="label">SUONA A MANO · RE# MINORE</span>
+    <div class="pads" id="pads"></div>
+  </section>
+
+  <section class="card" aria-label="Decay">
+    <span class="label">DECAY AL MINIMO · PRIMA / DOPO</span>
+    <p class="note">Lo stesso suono con DECAY a 0: <b>PRIMA</b> è l'app di oggi, <b>DOPO</b> è la correzione proposta (minimo fisso quasi a zero).</p>
+    <div class="ab" id="ab"></div>
+  </section>
+
+  <section class="card" aria-label="Test di carico">
+    <span class="label">TEST DI CARICO</span>
+    <p class="note">Fa suonare <b>16 voci insieme</b> per ogni motore e misura quanta parte del tempo audio disponibile serve per calcolarle. Sotto il 25% c'è tanto margine; sopra il 60% su questo dispositivo rischieresti crepitii.</p>
+    <button class="hw btn" id="benchBtn">AVVIA TEST (circa 10 s)</button>
+    <p class="msg" id="benchMsg" aria-live="polite"></p>
+    <table id="benchTab" hidden>
+      <thead><tr><th>MOTORE</th><th></th><th style="text-align:right">16 VOCI</th><th style="text-align:right">VOCI MAX*</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="note" id="benchNote" hidden>* stima delle voci contemporanee tenendo metà del tempo libero per il resto dell'app. Il test gira senza tenere conto del resto dell'app (sequencer, effetti, scatter), quindi è un confronto tra motori, non un limite assoluto.</p>
+  </section>
+
+  <p class="note">Prototipo da ascoltare, non ancora collegato all'app. <a href="../">Torna a PONY84</a></p>
+</div>
+
+<script>
+// =====================================================================
+// MOTORI IN AUDIOWORKLET: FM a 4 operatori, phase distortion (Casio CZ), modale
+// =====================================================================
+const WORKLET = String.raw`
+const TAU = Math.PI * 2, TL = 4096, SIN = new Float32Array(TL + 1);
+for (let i = 0; i <= TL; i++) SIN[i] = Math.sin(i / TL * TAU);
+function sn(ph) { ph -= Math.floor(ph); const x = ph * TL, i = x | 0; return SIN[i] + (SIN[i + 1] - SIN[i]) * (x - i); }
+const k60 = (t) => Math.exp(-6.9 / (Math.max(t, 0.0005) * sampleRate));   // fattore per arrivare a -60 dB in t secondi
+// algoritmi FM: chi modula chi (gli operatori con numero più alto modulano quelli più bassi)
+const ALGOS = [
+  { mods: [[1], [2], [3], []], car: [0] },          // 1: 4→3→2→1
+  { mods: [[1], [], [3], []], car: [0, 2] },        // 2: 2→1  4→3
+  { mods: [[1, 2, 3], [], [], []], car: [0] },      // 3: 2,3,4→1
+  { mods: [[3], [3], [3], []], car: [0, 1, 2] },    // 4: 4→1,2,3
+  { mods: [[], [], [], []], car: [0, 1, 2, 3] }     // 5: additivo
+];
+const MAXV = 48;
+class PonySynth extends AudioWorkletProcessor {
+  constructor(opt) {
+    super();
+    this.q = []; this.v = []; this.tick = 0;
+    const ev = opt && opt.processorOptions && opt.processorOptions.events;
+    if (ev) this.q.push(...ev);
+    this.port.onmessage = (e) => { this.q.push(e.data); this.q.sort((a, b) => a.when - b.when); };
+  }
+  start(e, off) {
+    const p = e.p, f = e.freq, sr = sampleRate;
+    const v = { type: e.type, off, vel: e.vel || 1, amp: 0, att: Math.max(1, (p.attack || 0.001) * sr), n: 0, ka: k60(p.decay), dead: false };
+    if (e.type === 'FM4') {
+      v.inc = p.ratios.map((r) => f * r / sr); v.ph = [0, 0, 0, 0]; v.out = [0, 0, 0, 0];
+      v.lv = p.levels.slice(); v.km = k60(p.modDecay); v.me = 1; v.fb = p.fb; v.f1 = 0; v.f2 = 0;
+      v.al = ALGOS[p.algo] || ALGOS[0]; v.cl = p.carLevels; v.norm = 1 / Math.sqrt(v.al.car.length);
+    } else if (e.type === 'PD') {
+      v.inc = f / sr; v.inc2 = f * Math.pow(2, p.detune / 1200) / sr; v.ph = 0; v.ph2 = 0;
+      v.wave = p.wave; v.d = p.dcw; v.kd = k60(p.dcwDecay); v.mix2 = p.detune > 0.5 ? 0.5 : 0; v.dc = 0; v.dcx = 0;
+    } else if (e.type === 'MODAL') {
+      const ny = sr * 0.45; v.m = [];
+      p.ratios.forEach((r, i) => {
+        const fr = f * r; if (fr >= ny) return;
+        const T = p.decay / (1 + i * p.damp * 3), rr = k60(T), w = TAU * fr / sr;
+        v.m.push({ a1: 2 * rr * Math.cos(w), a2: -rr * rr, g: Math.pow(1 / (i + 1), 1.4 - p.bright * 1.2) * (1 - rr) * 4, y1: 0, y2: 0 });
+      });
+      v.exLen = Math.max(8, p.hard * sr); v.ka = k60(p.decay * 1.2); v.amp = 1;
+    }
+    this.v.push(v);
+    if (this.v.length > MAXV) this.v.shift();   // ruba la voce più vecchia
+  }
+  process(inputs, outputs) {
+    const L = outputs[0][0], R = outputs[0][1] || outputs[0][0], N = L.length, t0 = currentTime, t1 = t0 + N / sampleRate;
+    while (this.q.length && this.q[0].when < t1) { const e = this.q.shift(); this.start(e, Math.max(0, Math.round((e.when - t0) * sampleRate))); }
+    for (let i = 0; i < N; i++) L[i] = 0;
+    for (const v of this.v) {
+      let i = v.off; v.off = 0;
+      for (; i < N; i++) {
+        // inviluppo d'ampiezza: attacco lineare, poi discesa esponenziale
+        if (v.n < v.att) v.amp = v.type === 'MODAL' ? 1 : v.n / v.att; else v.amp *= v.ka;
+        v.n++;
+        let s = 0;
+        if (v.type === 'FM4') {
+          const o = v.out, al = v.al, me = v.me; v.me *= v.km;
+          for (let k = 3; k >= 0; k--) {
+            let pm = 0; const ms = al.mods[k];
+            for (let j = 0; j < ms.length; j++) pm += o[ms[j]] * v.lv[ms[j]] * me;
+            if (k === 3) pm += (v.f1 + v.f2) * 0.5 * v.fb;
+            o[k] = sn(v.ph[k] + pm / TAU); v.ph[k] += v.inc[k];
+            if (v.ph[k] > 1) v.ph[k] -= 1;
+          }
+          v.f2 = v.f1; v.f1 = o[3];
+          for (let j = 0; j < al.car.length; j++) s += o[al.car[j]] * v.cl[al.car[j]];
+          s *= v.norm;
+        } else if (v.type === 'PD') {
+          const d = v.d; v.d *= v.kd;
+          s = pd(v.ph, d, v.wave); if (v.mix2) s = s * 0.5 + pd(v.ph2, d, v.wave) * 0.5;
+          v.ph += v.inc; if (v.ph >= 1) v.ph -= 1; v.ph2 += v.inc2; if (v.ph2 >= 1) v.ph2 -= 1;
+          v.dc = s - v.dcx + 0.995 * v.dc; v.dcx = s; s = v.dc;   // toglie la componente continua
+        } else {
+          const x = v.n < v.exLen ? (Math.random() * 2 - 1) * (1 - v.n / v.exLen) : 0;
+          for (let j = 0; j < v.m.length; j++) { const m = v.m[j], y = m.g * x + m.a1 * m.y1 + m.a2 * m.y2; m.y2 = m.y1; m.y1 = y; s += y; }
+        }
+        L[i] += s * v.amp * v.vel;
+      }
+      if (v.n > v.att && v.amp < 0.0002) v.dead = true;
+    }
+    if (this.v.some((v) => v.dead)) this.v = this.v.filter((v) => !v.dead);
+    for (let i = 0; i < N; i++) { const x = L[i] * 0.35; L[i] = x / (1 + Math.abs(x)) * 1.6; R[i] = L[i]; }   // limitatore morbido
+    if (++this.tick % 80 === 0) this.port.postMessage({ voices: this.v.length });
+    return true;
+  }
+}
+// phase distortion: la fase viene "piegata" prima di leggere il coseno, come nei Casio CZ
+function pd(p, d, wave) {
+  if (wave === 0) {             // SAW
+    const m = 0.5 - 0.49 * d;
+    const q = p < m ? 0.5 * p / m : 0.5 + 0.5 * (p - m) / (1 - m);
+    return -Math.cos(TAU * q);
+  }
+  if (wave === 1) {             // SQUARE
+    const m = 1 - 0.97 * d, h = p < 0.5 ? 0 : 0.5, q = (p - h) * 2;
+    const w = q < m ? q / m : 1;
+    return -Math.cos(TAU * (h + 0.5 * w));
+  }
+  const r = 1 + d * 14;         // RESO: risonanza che scende con l'inviluppo DCW
+  return (1 - p) * Math.cos(TAU * ((p * r) % 1)) * 1.4;
+}
+registerProcessor('pony-synth', PonySynth);
+`;
+
+// ---------------------------------------------------------------------
+// parametri: le manopole sono 0..1, i preset le impostano
+// ---------------------------------------------------------------------
+const decayT = (k) => 0.003 * Math.pow(4 / 0.003, k);          // DECAY: da 3 ms a 4 s
+const fmtT = (t) => t < 1 ? Math.round(t * 1000) + ' ms' : t.toFixed(2) + ' s';
+const RATIOS = [0.5, 1, 1.5, 2, 3, 4, 5, 7, 9, 11, 14];
+const MATERIALS = [
+  ['MARIMBA', [1, 3.99, 9.9, 17.4], 1.1],
+  ['CAMPANA', [0.5, 1, 1.19, 1.5, 2, 2.51, 3.01, 4.2, 5.4], 1.3],
+  ['METALLO', [1, 1.47, 2.09, 2.56, 3.39, 4.17, 4.97, 5.88, 6.79, 7.92], 0.7],
+  ['VETRO', [1, 2.32, 4.25, 6.63, 9.38], 5],
+  ['TAMBURO', [1, 1.59, 2.14, 2.3, 2.65, 2.92, 3.16, 3.5], 0.3]
+];
+const ENGINES = {
+  FM2: {
+    name: 'ATTUALE', sub: 'FM 2-OP (OGGI)',
+    knobs: [['DECAY', (k) => fmtT((0.03 + k * k * 1.5) * 5)], ['COLOR', (k) => Math.round(k * 127)], ['SHAPE', (k) => Math.round(k * 127)], ['CONTOUR', (k) => Math.round(k * 127)]],
+    note: 'Il motore che PONY84 usa oggi per TONE (blocchi nativi del browser, nessun AudioWorklet). È il riferimento per il confronto.',
+    presets: { 'TONE DEMO': { k: [0.31, 0.25, 0.43, 0.37], oct: 3 }, 'BASSO': { k: [0.3, 0.45, 0.1, 0.5], oct: 2 }, 'CAMPANELLO': { k: [0.45, 0.4, 0.85, 0.3], oct: 4 } }
+  },
+  FM4: {
+    name: 'FM 4-OP', sub: 'ALGORITMI + FEEDBACK',
+    knobs: [['ALGORITMO', (k) => String(1 + Math.min(4, Math.floor(k * 5)))], ['BRILLO', (k) => Math.round(k * 200) + '%'], ['RATIO', (k) => '×' + RATIOS[Math.min(10, Math.floor(k * 11))]], ['FEEDBACK', (k) => Math.round(k * 100) + '%'], ['DECAY', (k) => fmtT(decayT(k))], ['MOD DECAY', (k) => Math.round(5 + k * 95) + '%']],
+    note: 'Quattro operatori collegati in 5 modi diversi (ALGORITMO), con feedback sull\'operatore più alto: è la famiglia DX100 / TX81Z / Digitone. RATIO cambia l\'operatore che modula più in alto.',
+    presets: {
+      'E.PIANO': { k: [0.25, 0.42, 0.97, 0.0, 0.62, 0.22], oct: 3, r: [1, 1, 1, 14], l: [0, 1.6, 0, 2.6], c: [1, 0, 0.6, 0] },
+      'BASSO GROWL': { k: [0.05, 0.6, 0.2, 0.55, 0.5, 0.45], oct: 2, r: [1, 1, 2, 1], l: [0, 2.4, 1.6, 1.2], c: [1, 0, 0, 0] },
+      'CAMPANA': { k: [0.65, 0.55, 0.75, 0.1, 0.8, 0.6], oct: 4, r: [1, 3.5, 7.13, 1.41], l: [0, 0, 0, 2.2], c: [1, 0.5, 0.35, 0] },
+      'ORGANO': { k: [0.95, 0.5, 0.3, 0.2, 0.7, 0.9], oct: 3, r: [1, 2, 3, 4], l: [0, 0, 0, 0], c: [1, 0.5, 0.33, 0.25] },
+      'GLITCH': { k: [0.05, 1, 0.9, 0.95, 0.08, 0.5], oct: 4, r: [1, 2.01, 3, 7], l: [0, 3, 2.5, 3], c: [1, 0, 0, 0] }
+    }
+  },
+  PD: {
+    name: 'PHASE DIST.', sub: 'STILE CASIO CZ',
+    knobs: [['ONDA', (k) => ['SAW', 'SQUARE', 'RESO'][Math.min(2, Math.floor(k * 3))]], ['DCW', (k) => Math.round(k * 100) + '%'], ['DCW DECAY', (k) => fmtT(decayT(k))], ['DETUNE', (k) => Math.round(k * 25) + ' cent'], ['DECAY', (k) => fmtT(decayT(k))], ['ATTACK', (k) => fmtT(0.001 + k * k * 0.6)]],
+    note: 'La fase dell\'onda viene "piegata" prima di leggerla: con DCW a 0 è un seno puro, alzandolo diventa dente di sega, quadra o un picco risonante. DCW DECAY fa l\'effetto "filtro che si chiude", senza un filtro vero.',
+    presets: {
+      'CZ BASS': { k: [0.1, 0.85, 0.42, 0, 0.5, 0], oct: 2 },
+      'CZ RESO': { k: [0.9, 1, 0.55, 0, 0.6, 0], oct: 3 },
+      'CZ ARCHI': { k: [0.1, 0.45, 0.85, 0.6, 0.85, 0.55], oct: 3 },
+      'CZ PLUCK': { k: [0.45, 0.9, 0.3, 0.3, 0.45, 0], oct: 4 }
+    }
+  },
+  MODAL: {
+    name: 'MODALE', sub: 'OGGETTI PERCOSSI',
+    knobs: [['MATERIALE', (k) => MATERIALS[Math.min(4, Math.floor(k * 5))][0]], ['BRILLO', (k) => Math.round(k * 100) + '%'], ['DECAY', (k) => fmtT(decayT(k))], ['SMORZA', (k) => Math.round(k * 100) + '%'], ['DUREZZA', (k) => fmtT(0.0003 + (1 - k) * 0.02)], ['STRUTTURA', (k) => (k < 0.5 ? '−' : '+') + Math.round(Math.abs(k - 0.5) * 200) + '%']],
+    note: 'Un colpo di rumore brevissimo eccita tanti risonatori accordati come i modi di vibrazione di un oggetto reale: barra di legno, campana, lamiera, vetro, pelle. Candidato per METAL e PERC.',
+    presets: {
+      'MARIMBA': { k: [0.05, 0.35, 0.62, 0.5, 0.35, 0.5], oct: 3 },
+      'CAMPANA': { k: [0.25, 0.6, 0.85, 0.25, 0.6, 0.5], oct: 3 },
+      'METALLO': { k: [0.45, 0.8, 0.6, 0.35, 0.8, 0.6], oct: 3 },
+      'VETRO': { k: [0.65, 0.7, 0.7, 0.4, 0.9, 0.5], oct: 4 },
+      'TAMBURO': { k: [0.95, 0.4, 0.45, 0.6, 0.5, 0.4], oct: 2 }
+    }
+  }
+};
+const S = { eng: 'FM4', preset: {}, k: {}, oct: {}, playing: false, drums: true, bpm: 120, step: 0, next: 0 };
+for (const id in ENGINES) { const first = Object.keys(ENGINES[id].presets)[0]; S.preset[id] = first; S.k[id] = ENGINES[id].presets[first].k.slice(); S.oct[id] = ENGINES[id].presets[first].oct; }
+
+// parametri concreti di una nota per i motori del worklet
+function noteEvent(id, freq, when, vel, kk) {
+  const k = kk || S.k[id], pr = ENGINES[id].presets[S.preset[id]];
+  if (id === 'FM4') {
+    const algo = Math.min(4, Math.floor(k[0] * 5)), ratios = pr.r.slice(), bright = k[1] * 2;
+    ratios[3] = RATIOS[Math.min(10, Math.floor(k[2] * 11))];
+    const al = [[0], [0, 2], [0], [0, 1, 2], [0, 1, 2, 3]][algo];
+    const car = [0, 1, 2, 3].map((i) => (al.includes(i) ? (pr.c[i] || (i === 0 ? 1 : 0.5)) : 0));
+    const lv = [0, 1, 2, 3].map((i) => (al.includes(i) ? 0 : (pr.l[i] || 1.5) * bright));
+    const decay = decayT(k[4]);
+    return { type: 'FM4', when, freq, vel, p: { algo, ratios, levels: lv, carLevels: car, fb: k[3] * 2.2, decay, modDecay: decay * (0.05 + k[5] * 0.95), attack: 0.001 } };
+  }
+  if (id === 'PD') return { type: 'PD', when, freq, vel, p: { wave: Math.min(2, Math.floor(k[0] * 3)), dcw: k[1], dcwDecay: decayT(k[2]), detune: k[3] * 25, decay: decayT(k[4]), attack: 0.001 + k[5] * k[5] * 0.6 } };
+  const M = MATERIALS[Math.min(4, Math.floor(k[0] * 5))], mat = M[1], st = (k[5] - 0.5) * 0.3;
+  return { type: 'MODAL', when, freq, vel: vel * M[2], p: { ratios: mat.map((r) => Math.pow(r, 1 + st)), bright: k[1], decay: decayT(k[2]), damp: k[3], hard: 0.0003 + (1 - k[4]) * 0.02 } };
+}
+
+// ---------------------------------------------------------------------
+// motore attuale (copia di playFM dell'app) per KICK / METAL / TONE
+// ---------------------------------------------------------------------
+let ctx = null, node = null, master = null, noise = null;
+function playFM(c, dest, v, t, vel = 1) {
+  const out = c.createGain();
+  out.gain.setValueAtTime(0, t); out.gain.linearRampToValueAtTime(0.8 * vel, t + 0.002); out.gain.setTargetAtTime(0, t + 0.002, v.decay);
+  out.connect(dest);
+  const end = t + v.decay * 6 + 0.05;
+  const car = c.createOscillator(), mod = c.createOscillator(), mg = c.createGain(), cg = c.createGain();
+  const fs = v.freq * (1 + v.sweep);
+  car.frequency.setValueAtTime(fs, t); car.frequency.setTargetAtTime(v.freq, t, v.sweepTime);
+  mod.frequency.setValueAtTime(fs * v.ratio, t); mod.frequency.setTargetAtTime(v.freq * v.ratio, t, v.sweepTime);
+  mg.gain.setValueAtTime(v.index * v.freq * v.ratio, t); mg.gain.setTargetAtTime(0, t, v.modDecay);
+  cg.gain.value = 1 - (v.noise || 0) * 0.6;
+  mod.connect(mg); mg.connect(car.frequency); car.connect(cg); cg.connect(out);
+  car.start(t); mod.start(t); car.stop(end); mod.stop(end);
+  if (v.noise > 0 && noise) {
+    const ns = c.createBufferSource(), hp = c.createBiquadFilter(), ng = c.createGain();
+    ns.buffer = noise; ns.loop = true; hp.type = 'highpass'; hp.frequency.value = v.noiseFreq;
+    ng.gain.setValueAtTime(v.noise, t); ng.gain.setTargetAtTime(0, t, v.decay * 0.7);
+    ns.connect(hp); hp.connect(ng); ng.connect(out); ns.start(t, Math.random() * 0.5); ns.stop(end);
+  }
+}
+// voci dell'app: off = minimo fisso di oggi; con after=true il minimo è quasi zero
+function machine(m, K, after) {
+  const n = K.map((x) => x / 127), [a, b, c, d, e, f] = n, z = (x) => (after ? 0.0005 : x);
+  let v;
+  if (m === 'KICK') v = { freq: 30 + a * 90, decay: z(0.05) + b * b * 1.5, index: c * 6, ratio: 0.5 + d * 2.5, sweep: e * 8, sweepTime: 0.005 + f * 0.1, noise: 0 };
+  else if (m === 'METAL') v = { freq: 300 + a * 1700, decay: z(0.01) + b * b * 0.8, index: c * 10, ratio: 1.05 + d * 3, sweep: e, sweepTime: 0.01, noise: f * 0.8, noiseFreq: 6000 };
+  else { const note = 24 + Math.round(a * 60), decay = z(0.03) + b * b * 1.5; v = { freq: 440 * Math.pow(2, (note - 69) / 12), decay, index: c * 6, ratio: 0.5 + d * 3.5, sweep: e * 0.5, sweepTime: 0.02, noise: 0, modDecay: decay * (0.05 + f * 0.95) }; }
+  if (!v.modDecay) v.modDecay = v.decay * 0.4;
+  return v;
+}
+const DEF = { KICK: [25, 57, 25, 25, 48, 32], METAL: [24, 25, 44, 15, 0, 64], TONE: [25, 40, 32, 55, 0, 47] };
+function fm2Voice(freq, k) {   // TONE dell'app con frequenza libera
+  const decay = 0.03 + k[0] * k[0] * 1.5;
+  return { freq, decay, index: k[1] * 6, ratio: 0.5 + k[2] * 3.5, sweep: 0, sweepTime: 0.02, noise: 0, modDecay: decay * (0.05 + k[3] * 0.95) };
+}
+
+async function initAudio() {
+  if (ctx) return;
+  ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+  master = ctx.createGain(); master.gain.value = 0.9; master.connect(ctx.destination);
+  noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+  const nd = noise.getChannelData(0); for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+  const url = URL.createObjectURL(new Blob([WORKLET], { type: 'application/javascript' }));
+  await ctx.audioWorklet.addModule(url);
+  node = new AudioWorkletNode(ctx, 'pony-synth', { numberOfInputs: 0, outputChannelCount: [2] });
+  node.connect(master);
+  node.port.onmessage = (e) => { if (e.data.voices != null) workletVoices = e.data.voices; };
+}
+let workletVoices = 0;
+
+// ---------------------------------------------------------------------
+// pattern: melodia in RE# minore + kick e hat
+// ---------------------------------------------------------------------
+const SCALE = [0, 2, 3, 5, 7, 8, 10];   // minore naturale
+const MEL = [0, null, 7, 0, 10, null, 3, 5, 0, null, 7, 12, 10, 8, 7, 3];   // semitoni dalla tonica
+const ACC = [1, 0, .7, .8, .9, 0, .7, .8, 1, 0, .7, .9, .8, .7, .8, .7];
+const root = (oct) => 440 * Math.pow(2, (3 + 12 * (oct + 1) - 69) / 12);   // RE#
+function playNote(id, freq, t, vel) {
+  if (id === 'FM2') { playFM(ctx, master, fm2Voice(freq, S.k.FM2), t, vel); return; }
+  node.port.postMessage(noteEvent(id, freq, t, vel));
+}
+function schedule() {
+  const spb = 60 / S.bpm / 4;
+  while (S.next < ctx.currentTime + 0.12) {
+    const st = S.step % 16, t = S.next, sw = st % 2 ? spb * 0.08 : 0;
+    if (MEL[st] != null) playNote(S.eng, root(S.oct[S.eng]) * Math.pow(2, MEL[st] / 12), t + sw, ACC[st]);
+    if (S.drums) {
+      if (st % 4 === 0) playFM(ctx, master, machine('KICK', DEF.KICK, false), t, 0.9);
+      if (st % 4 === 2) playFM(ctx, master, machine('METAL', DEF.METAL, false), t + sw, 0.35);
+    }
+    S.step++; S.next += spb;
+  }
+}
+let timer = null;
+async function togglePlay() {
+  await initAudio(); if (ctx.state === 'suspended') await ctx.resume();
+  S.playing = !S.playing;
+  clearInterval(timer);
+  if (S.playing) { S.step = 0; S.next = ctx.currentTime + 0.05; timer = setInterval(schedule, 25); schedule(); }
+  $('playBtn').classList.toggle('on', S.playing); $('playBtn').setAttribute('aria-pressed', S.playing);
+  $('playBtn').textContent = S.playing ? '■ STOP' : '▶ PLAY';
+  lcd();
+}
+function lcd() {
+  $('lcdL').textContent = (S.playing ? '▶ ' : '■ ') + ENGINES[S.eng].name + ' · ' + S.preset[S.eng];
+}
+setInterval(() => { $('lcdR').textContent = 'VOCI ' + workletVoices; }, 250);
+
+// ---------------------------------------------------------------------
+// interfaccia
+// ---------------------------------------------------------------------
+const $ = (id) => document.getElementById(id);
+function drawEngines() {
+  $('engines').innerHTML = '';
+  for (const id in ENGINES) {
+    const b = document.createElement('button');
+    b.className = 'hw seg'; b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', String(id === S.eng));
+    b.innerHTML = ENGINES[id].name + '<small>' + ENGINES[id].sub + '</small>';
+    b.onclick = () => { S.eng = id; drawEngines(); drawEngine(); lcd(); };
+    $('engines').appendChild(b);
+  }
+}
+function drawEngine() {
+  const E = ENGINES[S.eng];
+  $('presets').innerHTML = '';
+  for (const name in E.presets) {
+    const b = document.createElement('button');
+    b.className = 'pre'; b.textContent = name; b.setAttribute('aria-pressed', String(name === S.preset[S.eng]));
+    b.onclick = () => { S.preset[S.eng] = name; S.k[S.eng] = E.presets[name].k.slice(); S.oct[S.eng] = E.presets[name].oct; drawEngine(); lcd(); audition(); };
+    $('presets').appendChild(b);
+  }
+  $('knobs').innerHTML = '';
+  E.knobs.forEach(([label, fmt], i) => {
+    const w = document.createElement('label'); w.className = 'kn';
+    w.innerHTML = '<span class="top"><b>' + label + '</b><output></output></span><input type="range" min="0" max="1000" aria-label="' + label + '">';
+    const inp = w.querySelector('input'), out = w.querySelector('output');
+    inp.value = Math.round(S.k[S.eng][i] * 1000); out.textContent = fmt(S.k[S.eng][i]);
+    inp.oninput = () => { S.k[S.eng][i] = inp.value / 1000; out.textContent = fmt(S.k[S.eng][i]); };
+    inp.onchange = () => { if (!S.playing) audition(); };
+    $('knobs').appendChild(w);
+  });
+  $('engNote').textContent = E.note;
+  drawPads();
+}
+async function audition(deg = 0) {
+  await initAudio(); if (ctx.state === 'suspended') await ctx.resume();
+  const st = SCALE[deg % 7] + 12 * Math.floor(deg / 7);
+  playNote(S.eng, root(S.oct[S.eng]) * Math.pow(2, st / 12), ctx.currentTime + 0.01, 1);
+}
+function drawPads() {
+  const names = ['RE#', 'FA', 'FA#', 'SOL#', 'LA#', 'SI', 'DO#'];
+  $('pads').innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const b = document.createElement('button');
+    b.className = 'pad' + (i % 7 === 0 ? ' root' : ''); b.textContent = names[i % 7] + (S.oct[S.eng] + Math.floor(i / 7));
+    b.onpointerdown = (e) => { e.preventDefault(); b.classList.add('hit'); audition(i); };
+    const up = () => b.classList.remove('hit');
+    b.onpointerup = up; b.onpointerleave = up; b.onpointercancel = up;
+    $('pads').appendChild(b);
+  }
+}
+function drawAB() {
+  const rows = [['KICK', 'KICK'], ['METAL', 'METAL'], ['TONE', 'TONE']];
+  $('ab').innerHTML = '';
+  for (const [label, m] of rows) {
+    const s = document.createElement('span'); s.textContent = label; $('ab').appendChild(s);
+    for (const after of [false, true]) {
+      const b = document.createElement('button'); b.className = 'hw btn';
+      const K = DEF[m].slice(); K[1] = 0;
+      const v = machine(m, K, after);
+      b.textContent = (after ? 'DOPO · ' : 'PRIMA · ') + fmtT(v.decay * 6.9).replace(' ', '');
+      b.onclick = async () => { await initAudio(); if (ctx.state === 'suspended') await ctx.resume(); playFM(ctx, master, machine(m, K, after), ctx.currentTime + 0.01, 1); };
+      $('ab').appendChild(b);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------
+// test di carico: rendering offline di 16 voci per motore
+// ---------------------------------------------------------------------
+async function bench() {
+  const btn = $('benchBtn'); btn.disabled = true;
+  const SEC = 3, SR = 48000, VOICES = 16, results = [];
+  const tests = [['ATTUALE FM2', 'FM2'], ['FM 4-OP', 'FM4'], ['PHASE DIST.', 'PD'], ['MODALE', 'MODAL']];
+  const longK = { FM2: [1, 0.4, 0.4, 0.8], FM4: [0, 0.6, 0.5, 0.5, 0.95, 0.9], PD: [0.1, 0.9, 0.9, 0.6, 0.95, 0], MODAL: [0.45, 0.8, 0.95, 0.1, 0.8, 0.6] };
+  for (const [label, id] of tests) {
+    $('benchMsg').textContent = 'TEST: ' + label + '…';
+    await new Promise((r) => setTimeout(r, 50));
+    let best = Infinity;
+    for (let rep = 0; rep < 2; rep++) {
+      const oc = new OfflineAudioContext(2, SEC * SR, SR);
+      const freqs = [...Array(VOICES).keys()].map((i) => 110 * Math.pow(2, i / 7));
+      if (id === 'FM2') {
+        const g = oc.createGain(); g.gain.value = 0.1; g.connect(oc.destination);
+        freqs.forEach((f) => { const v = fm2Voice(f, longK.FM2); v.decay = 3; playFM(oc, g, v, 0.001, 0.5); });
+      } else {
+        const url = URL.createObjectURL(new Blob([WORKLET], { type: 'application/javascript' }));
+        await oc.audioWorklet.addModule(url);
+        const events = freqs.map((f) => { const e = noteEvent(id, f, 0, 0.5, longK[id]); e.p.decay = 30; if (e.p.modDecay) e.p.modDecay = 30; return e; });
+        const n = new AudioWorkletNode(oc, 'pony-synth', { numberOfInputs: 0, outputChannelCount: [2], processorOptions: { events } });
+        n.connect(oc.destination);
+      }
+      const t0 = performance.now(); await oc.startRendering(); const dt = (performance.now() - t0) / 1000;
+      best = Math.min(best, dt);
+    }
+    results.push([label, best / SEC]);
+  }
+  const tb = $('benchTab').querySelector('tbody'); tb.innerHTML = '';
+  for (const [label, frac] of results) {
+    const pct = frac * 100, max = Math.max(1, Math.floor(VOICES * 0.5 / frac));
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + label + '</td><td><div class="bar"><i style="width:' + Math.min(100, pct) + '%"' + (pct > 60 ? ' class="hot"' : '') + '></i></div></td><td class="num">' + (pct < 1 ? pct.toFixed(1) : Math.round(pct)) + '%</td><td class="num">' + (max > 200 ? '200+' : max) + '</td>';
+    tb.appendChild(tr);
+  }
+  $('benchTab').hidden = false; $('benchNote').hidden = false;
+  $('benchMsg').textContent = 'FATTO · ' + (navigator.userAgentData && navigator.userAgentData.platform ? navigator.userAgentData.platform : '') + ' · 48 kHz';
+  window.benchResults = results;
+  btn.disabled = false;
+}
+
+$('playBtn').onclick = togglePlay;
+$('drumBtn').onclick = () => { S.drums = !S.drums; $('drumBtn').classList.toggle('on', S.drums); $('drumBtn').setAttribute('aria-pressed', S.drums); $('drumBtn').textContent = 'BATTERIA ' + (S.drums ? 'ON' : 'OFF'); };
+$('bpm').oninput = () => { S.bpm = Number($('bpm').value); $('bpmOut').textContent = S.bpm; };
+$('benchBtn').onclick = () => bench().catch((e) => { $('benchMsg').textContent = 'ERRORE: ' + e.message; $('benchBtn').disabled = false; });
+document.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); togglePlay(); } });
+drawEngines(); drawEngine(); drawAB(); lcd();
+</script>
+</body>
+</html>
