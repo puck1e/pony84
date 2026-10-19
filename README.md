@@ -1,11 +1,14 @@
 # PONY84
 
+Versione **0.6.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
+
 Groovebox ispirata a Elektron Model:Cycles e alla Roland SP-404, con i colori della 808.
 Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer a 6 canali.
 
 ## Struttura
 
 - `web/guide/` — la guida completa (italiano/inglese), online su `/guide/`.
+- `web/novita/` — le novità di ogni versione (italiano/inglese), online su `/novita/`; la stessa lista è in `CHANGELOG.md`.
 - `web/lab/` — laboratorio dei motori di sintesi (confronto, decay prima/dopo, test di carico), online su `/lab/`.
 - `web/vendor/movewire/` — libreria movewire 0.1.0 di Aureliano Bergese (MIT) per l'Ableton Move.
 - `web/` — la webapp giocabile (un solo file `index.html`, Web Audio API). È la cartella che pubblica Cloudflare.
