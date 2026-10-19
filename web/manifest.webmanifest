@@ -1,0 +1,23 @@
+{
+  "name": "PONY84",
+  "short_name": "PONY84",
+  "description": "Groovebox FM e sample: sequencer a 16 step, SYNTH, scatter e mixer. Di Sad Pony Girl.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "it",
+  "categories": ["music", "entertainment"],
+  "background_color": "#23211e",
+  "theme_color": "#23211e",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Guida", "url": "/guide/", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Novità", "url": "/novita/", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

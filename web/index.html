@@ -6,6 +6,9 @@
 <meta name="theme-color" content="#23211e">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <title>PONY84</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <script>try { if (localStorage.getItem('pony84-skin') === 'spg') document.documentElement.dataset.skin = 'spg'; } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Narrow:wght@500;600;700&family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,800&family=DM+Mono:wght@400;500&family=VT323&display=swap">
@@ -257,6 +260,11 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .mbtn.on { background: var(--cream); color: var(--ink); }
 .mnote { margin: 0; font-size: 15px; line-height: 1.35; color: var(--muted); max-width: 60ch; }
 .mnote b { color: var(--cream); font-weight: 700; }
+.ghost.news.fresh { position: relative; }
+.ghost.news.fresh::after, .logo .caret.fresh::after { content: ""; position: absolute; top: -4px; right: -4px; width: 9px; height: 9px; border-radius: 50%; background: var(--led); box-shadow: 0 0 6px var(--led); }
+.logo .caret { position: relative; }
+.mmsg.ver { color: var(--muted); }
+.mbtn.install { grid-column: 1 / -1; background: var(--orange); color: var(--ink); }
 .mlist { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
 .mmsg { margin: 0; min-height: 16px; font-family: var(--mono); font-size: 12px; letter-spacing: .5px; color: var(--lcd); }
 .learnbar { position: fixed; left: 50%; transform: translateX(-50%); top: calc(8px + env(safe-area-inset-top, 0px)); z-index: 25; max-width: calc(100% - 24px);
@@ -601,6 +609,7 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
     <div class="row-between">
       <b class="sheet-title" id="menuTitle">PROGETTO &amp; MIDI</b>
       <span class="rtop">
+        <a class="ghost news" id="newsLink" href="novita/" target="_blank" rel="noopener">NOVITÀ</a>
         <a class="ghost" href="guide/" target="_blank" rel="noopener">GUIDA</a>
         <button class="ghost" data-act="menuClose">CHIUDI</button>
       </span>
@@ -613,6 +622,7 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
         <button class="hw mbtn" data-act="import">IMPORTA FILE</button>
         <button class="hw mbtn" data-act="newp" data-k="empty">NUOVO VUOTO</button>
         <button class="hw mbtn" data-act="newp" data-k="demo">NUOVO DA DEMO</button>
+        <button class="hw mbtn install" data-act="install" id="installBtn" hidden>INSTALLA L'APP</button>
       </div>
       <input type="file" id="projInput" accept=".pony84,application/json" hidden>
       <p class="mmsg" id="projMsg" aria-live="polite"></p>
@@ -651,6 +661,7 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
       <p class="mmsg" id="moveMsg" aria-live="polite">MOVE NON COLLEGATA</p>
       <p class="mnote">Collega la Move via USB-C (con Ableton Live chiuso) e consenti l'accesso MIDI completo (SysEx). La Move diventa il controller di PONY84: step, pad, encoder e LED. Grazie a <a href="https://github.com/auridevil/movewire" target="_blank" rel="noopener">movewire</a> di Auri. La mappatura completa è nella guida.</p>
     </section>
+    <p class="mmsg ver" id="verLine"></p>
   </div>
 </div>
 
@@ -713,6 +724,7 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
+const VERSION = '0.7.0';   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
 const SAMPLE_LABELS = ['PITCH', 'START', 'END', 'DECAY', 'FILTER', 'GAIN', 'DELAY', 'REVERB'];
@@ -1586,13 +1598,14 @@ function tick() {
 function play() {
   initAudio();
   if (ctx.state === 'suspended') ctx.resume();
-  if (playing) { playing = false; clearTimeout(timer); restartRollLoop(); drawHeader(); drawLcd(); return; }
-  playing = true;
+  if (playing) { playing = false; keepAwake(false); clearTimeout(timer); restartRollLoop(); drawHeader(); drawLcd(); return; }
+  playing = true; keepAwake(true);
   if (UI.head < 0) count = 0;
   nextTime = ctx.currentTime + 0.06;
   tick(); drawHeader(); drawLcd();
 }
 function stop() {
+  keepAwake(false);
   playing = false; clearTimeout(timer); uiQ.length = 0; count = 0; UI.head = -1;
   if (UI.pendingPat !== null) { P.cur = UI.pendingPat; UI.pendingPat = null; }
   restartRollLoop();
@@ -2663,6 +2676,7 @@ function onAct(b) {
   if (act === 'menuClose') { closeMenu(); return; }
   if (act === 'skin') { setSkin(b.dataset.k, true); return; }
   if (act === 'export') { exportProject(); return; }
+  if (act === 'install') { installApp(); return; }
   if (act === 'import') { projInput.click(); return; }
   if (act === 'newp') {
     const k = b.dataset.k;
@@ -2983,6 +2997,40 @@ function setSkin(k, save) {
 }
 setSkin(document.documentElement.dataset.skin === 'spg' ? 'spg' : '808', false);
 setInterval(vhsDate, 30000);
+// versione e "novità non ancora lette" (pallino sul logo e sul tasto NOVITÀ)
+$('verLine').textContent = 'PONY84 v' + VERSION;
+function markNews() {
+  let seen = null; try { seen = localStorage.getItem('pony84-seen'); } catch (e) { /* ok */ }
+  const fresh = seen !== VERSION;
+  $('newsLink').classList.toggle('fresh', fresh);
+  document.querySelector('.logo .caret').classList.toggle('fresh', fresh);
+}
+$('newsLink').addEventListener('click', () => { try { localStorage.setItem('pony84-seen', VERSION); } catch (e) { /* ok */ } markNews(); });
+markNews();
+
+// ---------- app installabile (PWA) ----------
+let installEvt = null;
+const standalone = () => window.matchMedia('(display-mode: standalone)').matches || window.matchMedia('(display-mode: fullscreen)').matches;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; $('installBtn').hidden = standalone(); });
+window.addEventListener('appinstalled', () => { installEvt = null; $('installBtn').hidden = true; projMsg('PONY84 INSTALLATA: LA TROVI TRA LE APP'); });
+async function installApp() {
+  if (!installEvt) return;
+  installEvt.prompt();
+  try { await installEvt.userChoice; } catch (e) { /* ok */ }
+  installEvt = null; $('installBtn').hidden = true;
+}
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* senza offline */ }));
+}
+// schermo sempre acceso mentre il sequencer suona
+let wakeLock = null;
+async function keepAwake(on) {
+  try {
+    if (on && !wakeLock && navigator.wakeLock && document.visibilityState === 'visible') { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); }
+    else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch (e) { wakeLock = null; }
+}
+document.addEventListener('visibilitychange', () => { if (playing && document.visibilityState === 'visible') keepAwake(true); });
 if (/[?&]test\b/.test(location.search)) window.__t = (code) => eval(code);   // solo per i test automatici (?test)
 })();
 </script>
