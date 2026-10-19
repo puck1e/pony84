@@ -7,13 +7,13 @@ Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer
 
 - `web/guide/` — la guida completa (italiano/inglese), online su `/guide/`.
 - `web/vendor/movewire/` — libreria movewire 0.1.0 di Aureliano Bergese (MIT) per l'Ableton Move.
-- `web/` — la webapp giocabile (un solo file `index.html`, Web Audio API). È la cartella che pubblica Netlify.
+- `web/` — la webapp giocabile (un solo file `index.html`, Web Audio API). È la cartella che pubblica Cloudflare.
 - `prototype/` — il prototipo Python che genera un groove in `groove.wav`.
 - `prototype/samples/` — i WAV per il motore SAMPLE.
 
 ## Provare la webapp
 
-Apri `web/index.html` nel browser, oppure pubblicala con Netlify (vedi sotto) e aprila dal telefono.
+Online: **https://pony84.raptuzbass.workers.dev** (la guida è su `/guide/`). In locale: apri `web/index.html` nel browser.
 
 - **Tracce**: 6 tracce, ognuna assegnabile a KICK, SNARE, METAL, PERC, TONE o SAMPLE.
 - **WAVE** (motore SAMPLE): editor della forma d'onda con maniglie START/END, zoom fino a 64× e ascolto; in P-LOCK i punti valgono per il singolo step. Su Android, CARICA WAV permette anche di registrare un audio al momento.
@@ -47,6 +47,10 @@ pip install numpy
 python groovebox.py
 ```
 
-## Pubblicare su Netlify
+## Pubblicare su Cloudflare
 
-Collega il repository su Netlify ("Add new site" → "Import an existing project"): la cartella da pubblicare (`web`) è già indicata in `netlify.toml`, non serve nessun comando di build.
+Il sito è un Worker di Cloudflare con soli file statici, collegato a questo repository: ogni commit su `main` viene pubblicato da solo in circa mezzo minuto (scheda *Deployments* nella dashboard di Cloudflare).
+
+- La configurazione è in `wrangler.jsonc`: nome del Worker (`pony84`) e cartella da pubblicare (`web`). Non serve nessun comando di build.
+- Le richieste ai file statici non hanno costi né limiti mensili sul piano gratuito.
+- Nota: progetto, WAV e mappature MIDI salvati nel browser sono legati all'indirizzo del sito. Cambiando indirizzo, usa ESPORTA FILE sul vecchio e IMPORTA FILE sul nuovo.
