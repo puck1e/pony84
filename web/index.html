@@ -124,6 +124,8 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .led.head { outline: 2px solid var(--cream); outline-offset: 2px; }
 .key { width: 100%; height: clamp(34px, 4.8dvh, 46px); border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border-bottom: 5px solid var(--shade); color: var(--ink); }
 .key .n { font-size: 12px; font-weight: 700; }
+.key { position: relative; touch-action: none; }
+.key .vb { position: absolute; left: 5px; bottom: 3px; height: 3px; border-radius: 2px; background: currentColor; opacity: .75; pointer-events: none; }
 .key .s { font-family: var(--mono); font-size: 9px; line-height: 1; min-height: 9px; }
 .g0 { background: var(--red); color: var(--white); }
 .g1 { background: var(--orange); }
@@ -638,6 +640,15 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
       </div>
     </section>
 
+    <section class="sec" aria-label="Audio">
+      <span class="label">AUDIO</span>
+      <div class="mgrid" role="radiogroup" aria-label="Modalità audio">
+        <button class="hw mbtn" data-act="audioMode" data-k="fast" role="radio">BASSA LATENZA</button>
+        <button class="hw mbtn" data-act="audioMode" data-k="stable" role="radio">STABILE</button>
+      </div>
+      <p class="mnote">Se in cuffia senti piccoli click o crepitii, scegli <b>STABILE</b>: il suono parte qualche millesimo di secondo più tardi ma il telefono ha più margine. L'app si riavvia, il progetto resta.</p>
+    </section>
+
     <section class="sec" aria-label="Controller MIDI">
       <span class="label">CONTROLLER MIDI</span>
       <div class="mgrid">
@@ -725,7 +736,8 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
-const VERSION = '0.7.1';   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
+const VERSION = '0.8.0';
+const audioMode = () => { try { return localStorage.getItem('pony84-audio') === 'stable' ? 'stable' : 'fast'; } catch (e) { return 'fast'; } };   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
 const SAMPLE_LABELS = ['PITCH', 'START', 'END', 'DECAY', 'FILTER', 'GAIN', 'DELAY', 'REVERB'];
@@ -930,6 +942,7 @@ function save() {
 // stato dell'interfaccia
 const UI = { view: 'seq', track: 0, mode: 'TRIG', fx: false, selStep: null, latch: false, scatter: null, head: -1, pendingPat: null, rec: false, lastNote: '' };
 const VIEWS = ['seq', 'mix', 'roll'];
+let velDrag = null, velSuppress = false;   // trascinamento della velocity sugli step (vedi sotto)
 UI.wide = false;
 const shows = (v) => UI.wide || UI.view === v;   // nella vista larga si vedono tutte e tre
 const WIDE_MQ = window.matchMedia('(min-width: 900px) and (min-height: 600px) and (orientation: landscape)');
@@ -1002,17 +1015,16 @@ const stepDur = () => 60 / P.fx.tempo / 4;
 function initAudio() {
   if (ctx) return;
   const AC = window.AudioContext || window.webkitAudioContext;
-  ctx = new AC({ latencyHint: 'interactive' });
+  ctx = new AC({ latencyHint: audioMode() === 'stable' ? 'playback' : 'interactive' });
   const sr = ctx.sampleRate;
   A.bus = ctx.createGain();
-  A.sp = ctx.createScriptProcessor(1024, 2, 2);
   A.pre = ctx.createGain(); A.pre.gain.value = 0.7;
   A.shaper = ctx.createWaveShaper(); A.shaper.oversample = '2x';
   A.master = ctx.createGain();
   // catena master: somma → scatter → effetti MASTER → drive → volume
   A.busNodes = [0, 1, 2, 3].map(() => ({ in: ctx.createGain(), out: ctx.createGain(), fx: [null, null, null] }));
   for (let b = 0; b < 3; b++) A.busNodes[b].out.connect(A.bus);
-  A.bus.connect(A.sp); A.sp.connect(A.busNodes[3].in); A.busNodes[3].out.connect(A.pre);
+  A.bus.connect(A.busNodes[3].in); A.busNodes[3].out.connect(A.pre);   // lo SCATTER si inserisce qui appena è pronto (loadScatter)
   A.pre.connect(A.shaper); A.shaper.connect(A.master); A.master.connect(ctx.destination);
   A.ducks = [];
   loadLofi();
@@ -1082,6 +1094,7 @@ function makeImpulse(sec) {
 let revTimer = null;
 function applyFx() {
   if (!ctx) return;
+  scatterTempo();
   const t = ctx.currentTime, f = P.fx;
   A.dly.delayTime.setTargetAtTime(dlySteps(f.dlyT) * stepDur(), t, 0.05);
   A.dFb.gain.setTargetAtTime(f.dlyFb / 127 * 0.9, t, 0.02);
@@ -1124,7 +1137,11 @@ function trigger(ti, step, t) {
   else if (tr.machine === 'SYNTH' && tr.model !== 'FM2' && A.synth) {
     const freq = voiceParams('SYNTH', K).freq * mul;
     A.synth.port.postMessage(synthEvent(tr.model, K, freq, t, vel, ti));
-  } else { const v = voiceParams(tr.machine, K); v.freq *= mul; playFM(ti, v, t, vel); }
+  } else {
+    const v = voiceParams(tr.machine, K); v.freq *= mul;
+    if (vel < 1) { v.index *= 0.45 + 0.55 * vel; if (v.noise) v.noise *= 0.6 + 0.4 * vel; }   // colpi piano = meno armoniche
+    playFM(ti, v, t, vel, CHOKE.includes(tr.machine));
+  }
   if (audible(ti)) A.ducks.forEach((d) => d.src === ti && d.duck(t, vel));   // sidechain
 }
 
@@ -1197,7 +1214,11 @@ class PonySynth extends AudioWorkletProcessor {
       v.exLen = Math.max(8, p.hard * sr); v.ka = k60(p.decay * 1.2); v.amp = 1; v.att = 0;
     }
     this.v.push(v);
-    if (this.v.length > 32) this.v.shift();   // al massimo 32 voci: si spegne la più vecchia
+    if (this.v.length > 32) {   // troppe voci: la più vecchia sfuma in 6 ms invece di sparire di colpo (niente clic)
+      const old = this.v.find((x) => !x.rel);
+      if (old) { old.rel = true; old.att = Math.min(old.att, old.n); old.ka = k60(0.006); }
+      if (this.v.length > 40) this.v.shift();
+    }
   }
   process(inputs, outputs) {
     const N = outputs[0][0].length, t0 = currentTime, t1 = t0 + N / sampleRate;
@@ -1252,15 +1273,15 @@ function loadSynth() {
 }
 // parametri di una nota dei modelli nuovi (manopole 0..127)
 function synthEvent(model, K, freq, t, vel, ti) {
-  const n = (i) => K[i] / 127, decay = decayT(K[1]);
+  const n = (i) => K[i] / 127, decay = decayT(K[1]), soft = Math.min(1, vel);   // velocity: i colpi piano sono anche più scuri
   if (model === 'FM4') {
     const algo = zone(K[2], 5), car = [[0], [0, 2], [0], [0, 1, 2], [0, 1, 2, 3]][algo], bright = n(4) * 2;
     const ratios = [1, 2, 1, FM4_RATIOS[zone(K[3], 11)]], lv = [0, 1.8, 1.5, 2.2], cl = [1, 0.6, 0.6, 0.4];
-    return { type: 'FM4', when: t, ti, freq, vel, p: { algo, ratios, levels: lv.map((l, i) => (car.includes(i) ? 0 : l * bright)), carLevels: cl.map((c, i) => (car.includes(i) ? c : 0)), fb: n(5) * 2.2, decay, modDecay: decay * 0.4 } };
+    return { type: 'FM4', when: t, ti, freq, vel, p: { algo, ratios, levels: lv.map((l, i) => (car.includes(i) ? 0 : l * bright * (0.45 + 0.55 * soft))), carLevels: cl.map((c, i) => (car.includes(i) ? c : 0)), fb: n(5) * 2.2, decay, modDecay: decay * 0.4 } };
   }
-  if (model === 'CZ') return { type: 'CZ', when: t, ti, freq, vel, p: { wave: zone(K[2], 3), dcw: n(3), dcwDecay: decayT(K[4]), detune: n(5) * 25, decay } };
+  if (model === 'CZ') return { type: 'CZ', when: t, ti, freq, vel, p: { wave: zone(K[2], 3), dcw: n(3) * (0.5 + 0.5 * soft), dcwDecay: decayT(K[4]), detune: n(5) * 25, decay } };
   const M = MATERIALS[zone(K[2], 5)];
-  return { type: 'MODAL', when: t, ti, freq, vel: vel * M[2], p: { ratios: M[1], bright: n(3), decay, damp: n(4), hard: 0.0003 + (1 - n(5)) * 0.02 } };
+  return { type: 'MODAL', when: t, ti, freq, vel: vel * M[2], p: { ratios: M[1], bright: n(3) * (0.5 + 0.5 * soft), decay, damp: n(4), hard: (0.0003 + (1 - n(5)) * 0.02) * (1 + (1 - soft) * 2) } };
 }
 const busOf = (b) => (b === 3 ? P.mix.master : P.mix.buses[b]);
 const G = (v = 1) => { const g = ctx.createGain(); g.gain.value = v; return g; };
@@ -1447,8 +1468,17 @@ function fxFmt(type, i, v) {
   return String(v);
 }
 
-function playFM(ti, v, t, vel = 1) {
+const CHOKE = ['KICK', 'SNARE', 'METAL', 'PERC'];
+function playFM(ti, v, t, vel = 1, choke = false) {
   const out = ctx.createGain();
+  if (choke) {   // come sulle drum machine: il colpo nuovo chiude in 4 ms la coda del precedente
+    const prev = A.tr[ti].last;
+    if (prev && prev.end > t) {
+      try { prev.out.gain.cancelAndHoldAtTime ? prev.out.gain.cancelAndHoldAtTime(t) : prev.out.gain.cancelScheduledValues(t); } catch (e) { /* ok */ }
+      prev.out.gain.setTargetAtTime(0, t, 0.004);
+      prev.srcs.forEach((n) => { try { n.stop(t + 0.03); } catch (e) { /* ok */ } });
+    }
+  }
   out.gain.setValueAtTime(0, t);
   out.gain.linearRampToValueAtTime(0.8 * vel, t + 0.002);
   out.gain.setTargetAtTime(0, t + 0.002, v.decay);
@@ -1462,6 +1492,7 @@ function playFM(ti, v, t, vel = 1) {
   cg.gain.value = 1 - (v.noise || 0) * 0.6;
   mod.connect(mg); mg.connect(car.frequency); car.connect(cg); cg.connect(out);
   car.start(t); mod.start(t); car.stop(end); mod.stop(end);
+  const srcs = [car, mod];
   if (v.noise > 0) {
     const ns = ctx.createBufferSource(), hp = ctx.createBiquadFilter(), ng = ctx.createGain();
     ns.buffer = A.noise; ns.loop = true;
@@ -1469,7 +1500,9 @@ function playFM(ti, v, t, vel = 1) {
     ng.gain.setValueAtTime(v.noise, t); ng.gain.setTargetAtTime(0, t, v.decay * 0.7);
     ns.connect(hp); hp.connect(ng); ng.connect(out);
     ns.start(t, Math.random() * 0.5); ns.stop(end);
+    srcs.push(ns);
   }
+  if (choke) A.tr[ti].last = { out, srcs, end };
   car.onended = () => out.disconnect();
 }
 
@@ -1493,7 +1526,7 @@ function playSample(ti, K, t, mul = 1, vel = 1) {
   const real = Math.max(0.006, len / rate);
   const src = ctx.createBufferSource(), lp = ctx.createBiquadFilter(), g = ctx.createGain(), fg = ctx.createGain();
   src.buffer = rev ? reversedOf(buf) : buf; src.playbackRate.value = rate;
-  lp.type = 'lowpass'; lp.frequency.value = 200 * Math.pow(100, n(K[4])); lp.Q.value = 0.7;
+  lp.type = 'lowpass'; lp.frequency.value = 200 * Math.pow(100, n(K[4])) * (vel < 1 ? 0.3 + 0.7 * vel : 1); lp.Q.value = 0.7;
   const gain = n(K[5]) * 1.6 * vel;
   g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + 0.003);
   if (K[3] < 127) g.gain.setTargetAtTime(0, t + 0.003, DMIN + Math.pow(n(K[3]), 2) * 3);
@@ -1506,12 +1539,83 @@ function playSample(ti, K, t, mul = 1, vel = 1) {
 // ===================================================================
 // SCATTER: buffer circolare sul master, stutter in tempo
 // ===================================================================
+// lo SCATTER gira in un AudioWorklet, sul thread dell'audio: l'interfaccia non può più farlo "inciampare".
+// Se il browser non ha gli AudioWorklet si usa il vecchio ScriptProcessor.
+const SCATTER_SRC = `class PonyScatter extends AudioWorkletProcessor {
+  constructor() {
+    super();
+    this.N = Math.floor(sampleRate * 4); this.rL = new Float32Array(this.N); this.rR = new Float32Array(this.N); this.w = 0;
+    this.S = { target: false, engage: false, req: null, cur: null, type: null, mix: 0, start: 0, k: 0, rp: 0, g: 1 };
+    this.step = Math.round(sampleRate * 0.125);
+    this.port.onmessage = (e) => { const d = e.data, S = this.S; if (d.step) this.step = d.step; if (d.on) { S.req = d.on; S.engage = true; S.target = true; } if (d.off) S.target = false; };
+  }
+  process(ins, outs) {
+    const inp = ins[0], out = outs[0], oL = out[0], oR = out[1] || out[0], n = oL.length;
+    const iL = inp && inp[0] ? inp[0] : null, iR = inp && inp[1] ? inp[1] : iL;
+    const S = this.S, N = this.N, rL = this.rL, rR = this.rR, step = Math.max(64, this.step);
+    const pick = () => ['REPEAT', 'STUTTER', 'REVERSE', 'GATE', 'TAPESTOP'][Math.floor(Math.random() * 5)];
+    const at = (arr, i) => arr[((i % N) + N) % N];
+    const atf = (arr, x) => { const i = Math.floor(x), f = x - i; return at(arr, i) * (1 - f) + at(arr, i + 1) * f; };
+    if (S.engage) { S.engage = false; S.type = S.req; S.cur = S.type === 'RANDOM' ? pick() : S.type; S.start = this.w; S.k = 0; S.rp = this.w; S.g = 1; }
+    let w = this.w;
+    for (let i = 0; i < n; i++) {
+      const l = iL ? iL[i] : 0, r = iR ? iR[i] : 0;
+      rL[w] = l; rR[w] = r;
+      S.mix += ((S.target ? 1 : 0) - S.mix) * 0.004;
+      let el = l, er = r;
+      if (S.mix > 0.0005 && S.cur) {
+        let k = S.k;
+        if (S.type === 'RANDOM' && k >= 4 * step) { S.cur = pick(); S.start = w; S.rp = w; k = 0; }
+        S.k = k + 1;
+        if (S.cur === 'REPEAT') {
+          const L = step;
+          if (k >= L) { const p = k % L, wn = Math.min(1, p / 48, (L - p) / 48); el = at(rL, S.start + p) * wn; er = at(rR, S.start + p) * wn; }
+        } else if (S.cur === 'STUTTER') {
+          const L0 = 2 * step;
+          if (k >= L0) { const stage = Math.min(3, Math.floor(k / L0) - 1), L = Math.max(32, L0 >> stage), p = k % L, wn = Math.min(1, p / 24, (L - p) / 24); el = at(rL, S.start + p) * wn; er = at(rR, S.start + p) * wn; }
+        } else if (S.cur === 'REVERSE') {
+          const L = 2 * step;
+          if (k >= L) { const p = k % L, wn = Math.min(1, p / 48, (L - p) / 48); el = at(rL, S.start + L - 1 - p) * wn; er = at(rR, S.start + L - 1 - p) * wn; }
+        } else if (S.cur === 'GATE') {
+          const per = Math.max(8, step >> 1);
+          S.g += (((k % per) < per / 2 ? 1 : 0) - S.g) * 0.05; el = l * S.g; er = r * S.g;
+        } else if (S.cur === 'TAPESTOP') {
+          const sp = Math.max(0, 1 - k / (4 * step)); S.rp += sp; const amp = Math.sqrt(sp);
+          el = atf(rL, S.rp) * amp; er = atf(rR, S.rp) * amp;
+        }
+      }
+      oL[i] = l * (1 - S.mix) + el * S.mix;
+      oR[i] = r * (1 - S.mix) + er * S.mix;
+      w = (w + 1) % N;
+    }
+    this.w = w;
+    return true;
+  }
+}
+registerProcessor('pony-scatter', PonyScatter);`;
 function setupScatter() {
+  A.scatter = { node: null, sp: null };
+  const fallback = () => { if (!A.scatter.node && !A.scatter.sp) setupScatterSP(); };
+  if (!ctx.audioWorklet) { fallback(); return; }
+  const url = URL.createObjectURL(new Blob([SCATTER_SRC], { type: 'application/javascript' }));
+  ctx.audioWorklet.addModule(url).then(() => {
+    const node = new AudioWorkletNode(ctx, 'pony-scatter', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], channelCount: 2, channelCountMode: 'explicit' });
+    A.bus.disconnect(); A.bus.connect(node); node.connect(A.busNodes[3].in);
+    A.scatter.node = node;
+    scatterTempo();
+  }).catch(fallback);
+}
+function scatterTempo() {   // lunghezza di uno step in campioni, per REPEAT, STUTTER e gli altri
+  if (A.scatter && A.scatter.node) A.scatter.node.port.postMessage({ step: Math.max(64, Math.round(ctx.sampleRate * stepDur())) });
+}
+function setupScatterSP() {
+  A.sp = ctx.createScriptProcessor(1024, 2, 2);
+  A.bus.disconnect(); A.bus.connect(A.sp); A.sp.connect(A.busNodes[3].in);
   const N = Math.floor(ctx.sampleRate * 4);
   const rL = new Float32Array(N), rR = new Float32Array(N);
   let w = 0;
   const S = { target: false, engage: false, req: null, cur: null, mix: 0, start: 0, k: 0, rp: 0, g: 1 };
-  A.scatter = S;
+  A.scatter.sp = S;
   const pick = () => ['REPEAT', 'STUTTER', 'REVERSE', 'GATE', 'TAPESTOP'][Math.floor(Math.random() * 5)];
   const at = (arr, i) => arr[((i % N) + N) % N];
   const atf = (arr, x) => { const i = Math.floor(x), f = x - i; return at(arr, i) * (1 - f) + at(arr, i + 1) * f; };
@@ -1564,12 +1668,15 @@ function setupScatter() {
 }
 function scatterOn(type) {
   if (!ctx) return;
-  const S = A.scatter; S.req = type; S.engage = true; S.target = true;
+  if (A.scatter.node) { scatterTempo(); A.scatter.node.port.postMessage({ on: type }); }
+  else if (A.scatter.sp) { const S = A.scatter.sp; S.req = type; S.engage = true; S.target = true; }
   UI.scatter = type; drawPads(); drawLcd();
 }
 function scatterOff() {
   if (!ctx) return;
-  A.scatter.target = false; UI.scatter = null; drawPads(); drawLcd();
+  if (A.scatter.node) A.scatter.node.port.postMessage({ off: true });
+  else if (A.scatter.sp) A.scatter.sp.target = false;
+  UI.scatter = null; drawPads(); drawLcd();
 }
 
 // ===================================================================
@@ -1744,6 +1851,15 @@ function resolveKnob(id) {
     const tr = P.tracks[UI.track];
     const labels = tr.machine === 'SAMPLE' ? SAMPLE_LABELS : tr.machine === 'SYNTH' ? MODEL_LABELS[tr.model] : SYNTH_LABELS;
     const st = UI.mode === 'PLOCK' && UI.selStep !== null && i < 6 ? P.patterns[P.cur][UI.track][UI.selStep] : null;
+    if (i === 6 && UI.mode === 'PLOCK' && UI.selStep !== null) {   // in P-LOCK la manopola DELAY diventa la velocity dello step
+      const vs = P.patterns[P.cur][UI.track][UI.selStep];
+      return {
+        label: 'VEL', locked: vs.v != null,
+        get: () => (vs.v != null ? Math.round(vs.v * 127) : 127),
+        set: (v) => { vs.on = true; if (v >= 127) delete vs.v; else vs.v = Math.max(1, Math.round(v)) / 127; },
+        fmt: (v) => String(Math.max(1, Math.round(v)))
+      };
+    }
     return {
       label: labels[i], locked: st && st.locks[i] != null,
       get: () => (st && st.locks[i] != null ? st.locks[i] : tr.params[i]),
@@ -1823,9 +1939,9 @@ const clone = (x) => JSON.parse(JSON.stringify(x));
   });
   for (let s = 0; s < 16; s++) {
     const c = document.createElement('div'); c.className = 'cell';
-    c.innerHTML = '<span class="led"></span><button class="key g' + Math.floor(s / 4) + '" data-act="step" data-s="' + s + '"><span class="n">' + (s + 1) + '</span><span class="s"></span></button>';
+    c.innerHTML = '<span class="led"></span><button class="key g' + Math.floor(s / 4) + '" data-act="step" data-s="' + s + '"><span class="n">' + (s + 1) + '</span><span class="s"></span><i class="vb" hidden></i></button>';
     $('steps').appendChild(c);
-    stepCells.push({ led: c.querySelector('.led'), key: c.querySelector('.key'), sub: c.querySelector('.s') });
+    stepCells.push({ led: c.querySelector('.led'), key: c.querySelector('.key'), sub: c.querySelector('.s'), vb: c.querySelector('.vb') });
   }
   for (let i = 0; i < 6; i++) {
     const s = document.createElement('div'); s.className = 'strip';
@@ -1959,6 +2075,7 @@ function drawSteps() {
       c.key.classList.toggle('pending', idx === UI.pendingPat);
       c.key.classList.toggle('head', false);
       c.sub.textContent = '';
+      c.vb.hidden = true;
       c.key.setAttribute('aria-label', 'Pattern ' + patName(idx));
       c.key.setAttribute('aria-pressed', String(idx === P.cur));
     } else {
@@ -1969,6 +2086,10 @@ function drawSteps() {
       c.key.classList.remove('pending');
       const hasLock = Object.keys(st.locks).length > 0;
       c.sub.textContent = st.on ? (st.cond || (st.tp ? (st.tp > 0 ? '+' : '') + st.tp : (hasLock ? '●' : ''))) : '';
+      const showV = st.on && st.v != null;   // barra della velocity: corta = colpo piano
+      c.vb.hidden = !showV;
+      if (showV) c.vb.style.width = 'calc((100% - 10px) * ' + st.v.toFixed(3) + ')';
+      if (velDrag && velDrag.s === s && velDrag.moved) c.sub.textContent = 'V' + Math.round((st.v != null ? st.v : 1) * 127);
       c.key.setAttribute('aria-label', 'Step ' + (s + 1));
       c.key.setAttribute('aria-pressed', String(st.on));
     }
@@ -2678,6 +2799,11 @@ function onAct(b) {
   if (act === 'skin') { setSkin(b.dataset.k, true); return; }
   if (act === 'export') { exportProject(); return; }
   if (act === 'install') { installApp(); return; }
+  if (act === 'audioMode') {
+    if (b.dataset.k === audioMode()) return;
+    try { localStorage.setItem('pony84-audio', b.dataset.k); localStorage.setItem(STORE, JSON.stringify(packProject(P))); } catch (e) { /* ok */ }
+    location.reload(); return;
+  }
   if (act === 'import') { projInput.click(); return; }
   if (act === 'newp') {
     const k = b.dataset.k;
@@ -2774,6 +2900,7 @@ function onAct(b) {
   if (act === 'oct') { P.roll.oct = Math.max(-3, Math.min(3, P.roll.oct + Number(b.dataset.d))); renderAll(); return; }
   if (act === 'rate') { P.roll.rate = Number(b.dataset.i); renderAll(); return; }
   if (act === 'step') {
+    if (velSuppress) { velSuppress = false; return; }   // era un trascinamento della velocity, non un tocco
     const s = Number(b.dataset.s);
     if (UI.mode === 'PATTERN') {
       const idx = UI.bank * 16 + s;
@@ -2851,6 +2978,35 @@ function fit() {
 }
 
 let swipe = null, padHeld = null;
+// in STEP: trascina su o giù su uno step per cambiarne la velocity (un tocco semplice lo accende/spegne come sempre)
+document.addEventListener('pointerdown', (e) => {
+  velSuppress = false;   // un gesto nuovo: il tocco successivo vale di nuovo
+  const k = UI.mode === 'TRIG' && e.target.closest && e.target.closest('[data-act="step"]');
+  if (!k) return;
+  const s = Number(k.dataset.s), st = P.patterns[P.cur][UI.track][s];
+  velDrag = { s, y0: e.clientY, v0: st.on ? (st.v != null ? st.v : 1) : 1, moved: false, id: e.pointerId };
+}, true);
+document.addEventListener('pointermove', (e) => {
+  if (!velDrag || e.pointerId !== velDrag.id) return;
+  const dy = velDrag.y0 - e.clientY;
+  if (!velDrag.moved && Math.abs(dy) < 10) return;
+  velDrag.moved = true;
+  const st = P.patterns[P.cur][UI.track][velDrag.s], v = Math.max(0.05, Math.min(1, velDrag.v0 + dy / 140));
+  st.on = true;
+  if (v >= 0.995) delete st.v; else st.v = Math.round(v * 100) / 100;
+  drawSteps();
+});
+const velEnd = (e) => {
+  if (!velDrag || e.pointerId !== velDrag.id) return;
+  const d = velDrag; velDrag = null;
+  if (d.moved) {
+    velSuppress = true;
+    const st = P.patterns[P.cur][UI.track][d.s];
+    if (ctx && !playing) trigger(UI.track, st, ctx.currentTime + 0.01);   // senti subito il colpo
+    drawSteps(); save();
+  }
+};
+document.addEventListener('pointerup', velEnd); document.addEventListener('pointercancel', velEnd);
 document.addEventListener('pointerdown', (e) => {
   if (e.target.closest('[data-tap]')) { e.preventDefault(); tap(); return; }
   const bd = e.target.closest('[data-bpm]');
@@ -3011,6 +3167,7 @@ function markNews() {
 }
 $('newsLink').addEventListener('click', () => { try { localStorage.setItem('pony84-seen', VERSION); } catch (e) { /* ok */ } markNews(); });
 markNews();
+document.querySelectorAll('[data-act="audioMode"]').forEach((b) => { const on = b.dataset.k === audioMode(); b.setAttribute('aria-checked', String(on)); b.classList.toggle('on', on); });
 
 // ---------- app installabile (PWA) ----------
 let installEvt = null;

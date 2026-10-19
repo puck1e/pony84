@@ -2,6 +2,13 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## v0.8.0 — 2026-10-19 · Velocity e meno click
+
+- **Nuovo**: **Velocity per step**: in STEP trascina su o giù su uno step; in P-LOCK la manopola DELAY diventa `VEL`. Una barretta nello step mostra i colpi piano.
+- **Meglio**: I colpi piano sono anche più scuri, su tutte le machine: ghost note e accenti più naturali.
+- **Fix**: Meno click in cuffia: lo SCATTER gira sul thread dell'audio (AudioWorklet); il colpo nuovo su KICK, SNARE, METAL e PERC chiude in 4 ms la coda del precedente; nel SYNTH la voce rubata sfuma invece di sparire.
+- **Nuovo**: Menu PROGETTO, sezione `AUDIO`: BASSA LATENZA o STABILE.
+
 ## v0.7.1 — 2026-10-19 · Licenza e crediti
 
 - **Sito**: PONY84 è open source con **licenza MIT** (file `LICENSE`). In fondo al menu PROGETTO: © e link alla pagina Crediti e licenze (`/crediti/`).

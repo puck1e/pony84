@@ -371,6 +371,9 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><code>50%</code>, <code>1:2</code>… ha una condizione <a href="#prob">PROB</a>;</li>
           <li><code>+7</code>, <code>−2</code>… ha una nota registrata con <a href="#roll">ROLL</a> (semitoni rispetto all'intonazione della traccia).</li>
         </ul>
+        <h3>Velocity: colpi piano e forti</h3>
+        <p><strong>Trascina su o giù</strong> su uno step per cambiarne la velocity: in giù il colpo diventa più piano, in su torna pieno. Mentre trascini lo step mostra il valore (<code>V87</code>), quando lasci lo senti. Un tocco semplice continua ad accendere e spegnere lo step.</p>
+        <p>La <strong>barretta</strong> in fondo allo step mostra la velocity: corta = colpo piano; senza barra = velocity piena. I colpi piano sono anche più scuri, come su uno strumento vero: meno FM, meno DCW, filtro più chiuso sul SAMPLE, colpo più morbido sul MOD. Ghost note e accenti, per groove meno rigidi.</p>
       </div>
       <div class="en">
         <p>With <span class="k c">STEP</span> active, the 16 coloured keys are the sixteenth notes of one bar of the selected track. Tap a key to turn it on (red LED) or off. While stopped, turning a step on plays its sound straight away.</p>
@@ -380,6 +383,9 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><code>50%</code>, <code>1:2</code>… it has a <a href="#prob">PROB</a> condition;</li>
           <li><code>+7</code>, <code>−2</code>… it has a note recorded with <a href="#roll">ROLL</a> (semitones from the track's pitch).</li>
         </ul>
+        <h3>Velocity: soft and hard hits</h3>
+        <p><strong>Drag up or down</strong> on a step to change its velocity: down makes the hit softer, up brings it back to full. While you drag, the step shows the value (<code>V87</code>); when you let go, you hear it. A simple tap still turns the step on and off.</p>
+        <p>The <strong>small bar</strong> at the bottom of the step shows the velocity: short = soft hit; no bar = full velocity. Soft hits are also darker, like on a real instrument: less FM, less DCW, a more closed filter on SAMPLE, a gentler strike on MOD. Ghost notes and accents, for less rigid grooves.</p>
       </div>
     </section>
 
@@ -395,6 +401,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li>Tocca un altro step per bloccarne altri, oppure lo stesso step per uscire.</li>
         </ol>
         <p><span class="k">TOGLI LOCK</span> cancella tutti i lock dello step selezionato, comprese le note e l'intensità registrate con ROLL. Si bloccano le prime 6 manopole; DELAY e REVERB valgono per tutta la traccia.</p>
+        <p>In P-LOCK, con uno step selezionato, la manopola DELAY diventa <strong>VEL</strong>: la velocity di quello step, da 1 a 127 (si gira anche dalla Move o con il MIDI LEARN).</p>
       </div>
       <div class="en">
         <p><strong>Parameter locks</strong> give a single step values that differ from the track's: a shorter kick, a more open hi-hat, a different note.</p>
@@ -405,6 +412,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li>Tap another step to lock more, or the same step to leave.</li>
         </ol>
         <p><span class="k">TOGLI LOCK</span> (remove lock) clears every lock on the selected step, including notes and intensity recorded with ROLL. The first 6 knobs can be locked; DELAY and REVERB apply to the whole track.</p>
+        <p>In P-LOCK, with a step selected, the DELAY knob becomes <strong>VEL</strong>: that step's velocity, from 1 to 127 (you can also turn it from the Move or with MIDI LEARN).</p>
       </div>
     </section>
 
@@ -785,7 +793,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <thead><tr><th><span class="it">PROBLEMA</span><span class="en">PROBLEM</span></th><th><span class="it">SOLUZIONE</span><span class="en">FIX</span></th></tr></thead>
         <tbody>
           <tr><td><span class="it">Non si sente niente</span><span class="en">No sound</span></td><td><span class="it">Tocca ACCENDI, alza il volume multimediale del telefono, controlla che il MASTER non sia a zero e che le tracce non siano in mute o in solo.</span><span class="en">Tap ACCENDI, turn up the phone's media volume, check that MASTER isn't at zero and that tracks aren't muted or soloed.</span></td></tr>
-          <tr><td><span class="it">Click o suono a scatti</span><span class="en">Clicks or stuttering</span></td><td><span class="it">Chiudi le altre app e schede, usa Chrome aggiornato, togli qualche effetto REVERB dai bus. Le cuffie Bluetooth aggiungono ritardo: per suonare dal vivo meglio quelle con il filo.</span><span class="en">Close other apps and tabs, use an up-to-date Chrome, remove some REVERB effects from the buses. Bluetooth headphones add delay: for live playing, wired ones are better.</span></td></tr>
+          <tr><td><span class="it">Click o suono a scatti</span><span class="en">Clicks or stuttering</span></td><td><span class="it">Nel menu PROGETTO, sezione AUDIO, scegli <strong>STABILE</strong>. Poi: Chiudi le altre app e schede, usa Chrome aggiornato, togli qualche effetto REVERB dai bus. Le cuffie Bluetooth aggiungono ritardo: per suonare dal vivo meglio quelle con il filo.</span><span class="en">In the PROJECT menu, AUDIO section, choose <strong>STABILE</strong> (stable). Then: close other apps and tabs, use an up-to-date Chrome, remove some REVERB effects from the buses. Bluetooth headphones add delay: for live playing, wired ones are better.</span></td></tr>
           <tr><td><span class="it">Il WAV non si carica</span><span class="en">WAV won't load</span></td><td><span class="it">Il display mostra FILE NON LETTO: esporta il file come WAV a 16 o 24 bit e riprova.</span><span class="en">The display shows FILE NON LETTO (file not read): export it as a 16- or 24-bit WAV and try again.</span></td></tr>
           <tr><td><span class="it">Il progetto è sparito</span><span class="en">My project is gone</span></td><td><span class="it">Succede in incognito, cancellando i dati del sito o aprendo PONY84 da un altro browser o dispositivo. Reimporta l'ultimo file .pony84 esportato.</span><span class="en">It happens in incognito, after clearing site data, or when opening PONY84 in another browser or device. Re-import your last exported .pony84 file.</span></td></tr>
           <tr><td><span class="it">Il controller MIDI non appare</span><span class="en">MIDI controller not found</span></td><td><span class="it">Usa Chrome, consenti il MIDI quando richiesto, controlla l'adattatore OTG e tocca AGGIORNA MIDI. Se pad o manopole inviano note o CC diversi, assegnali con MIDI LEARN.</span><span class="en">Use Chrome, allow MIDI when asked, check the OTG adapter and tap AGGIORNA MIDI. If pads or knobs send different notes or CCs, assign them with MIDI LEARN.</span></td></tr>
