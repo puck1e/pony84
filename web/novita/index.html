@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#23211e">
 <title>PONY84 · Novità</title>
 <meta name="description" content="Le novità di ogni versione di PONY84, la groovebox FM e sample nel browser.">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,800&family=Barlow:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
 <style>
@@ -118,7 +120,8 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
 .tag.fix { background: var(--red); color: var(--white); }
 .tag.web { background: var(--key); color: var(--cream); }
 .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); align-items: center; }
-.legend span { display: flex; gap: 6px; align-items: center; }
+.legend > span { display: flex; gap: 6px; align-items: center; }
+.legend .tag { display: flex; justify-content: center; align-items: center; }
 .legend .tag { width: 54px; margin: 0; }
 </style>
 </head>
@@ -146,8 +149,17 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       <p class="lead"><span class="it">Cosa è cambiato in ogni versione, dalla più recente. Il numero di versione è in basso nel menu PROGETTO &amp; MIDI.</span><span class="en">What changed in each version, newest first. The version number is at the bottom of the PROJECT &amp; MIDI menu.</span></p>
       <div class="legend"><span><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span class="it">funzione nuova</span><span class="en">new feature</span></span><span><span class="tag up"><span class="it">MEGLIO</span><span class="en">BETTER</span></span><span class="it">miglioria</span><span class="en">improvement</span></span><span><span class="tag fix"><span class="it">FIX</span><span class="en">FIX</span></span><span class="it">correzione</span><span class="en">fix</span></span><span><span class="tag web"><span class="it">SITO</span><span class="en">SITE</span></span><span class="it">sito</span><span class="en">site</span></span></div>
     </div>
+    <article class="rel" id="v0.7.0">
+      <div class="rel-head"><span class="ver">v0.7.0</span><span class="now"><span class="it">ATTUALE</span><span class="en">CURRENT</span></span></div>
+      <h2><span class="it">PONY84 diventa un'app</span><span class="en">PONY84 becomes an app</span></h2>
+      <ul>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><strong>PONY84 si installa come app</strong>: tasto <span class="k">INSTALLA L'APP</span> nel menu PROGETTO, icona con la maschera da luchador, apertura a tutto schermo.</span><span class="en"><strong>PONY84 installs as an app</strong>: <span class="k">INSTALLA L'APP</span> button in the PROJECT menu, luchador mask icon, full-screen launch.</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><strong>Funziona senza internet</strong>: app, guida e novità restano disponibili offline; gli aggiornamenti arrivano da soli quando torni online.</span><span class="en"><strong>Works offline</strong>: app, guide and release notes stay available without a connection; updates arrive by themselves when you are back online.</span></span></li>
+        <li><span class="tag up"><span class="it">MEGLIO</span><span class="en">BETTER</span></span><span><span class="it">Mentre il sequencer suona lo schermo resta acceso.</span><span class="en">While the sequencer plays, the screen stays on.</span></span></li>
+      </ul>
+    </article>
     <article class="rel" id="v0.6.0">
-      <div class="rel-head"><span class="ver">v0.6.0</span><time class="date" datetime="2026-10-19"><span class="it">19 ott 2026</span><span class="en">Oct 19, 2026</span></time><span class="now"><span class="it">ATTUALE</span><span class="en">CURRENT</span></span></div>
+      <div class="rel-head"><span class="ver">v0.6.0</span></div>
       <h2><span class="it">Nuovi suoni: SYNTH, decay e WAVE</span><span class="en">New sounds: SYNTH, decay and WAVE</span></h2>
       <ul>
         <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><span class="k">SYNTH</span> al posto di TONE, con quattro modelli: <strong>FM2</strong> (il TONE di prima), <strong>FM4</strong> (4 operatori, algoritmi e feedback), <strong>CZ</strong> (phase distortion stile Casio) e <strong>MOD</strong> (modale: marimba, campana, metallo, vetro, tamburo).</span><span class="en"><span class="k">SYNTH</span> replaces TONE, with four models: <strong>FM2</strong> (the old TONE), <strong>FM4</strong> (4 operators, algorithms and feedback), <strong>CZ</strong> (Casio-style phase distortion) and <strong>MOD</strong> (modal: marimba, bell, metal, glass, drum).</span></span></li>
@@ -159,14 +171,14 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       </ul>
     </article>
     <article class="rel" id="v0.5.1">
-      <div class="rel-head"><span class="ver">v0.5.1</span><time class="date" datetime="2026-10-19"><span class="it">19 ott 2026</span><span class="en">Oct 19, 2026</span></time></div>
+      <div class="rel-head"><span class="ver">v0.5.1</span></div>
       <h2><span class="it">Nuova casa</span><span class="en">A new home</span></h2>
       <ul>
         <li><span class="tag web"><span class="it">SITO</span><span class="en">SITE</span></span><span><span class="it">PONY84 si trasferisce su <strong>app.sadponygirl.com</strong> (Cloudflare). Per portarti i progetti: ESPORTA FILE dal vecchio indirizzo, IMPORTA FILE sul nuovo.</span><span class="en">PONY84 moves to <strong>app.sadponygirl.com</strong> (Cloudflare). To bring your projects: EXPORT FILE from the old address, IMPORT FILE on the new one.</span></span></li>
       </ul>
     </article>
     <article class="rel" id="v0.5.0">
-      <div class="rel-head"><span class="ver">v0.5.0</span><time class="date" datetime="2026-10-17"><span class="it">17 ott 2026</span><span class="en">Oct 17, 2026</span></time></div>
+      <div class="rel-head"><span class="ver">v0.5.0</span></div>
       <h2><span class="it">Ableton Move e skin Sad Pony Girl</span><span class="en">Ableton Move and the Sad Pony Girl skin</span></h2>
       <ul>
         <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><strong>Ableton Move</strong> come controller (step, pad, encoder, tasti e LED) grazie a movewire di Auri.</span><span class="en"><strong>Ableton Move</strong> as a controller (steps, pads, encoders, buttons and LEDs) thanks to Auri's movewire.</span></span></li>
@@ -174,7 +186,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       </ul>
     </article>
     <article class="rel" id="v0.4.0">
-      <div class="rel-head"><span class="ver">v0.4.0</span><time class="date" datetime="2026-10-17"><span class="it">17 ott 2026</span><span class="en">Oct 17, 2026</span></time></div>
+      <div class="rel-head"><span class="ver">v0.4.0</span></div>
       <h2><span class="it">Banchi e campioni</span><span class="en">Banks and samples</span></h2>
       <ul>
         <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><strong>128 pattern</strong> in 8 banchi A–H, con COPIA / INCOLLA di pattern e tracce.</span><span class="en"><strong>128 patterns</strong> in 8 banks A–H, with COPY / PASTE of patterns and tracks.</span></span></li>
@@ -184,7 +196,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       </ul>
     </article>
     <article class="rel" id="v0.3.0">
-      <div class="rel-head"><span class="ver">v0.3.0</span><time class="date" datetime="2026-10-17"><span class="it">17 ott 2026</span><span class="en">Oct 17, 2026</span></time></div>
+      <div class="rel-head"><span class="ver">v0.3.0</span></div>
       <h2><span class="it">Progetto, MIDI e mixer</span><span class="en">Project, MIDI and mixer</span></h2>
       <ul>
         <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">Menu <span class="k">PROGETTO &amp; MIDI</span>: esporta e importa file .pony84, nuovo progetto, WAV salvati nel browser.</span><span class="en"><span class="k">PROJECT &amp; MIDI</span> menu: export and import .pony84 files, new project, WAVs saved in the browser.</span></span></li>
@@ -194,7 +206,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       </ul>
     </article>
     <article class="rel" id="v0.2.0">
-      <div class="rel-head"><span class="ver">v0.2.0</span><time class="date" datetime="2026-10-17"><span class="it">17 ott 2026</span><span class="en">Oct 17, 2026</span></time></div>
+      <div class="rel-head"><span class="ver">v0.2.0</span></div>
       <h2><span class="it">Sul telefono e dal vivo</span><span class="en">On the phone and live</span></h2>
       <ul>
         <li><span class="tag up"><span class="it">MEGLIO</span><span class="en">BETTER</span></span><span><span class="it">Schermata che si adatta al telefono; BPM trascinabile sul display e <span class="k">TAP</span>.</span><span class="en">Screen that fits the phone; BPM draggable on the display, and <span class="k">TAP</span>.</span></span></li>
@@ -204,7 +216,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       </ul>
     </article>
     <article class="rel" id="v0.1.0">
-      <div class="rel-head"><span class="ver">v0.1.0</span><time class="date" datetime="2026-10-16"><span class="it">16 ott 2026</span><span class="en">Oct 16, 2026</span></time></div>
+      <div class="rel-head"><span class="ver">v0.1.0</span></div>
       <h2><span class="it">La prima webapp</span><span class="en">The first web app</span></h2>
       <ul>
         <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">6 tracce con motori FM e SAMPLE, sequencer a 16 step con P-LOCK e condizioni.</span><span class="en">6 tracks with FM and SAMPLE machines, 16-step sequencer with p-locks and conditions.</span></span></li>
