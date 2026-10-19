@@ -1,6 +1,6 @@
 # PONY84
 
-Versione **0.8.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
+Versione **0.9.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
 
 Groovebox ispirata a Elektron Model:Cycles e alla Roland SP-404, con i colori della 808.
 Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer a 6 canali.
@@ -34,6 +34,8 @@ Online: **https://app.sadponygirl.com** (anche https://pony84.raptuzbass.workers
 - **SCATTER**: tieni premuto un pad (o attiva LATCH): REPEAT, STUTTER, REVERSE, GATE, TAPESTOP, RANDOM.
 - **MIXER · CANALI**: volume, pan, mandata delay, mute/solo; il tasto sotto il nome sceglie l'uscita del canale: MAIN o BUS A/B/C.
 - **MIXER · BUS · FX**: 3 bus (A, B, C) più MASTER, ognuno con 3 slot di effetti: FILTER (DJ, con LFO a tempo), SIDECHAIN (pompa con la traccia scelta), LO-FI, VINYL, DRIVE, CHORUS, TAPE ECHO, ISOLATOR, REVERB. I bus hanno volume e mute; il MASTER lavora su tutto il mix dopo lo scatter.
+- **Annulla / ripeti**: le frecce ↶ ↷ accanto a TAP (60 passi), Ctrl+Z su PC, Undo sulla Move.
+- **Registra WAV** (menu PROGETTO): LOOP di 1/2/4/8 battute esatte o JAM LIBERA; il file va nella cartella Download.
 - **TAP / BPM**: tocca TAP a tempo, oppure trascina su e giù il numero dei BPM sul display.
 - **ROLL**: pad da suonare. KEYS = note del motore della traccia scelta (scala, tonica, ottava); KIT = le 6 tracce. RIPETI ripete la nota a tempo finché tieni premuto; in alto sul pad suona più forte. REC registra nel pattern.
 - **Viste**: sul telefono SEQ → MIXER → ROLL con i tab o con lo swipe verso destra. Su tablet in orizzontale e PC (almeno 900×600) le tre viste sono affiancate.

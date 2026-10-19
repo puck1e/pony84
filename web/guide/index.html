@@ -627,6 +627,8 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <p>Tocca il logo <span class="k c">PONY84 ▾</span> per aprire <strong>PROGETTO &amp; MIDI</strong>.</p>
         <ul>
           <li><strong>Salvataggio automatico</strong>: pattern, suoni, mixer, effetti, impostazioni di ROLL e WAV vengono salvati nel browser mezzo secondo dopo ogni modifica.</li>
+          <li><strong>Annulla / ripeti</strong>: le due frecce piccole accanto a TAP (<span class="k">↶</span> <span class="k">↷</span>) annullano e ripetono le ultime 60 modifiche: step, manopole, machine, mixer, effetti, pattern. I WAV caricati non tornano indietro. Su PC: Ctrl+Z e Ctrl+Maiusc+Z; sulla Move: Undo e Shift+Undo.</li>
+          <li><strong>Registra WAV</strong>: scegli quante battute (1, 2, 4, 8) e tocca <span class="k">● LOOP</span>: PONY84 registra quelle battute esatte, dall'inizio di una battuta, così il file si ripete senza buchi in un DAW (se il sequencer era fermo parte da solo e salta la prima battuta, per avere già le code di riverbero e delay). <span class="k">● JAM LIBERA</span> registra da subito, con scatter e manopole, finché tocchi <span class="k">SALVA</span> nella barra rossa (massimo 5 minuti). Il file WAV, 16 bit stereo, finisce nella cartella Download. Sulla Move: Capture (LOOP) e Shift+Capture (JAM).</li>
           <li><span class="k">ESPORTA FILE</span>: scarica un file <code>.pony84</code> (cartella Download) con tutto il progetto, WAV compresi.</li>
           <li><span class="k">IMPORTA FILE</span>: apre un file <code>.pony84</code>, anche creato su un altro dispositivo.</li>
           <li><span class="k">NUOVO VUOTO</span>: tiene suoni ed effetti del demo, con tutti i pattern vuoti. <span class="k">NUOVO DA DEMO</span>: ricarica il demo. Entrambi chiedono un secondo tocco per conferma.</li>
@@ -637,6 +639,8 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       <div class="en">
         <p>Tap the <span class="k c">PONY84 ▾</span> logo to open <strong>PROJECT &amp; MIDI</strong>.</p>
         <ul>
+          <li><strong>Undo / redo</strong>: the two small arrows next to TAP (<span class="k">↶</span> <span class="k">↷</span>) undo and redo the last 60 changes: steps, knobs, machines, mixer, effects, patterns. Loaded WAVs don't go back. On a computer: Ctrl+Z and Ctrl+Shift+Z; on the Move: Undo and Shift+Undo.</li>
+          <li><strong>Record WAV</strong>: choose how many bars (1, 2, 4, 8) and tap <span class="k">● LOOP</span>: PONY84 records exactly those bars, from the start of a bar, so the file loops seamlessly in a DAW (if the sequencer was stopped it starts by itself and skips the first bar, so reverb and delay tails are already there). <span class="k">● JAM LIBERA</span> (free jam) records right away, scatter and knobs included, until you tap <span class="k">SALVA</span> (save) in the red bar (5 minutes max). The 16-bit stereo WAV lands in your Downloads folder. On the Move: Capture (LOOP) and Shift+Capture (JAM).</li>
           <li><strong>Autosave</strong>: patterns, sounds, mixer, effects, ROLL settings and WAVs are saved in the browser half a second after every change.</li>
           <li><span class="k">ESPORTA FILE</span> (export): downloads a <code>.pony84</code> file (Downloads folder) with the whole project, WAVs included.</li>
           <li><span class="k">IMPORTA FILE</span> (import): opens a <code>.pony84</code> file, even one made on another device.</li>
@@ -738,6 +742,8 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <tr><td>Record</td><td><span class="it">REC di ROLL: registra quello che suoni sui pad</span><span class="en">ROLL REC: records what you play on the pads</span></td></tr>
           <tr><td>Mute</td><td><span class="it">mute della traccia selezionata</span><span class="en">mutes the selected track</span></td></tr>
           <tr><td>Duplicate · Shift + Duplicate</td><td><span class="it">copia · incolla (pattern in PATTERN, traccia in STEP)</span><span class="en">copy · paste (pattern in PATTERN, track in STEP)</span></td></tr>
+          <tr><td>Undo · Shift + Undo</td><td><span class="it">annulla · ripeti</span><span class="en">undo · redo</span></td></tr>
+          <tr><td>Capture · Shift + Capture</td><td><span class="it">registra WAV: LOOP · JAM LIBERA (di nuovo per salvare)</span><span class="en">record WAV: LOOP · free JAM (press again to save)</span></td></tr>
           <tr><td>Loop · Layout · Back</td><td><span class="it">LATCH dello scatter · pagina FX · chiude i pannelli aperti</span><span class="en">scatter LATCH · FX page · closes open panels</span></td></tr>
         </tbody>
       </table></div>
@@ -756,6 +762,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <tr><td><span class="it">Spazio</span><span class="en">Space</span></td><td><span class="it">play / pausa</span><span class="en">play / pause</span></td></tr>
           <tr><td>↑ ↓ ← →</td><td><span class="it">regolano manopola, fader o BPM selezionati (con Maiusc a passi di 10)</span><span class="en">adjust the focused knob, fader or BPM (with Shift in steps of 10)</span></td></tr>
           <tr><td>Tab · Invio</td><td><span class="it">si spostano tra i tasti e li premono; Invio su un pad di ROLL lo suona</span><span class="en">move between buttons and press them; Enter on a ROLL pad plays it</span></td></tr>
+          <tr><td>Ctrl+Z · Ctrl+Maiusc+Z</td><td><span class="it">annulla · ripeti (anche Ctrl+Y)</span><span class="en">undo · redo (Ctrl+Y works too)</span></td></tr>
           <tr><td>Esc</td><td><span class="it">chiude il menu o termina il MIDI LEARN</span><span class="en">closes the menu or ends MIDI LEARN</span></td></tr>
         </tbody>
       </table></div>

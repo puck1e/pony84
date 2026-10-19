@@ -62,6 +62,9 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .tbtn.on { background: var(--orange); }
 .tbtn svg { fill: var(--cream); }
 .tbtn.on svg { fill: var(--ink); }
+.hist { display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+.hist .hw { width: 34px; height: calc((clamp(42px, 5.4dvh, 48px) - 4px) / 2); border-radius: 6px; border-bottom-width: 2px; display: flex; align-items: center; justify-content: center; color: var(--cream); }
+.hist .hw:disabled { opacity: .35; cursor: default; }
 .tap { font-size: 14px; letter-spacing: 1px; touch-action: none; }
 .tap.on { background: var(--cream); color: var(--ink); }
 
@@ -267,6 +270,13 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .logo .caret { position: relative; }
 .mmsg.ver { color: var(--muted); line-height: 1.6; }
 .mmsg.ver a { color: var(--muted); }
+.mbtn.rec { color: var(--led); }
+.wavbars .segb { flex: 1; height: 32px; }
+.learnbar.recbar { background: var(--red); color: var(--white); }
+.learnbar.recbar { white-space: nowrap; align-items: center; }
+.learnbar.recbar #recTxt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-family: var(--mono); font-weight: 500; letter-spacing: .5px; }
+.learnbar.recbar .ghost { flex: none; }
+.learnbar.recbar .ghost { border-color: var(--white); color: var(--white); }
 .mbtn.install { grid-column: 1 / -1; background: var(--orange); color: var(--ink); }
 .mlist { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
 .mmsg { margin: 0; min-height: 16px; font-family: var(--mono); font-size: 12px; letter-spacing: .5px; color: var(--lcd); }
@@ -315,6 +325,7 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
   .tab { padding: 0 6px; }
   .transport { gap: 6px; }
   .tbtn { width: 40px; height: 40px; }
+  .hist .hw { width: 30px; height: 18px; }
   header { gap: 8px; }
 }
 
@@ -450,6 +461,10 @@ html[data-skin="spg"] .wave-btns .wave-play { color: var(--white); }
 html[data-skin="spg"] .wave-lock { color: var(--deep); }
 html[data-skin="spg"] .wavebox { border-color: var(--dark); }
 html[data-skin="spg"] .learnbar { background: var(--yellow); color: var(--dark); border: 2px solid var(--dark); }
+html[data-skin="spg"] .learnbar.recbar { background: var(--red); color: var(--white); }
+html[data-skin="spg"] .learnbar.recbar .ghost { border-color: var(--white); color: var(--white); }
+html[data-skin="spg"] .hist .hw { color: var(--dark); }
+html[data-skin="spg"] .mbtn.rec { color: var(--red); }
 html[data-skin="spg"] .learnbar .ghost { border-color: var(--dark); color: var(--dark); }
 html[data-skin="spg"] .power { background: rgba(230,226,43,.94); }
 html[data-skin="spg"] .power .go { border: 2px solid var(--dark); box-shadow: 3px 3px 0 var(--dark); color: var(--white); }
@@ -472,6 +487,10 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
       </div>
     </div>
     <div class="transport">
+      <div class="hist">
+        <button class="hw" id="undoBtn" data-act="undo" aria-label="Annulla l'ultima modifica" disabled><svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true"><path d="M5 1L1 4.5L5 8M1.5 4.5H9a4 4 0 0 1 0 7H6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="hw" id="redoBtn" data-act="redo" aria-label="Ripeti" disabled><svg width="14" height="12" viewBox="0 0 14 12" aria-hidden="true"><path d="M9 1L13 4.5L9 8M12.5 4.5H5a4 4 0 0 0 0 7h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
       <button class="hw tbtn tap" id="tapBtn" data-tap aria-label="Tap tempo: tocca a tempo per impostare i BPM">TAP</button>
       <button class="hw tbtn" id="stopBtn" data-act="stop" aria-label="Stop"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect width="14" height="14" rx="1.5"></rect></svg></button>
       <button class="hw tbtn" id="playBtn" data-act="play" aria-label="Play"><svg width="15" height="16" viewBox="0 0 15 16" aria-hidden="true"><path d="M1 1.2v13.6c0 .8.9 1.3 1.5.8l11-6.8c.6-.4.6-1.2 0-1.6l-11-6.8C1.9-.1 1 .4 1 1.2z"></path></svg></button>
@@ -640,6 +659,21 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
       </div>
     </section>
 
+    <section class="sec" aria-label="Registra WAV">
+      <span class="label">REGISTRA WAV</span>
+      <div class="seg wavbars" role="radiogroup" aria-label="Battute del loop">
+        <button class="segb" role="radio" data-act="wavBars" data-n="1">1</button>
+        <button class="segb" role="radio" data-act="wavBars" data-n="2">2</button>
+        <button class="segb" role="radio" data-act="wavBars" data-n="4">4</button>
+        <button class="segb" role="radio" data-act="wavBars" data-n="8">8 BATTUTE</button>
+      </div>
+      <div class="mgrid">
+        <button class="hw mbtn rec" data-act="wavRec" data-k="loop">● LOOP</button>
+        <button class="hw mbtn rec" data-act="wavRec" data-k="jam">● JAM LIBERA</button>
+      </div>
+      <p class="mnote"><b>LOOP</b> registra le battute scelte, esatte, dall'inizio di una battuta: il file si ripete senza buchi in un DAW. <b>JAM LIBERA</b> registra da subito finché premi FERMA, con scatter e manopole. Il WAV finisce nella cartella Download.</p>
+    </section>
+
     <section class="sec" aria-label="Audio">
       <span class="label">AUDIO</span>
       <div class="mgrid" role="radiogroup" aria-label="Modalità audio">
@@ -713,6 +747,11 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
   </div>
 </div>
 
+<div class="learnbar recbar" id="recBar" hidden role="status">
+  <span id="recTxt">● REC</span>
+  <button class="ghost" data-act="wavStop">SALVA</button>
+  <button class="ghost" data-act="wavCancel" aria-label="Annulla la registrazione">✕</button>
+</div>
 <div class="learnbar" id="learnBar" hidden role="status">
   <span id="learnTxt">MIDI LEARN</span>
   <button class="ghost" data-act="learn">FINE</button>
@@ -736,7 +775,7 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
-const VERSION = '0.8.0';
+const VERSION = '0.9.0';
 const audioMode = () => { try { return localStorage.getItem('pony84-audio') === 'stable' ? 'stable' : 'fast'; } catch (e) { return 'fast'; } };   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
@@ -932,11 +971,28 @@ function loadProject() {
   } catch (e) { /* storage non disponibile */ }
   return demoProject();
 }
+const hist = { past: [], future: [], cur: null };   // ANNULLA / RIPETI (vedi histPush)
 let P = loadProject();
+hist.cur = JSON.stringify(packProject(P));
 let saveTimer = null;
 function save() {
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => { try { localStorage.setItem(STORE, JSON.stringify(packProject(P))); } catch (e) { /* ok */ } }, 400);
+  saveTimer = setTimeout(saveNow, 400);
+}
+// salva subito; ogni salvataggio diverso dal precedente diventa un passo di ANNULLA
+function saveNow() {
+  clearTimeout(saveTimer); saveTimer = null;
+  const json = JSON.stringify(packProject(P));
+  try { localStorage.setItem(STORE, json); } catch (e) { /* ok */ }
+  histPush(json);
+}
+// ---------- ANNULLA / RIPETI: istantanee del progetto (i WAV caricati restano fuori) ----------
+function histPush(json) {
+  if (hist.cur === null) { hist.cur = json; return; }
+  if (json === hist.cur) return;
+  hist.past.push(hist.cur); if (hist.past.length > 60) hist.past.shift();
+  hist.cur = json; hist.future.length = 0;
+  if (typeof drawHist === 'function') drawHist();
 }
 
 // stato dell'interfaccia
@@ -2004,6 +2060,8 @@ function drawLcd() {
     left = 'T' + (UI.track + 1) + ' ' + name + ' · STEP ' + (UI.head < 0 ? '--' : pad2(UI.head + 1));
     right = UI.flash ? UI.flash : UI.scatter ? 'SCATTER ' + UI.scatter : UI.mode === 'PLOCK' && UI.selStep !== null ? 'LOCK ' + pad2(UI.selStep + 1) : 'SW ' + Math.round(P.fx.swing / 127 * 60) + '%';
   }
+  if (wavRec) right = wavRec.label;
+  if (lcdFlash && performance.now() < lcdFlash.until) right = lcdFlash.t;
   $('lcd2').textContent = left; $('lcd3').textContent = right;
 }
 function drawTracks() {
@@ -2457,6 +2515,135 @@ async function exportProject() {
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   projMsg('ESPORTATO: ' + name + ' (CARTELLA DOWNLOAD)');
 }
+function histGo(dir) {   // dir = -1 annulla, +1 ripeti
+  if (saveTimer) saveNow();                       // prima fissa l'ultima modifica ancora in sospeso
+  const from = dir < 0 ? hist.past : hist.future, to = dir < 0 ? hist.future : hist.past;
+  if (!from.length) { flashLcd(dir < 0 ? 'NIENTE DA ANNULLARE' : 'NIENTE DA RIPETERE'); return; }
+  to.push(hist.cur); hist.cur = from.pop();
+  const p = normalizeProject(JSON.parse(hist.cur));
+  if (!p) return;
+  const keepSample = P.tracks.map((t) => t.sample);
+  P = p;
+  P.tracks.forEach((t, i) => { if (keepSample[i] && t.sample === DEMO_SAMPLE) t.sample = keepSample[i]; });
+  if (UI.selStep !== null && UI.mode !== 'PLOCK') UI.selStep = null;
+  UI.bank = (UI.pendingPat ?? P.cur) >> 4;
+  if (ctx) { for (let b = 0; b < 4; b++) buildChain(b); A.tr.forEach((N) => { N.routed = -1; }); applyFx(); applyMix(); }
+  renderAll();
+  clearTimeout(saveTimer); saveTimer = null;            // ridisegnare non è una modifica nuova
+  hist.cur = JSON.stringify(packProject(P));            // forma canonica: il prossimo salvataggio uguale non conta
+  try { localStorage.setItem(STORE, hist.cur); } catch (e) { /* ok */ }
+  drawHist();
+  flashLcd(dir < 0 ? 'ANNULLATO' : 'RIPETUTO');
+  if (move) moveSync();
+}
+// ---------- REGISTRA WAV: quello che esce dal MASTER, campione per campione (AudioWorklet) ----------
+// LOOP = N battute esatte, dall'inizio di una battuta: il file si ripete senza buchi in un DAW.
+// JAM = libera: da quando premi a quando fermi (al massimo 5 minuti).
+const REC_SRC = `class PonyRec extends AudioWorkletProcessor {
+  constructor() { super(); this.from = -1; this.to = -1; this.port.onmessage = (e) => { const d = e.data; if (d.from != null) { this.from = d.from; this.to = d.to != null ? d.to : -1; } if (d.stopAt != null) this.to = d.stopAt; }; }
+  process(ins, outs) {
+    const inp = ins[0], n = (outs[0] && outs[0][0] ? outs[0][0].length : 128), f0 = currentFrame, f1 = f0 + n;
+    if (this.from >= 0 && f1 > this.from) {
+      const a = Math.max(0, this.from - f0), b = this.to >= 0 ? Math.min(n, this.to - f0) : n;
+      if (b > a) {
+        const L = inp && inp[0] ? inp[0] : null, R = inp && inp[1] ? inp[1] : L;
+        const out = new Int16Array((b - a) * 2);
+        for (let i = a, j = 0; i < b; i++) {
+          const l = L ? Math.max(-1, Math.min(1, L[i])) : 0, r = R ? Math.max(-1, Math.min(1, R[i])) : 0;
+          out[j++] = l < 0 ? l * 32768 : l * 32767; out[j++] = r < 0 ? r * 32768 : r * 32767;
+        }
+        this.port.postMessage(out, [out.buffer]);
+      }
+      if (this.to >= 0 && f1 >= this.to) { this.from = -1; this.to = -1; this.port.postMessage('done'); }
+    }
+    return true;
+  }
+}
+registerProcessor('pony-rec', PonyRec);`;
+let wavRec = null, recNode = null;
+UI.wavBars = 4;
+async function recNodeReady() {
+  if (recNode) return recNode;
+  await ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([REC_SRC], { type: 'application/javascript' })));
+  recNode = new AudioWorkletNode(ctx, 'pony-rec', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], channelCount: 2, channelCountMode: 'explicit' });
+  const mute = ctx.createGain(); mute.gain.value = 0;
+  A.master.connect(recNode); recNode.connect(mute); mute.connect(ctx.destination);   // il registratore ascolta, non suona
+  recNode.port.onmessage = (e) => {
+    if (!wavRec) return;
+    if (e.data === 'done') { wavRecStop(true); return; }
+    wavRec.chunks.push(e.data); wavRec.frames += e.data.length / 2;
+    if (wavRec.kind === 'jam' && wavRec.frames > ctx.sampleRate * 300) wavRecStop(true);   // 5 minuti
+  };
+  return recNode;
+}
+async function wavRecStart(kind) {
+  if (wavRec) return;
+  initAudio(); if (ctx.state === 'suspended') await ctx.resume();
+  if (!ctx.audioWorklet) { projMsg('QUESTO BROWSER NON PUÒ REGISTRARE: USA CHROME'); return; }
+  const node = await recNodeReady(), sr = ctx.sampleRate;
+  wavRec = { kind, chunks: [], frames: 0, t0: 0, total: 0, label: '● REC', pat: patName(P.cur), bpm: P.fx.tempo };
+  if (kind === 'loop') {
+    // dall'inizio della prossima battuta (se era fermo: parte e salta la prima battuta, così le code del riverbero ci sono già)
+    if (!playing) { UI.head = -1; play(); }
+    const steps = (16 - (count % 16)) % 16 + (count < 16 ? 16 : 0);
+    const start = nextTime + steps * stepDur(), len = UI.wavBars * 16 * stepDur();
+    wavRec.t0 = start; wavRec.total = len;
+    node.port.postMessage({ from: Math.round(start * sr), to: Math.round((start + len) * sr) });
+  } else {
+    const start = ctx.currentTime + 0.05;
+    wavRec.t0 = start;
+    node.port.postMessage({ from: Math.round(start * sr) });
+  }
+  closeMenu(); drawWavRec(); wavRecTick();
+}
+function wavRecTick() {
+  if (!wavRec) return;
+  const el = ctx.currentTime - wavRec.t0, mmss = (x) => Math.floor(x / 60) + ':' + pad2(Math.floor(x % 60));
+  if (wavRec.kind === 'loop') {
+    const bar = 16 * stepDur();
+    wavRec.label = el < 0 ? '● PRONTO −' + Math.ceil(-el / bar) : '● REC ' + Math.min(UI.wavBars, Math.floor(el / bar) + 1) + '/' + UI.wavBars;
+  } else wavRec.label = '● REC ' + mmss(Math.max(0, el));
+  $('recTxt').textContent = wavRec.label;
+  drawLcd();
+  setTimeout(wavRecTick, 200);
+}
+function wavRecStop(keep) {
+  if (!wavRec) return;
+  const r = wavRec; wavRec = null;
+  if (recNode) recNode.port.postMessage({ from: -1, to: -1 });
+  $('recBar').hidden = true; drawLcd(); drawWavRec();
+  if (!keep || !r.frames) { projMsg(keep ? 'NIENTE DA SALVARE' : 'REGISTRAZIONE ANNULLATA'); return; }
+  const blob = wavBlob(r.chunks, r.frames, ctx.sampleRate);
+  const d = new Date(), stamp = d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + '-' + pad2(d.getHours()) + pad2(d.getMinutes()) + pad2(d.getSeconds());
+  const name = 'pony84-' + r.pat + '-' + Math.round(r.bpm) + 'bpm-' + (r.kind === 'loop' ? UI.wavBars + 'batt' : 'jam') + '-' + stamp + '.wav';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  flashLcd('WAV SALVATO');
+  projMsg('SALVATO: ' + name + ' (CARTELLA DOWNLOAD)');
+}
+function wavBlob(chunks, frames, sr) {   // WAV PCM 16 bit stereo
+  const buf = new ArrayBuffer(44 + frames * 4), v = new DataView(buf);
+  const str = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  str(0, 'RIFF'); v.setUint32(4, 36 + frames * 4, true); str(8, 'WAVE'); str(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 2, true); v.setUint32(24, sr, true);
+  v.setUint32(28, sr * 4, true); v.setUint16(32, 4, true); v.setUint16(34, 16, true); str(36, 'data'); v.setUint32(40, frames * 4, true);
+  const out = new Int16Array(buf, 44); let o = 0;
+  for (const c of chunks) { out.set(c.subarray(0, Math.min(c.length, out.length - o)), o); o += c.length; if (o >= out.length) break; }
+  return new Blob([buf], { type: 'audio/wav' });
+}
+function drawWavRec() {
+  document.querySelectorAll('[data-act="wavBars"]').forEach((b) => b.setAttribute('aria-checked', String(Number(b.dataset.n) === UI.wavBars)));
+  $('recBar').hidden = !wavRec;
+}
+function drawHist() {
+  const u = $('undoBtn'), r = $('redoBtn');
+  if (u) u.disabled = !hist.past.length;
+  if (r) r.disabled = !hist.future.length;
+}
+let lcdFlash = null;
+function flashLcd(t) { lcdFlash = { t, until: performance.now() + 900 }; drawLcd(); setTimeout(drawLcd, 950); }
 async function useProject(p, samples) {
   if (playing) stop();
   held.clear();
@@ -2697,6 +2884,8 @@ function moveButton({ name, pressed }) {
   switch (name) {
     case 'play': if (mv.shift) stop(); else play(); break;
     case 'record': act('rec'); break;
+    case 'undo': histGo(mv.shift ? 1 : -1); break;
+    case 'capture': if (wavRec) wavRecStop(true); else wavRecStart(mv.shift ? 'jam' : 'loop'); break;
     case 'track1': act('mode', { m: 'TRIG' }); break;
     case 'track2': act('mode', { m: 'PLOCK' }); break;
     case 'track3': act('mode', { m: 'COND' }); break;
@@ -2799,6 +2988,12 @@ function onAct(b) {
   if (act === 'skin') { setSkin(b.dataset.k, true); return; }
   if (act === 'export') { exportProject(); return; }
   if (act === 'install') { installApp(); return; }
+  if (act === 'undo') { histGo(-1); return; }
+  if (act === 'redo') { histGo(1); return; }
+  if (act === 'wavRec') { wavRecStart(b.dataset.k); return; }
+  if (act === 'wavStop') { wavRecStop(true); return; }
+  if (act === 'wavCancel') { wavRecStop(false); return; }
+  if (act === 'wavBars') { UI.wavBars = Number(b.dataset.n); drawWavRec(); return; }
   if (act === 'audioMode') {
     if (b.dataset.k === audioMode()) return;
     try { localStorage.setItem('pony84-audio', b.dataset.k); localStorage.setItem(STORE, JSON.stringify(packProject(P))); } catch (e) { /* ok */ }
@@ -3073,6 +3268,9 @@ function dragKnob(el, e) {
 }
 document.addEventListener('keydown', (e) => {
   // barra spaziatrice = play/pausa (quando non si è su un tasto)
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 'z' || e.key === 'Z' || e.key === 'y' || e.key === 'Y') && !(e.target.closest && e.target.closest('input, select, textarea'))) {
+    e.preventDefault(); histGo(e.key.toLowerCase() === 'y' || e.shiftKey ? 1 : -1); return;
+  }
   if (e.key === 'Escape') { if (!$('waveEd').hidden) closeWave(); else if (!$('menu').hidden) closeMenu(); else if (UI.learn) setLearn(false); return; }
   if (e.code === 'Space' && !e.repeat && !$('waveEd').hidden && e.target.id === 'waveCanvas') { e.preventDefault(); wavePlay(); return; }
   if (e.code === 'Space' && !e.repeat && $('menu').hidden && $('waveEd').hidden && (e.target === document.body || e.target === document.documentElement)) {
@@ -3167,6 +3365,7 @@ function markNews() {
 }
 $('newsLink').addEventListener('click', () => { try { localStorage.setItem('pony84-seen', VERSION); } catch (e) { /* ok */ } markNews(); });
 markNews();
+drawHist(); drawWavRec();
 document.querySelectorAll('[data-act="audioMode"]').forEach((b) => { const on = b.dataset.k === audioMode(); b.setAttribute('aria-checked', String(on)); b.classList.toggle('on', on); });
 
 // ---------- app installabile (PWA) ----------

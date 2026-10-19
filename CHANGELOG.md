@@ -2,6 +2,11 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## v0.9.0 — 2026-10-19 · Annulla e registra
+
+- **Nuovo**: **Annulla e ripeti** (↶ ↷ accanto a TAP, 60 passi; Ctrl+Z / Ctrl+Maiusc+Z; Undo e Shift+Undo sulla Move).
+- **Nuovo**: **Registra WAV** nel menu PROGETTO: LOOP di 1/2/4/8 battute esatte o JAM LIBERA (max 5 minuti), WAV 16 bit stereo; Capture / Shift+Capture sulla Move.
+
 ## v0.8.0 — 2026-10-19 · Velocity e meno click
 
 - **Nuovo**: **Velocity per step**: in STEP trascina su o giù su uno step; in P-LOCK la manopola DELAY diventa `VEL`. Una barretta nello step mostra i colpi piano.
