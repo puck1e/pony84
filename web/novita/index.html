@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#23211e">
+<title>PONY84 · Novità</title>
+<meta name="description" content="Le novità di ogni versione di PONY84, la groovebox FM e sample nel browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,800&family=Barlow:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Pagina delle novità: una colonna di lettura, un rilascio per scheda, il più recente in alto. */
+:root {
+  --body: #23211e; --panel: #2d2a26; --key: #3a3631; --edge: #141210; --line: #4a453e;
+  --cream: #ece4cf; --text: #d9d0bb; --muted: #a99f8a; --ink: #1d1a17; --white: #fff6ee;
+  --red: #c9372c; --orange: #e07b26; --yellow: #e3b93c; --lcd-bg: #120d07; --lcd: #ffb347;
+  --display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --sans: 'Barlow', 'Segoe UI', Roboto, sans-serif;
+  --mono: 'DM Mono', ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--body); color: var(--text); font-family: var(--sans); font-size: 17px; line-height: 1.6; }
+html[lang="it"] .en, html[lang="en"] .it { display: none !important; }
+a { color: var(--lcd); text-underline-offset: 3px; }
+a:hover { color: var(--yellow); }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* barra in alto */
+.top { position: sticky; top: 0; z-index: 10; background: var(--body); border-bottom: 1px solid var(--line);
+  padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top-in { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.logo { font-family: var(--display); font-size: 30px; line-height: 1; font-weight: 800; font-style: italic; letter-spacing: -.5px; color: var(--cream); text-decoration: none; }
+.logo b { color: var(--orange); font-weight: 800; }
+.logo small { font-style: normal; font-weight: 600; font-size: 13px; letter-spacing: 2.4px; color: var(--muted); margin-left: 8px; vertical-align: middle; }
+.top nav { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-wrap: wrap; }
+.btn { font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: 1.2px; text-decoration: none; color: var(--cream); background: var(--key);
+  border: none; border-bottom: 3px solid var(--edge); border-radius: 6px; padding: 7px 12px; cursor: pointer; }
+.btn.primary { background: var(--orange); color: var(--ink); }
+.btn:hover { color: var(--white); filter: brightness(1.1); }
+.btn.primary:hover { color: var(--ink); }
+.lang { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.lang button { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: 1px; background: none; color: var(--muted); border: none; padding: 7px 10px; cursor: pointer; }
+.lang button[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
+@media (max-width: 560px) {
+  .top-in { flex-wrap: nowrap; gap: 10px; }
+  .top nav { flex-wrap: nowrap; gap: 6px; }
+  .top nav .btn:not(.primary) { display: none; }
+  .logo { font-size: 26px; }
+  .logo small { display: none; }
+  .btn { padding: 7px 10px; font-size: 13px; }
+}
+
+/* impaginazione */
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { min-width: 0; max-width: 72ch; margin: 0 auto; }
+
+/* intestazione */
+.hero { display: flex; flex-direction: column; gap: 14px; margin-bottom: 8px; }
+.eyebrow { font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: 2.4px; color: var(--muted); text-transform: uppercase; }
+h1 { font-family: var(--display); font-weight: 800; font-style: italic; font-size: clamp(40px, 7vw, 64px); line-height: .95; color: var(--cream); margin: 0; letter-spacing: -.5px; text-wrap: balance; }
+h1 b { color: var(--orange); font-weight: 800; }
+.lead { font-size: 19px; color: var(--cream); margin: 0; max-width: 60ch; }
+.lcd { background: var(--lcd-bg); border: 2px solid var(--line); border-radius: 10px; padding: 10px 14px; font-family: var(--mono); color: var(--lcd); font-size: 13px; letter-spacing: 1px;
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.lcd span { white-space: nowrap; }
+
+/* sezioni */
+section { padding-top: 36px; margin-top: 36px; border-top: 1px solid var(--line); }
+h2.sec { font-family: var(--display); font-weight: 700; font-size: 30px; line-height: 1.1; color: var(--cream); margin: 0 0 14px; letter-spacing: .3px; display: flex; gap: 12px; align-items: baseline; }
+h2.sec .n { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--orange); }
+h3 { font-family: var(--display); font-weight: 700; font-size: 21px; color: var(--cream); margin: 26px 0 8px; letter-spacing: .4px; }
+p { margin: 0 0 14px; }
+ul, ol { margin: 0 0 14px; padding-left: 22px; }
+li { margin-bottom: 6px; }
+li::marker { color: var(--muted); }
+strong { color: var(--cream); font-weight: 600; }
+.note { background: var(--panel); border-radius: 10px; padding: 12px 16px; margin: 0 0 16px; }
+.note.warn { box-shadow: inset 0 0 0 1px var(--orange); }
+.note p:last-child, .note ul:last-child { margin-bottom: 0; }
+.note .lbl { font-family: var(--display); font-weight: 700; letter-spacing: 1.5px; font-size: 13px; color: var(--yellow); display: block; margin-bottom: 4px; }
+
+/* tasti come sull'apparecchio */
+.k { display: inline-block; font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: .8px; line-height: 1.2; padding: 2px 7px 1px;
+  border-radius: 4px; background: var(--key); color: var(--cream); border-bottom: 2px solid var(--edge); white-space: nowrap; vertical-align: 1px; }
+.k.o { background: var(--orange); color: var(--ink); }
+.k.r { background: var(--red); color: var(--white); }
+.k.y { background: var(--yellow); color: var(--ink); }
+.k.c { background: var(--cream); color: var(--ink); }
+code, .m { font-family: var(--mono); font-size: 14px; color: var(--lcd); }
+
+/* tabelle */
+.tbl { overflow-x: auto; margin: 0 0 18px; border-radius: 10px; border: 1px solid var(--line); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--display); font-weight: 700; letter-spacing: 1.2px; font-size: 13px; color: var(--muted); background: var(--panel); white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+td:first-child { white-space: nowrap; }
+
+footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 15px; color: var(--muted); }
+
+/* rilasci */
+.rel { padding-top: 32px; margin-top: 32px; border-top: 1px solid var(--line); }
+.rel-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.ver { font-family: var(--mono); font-weight: 500; font-size: 15px; color: var(--ink); background: var(--orange); border-radius: 5px; padding: 3px 9px; border-bottom: 2px solid var(--edge); }
+.rel:not(:first-of-type) .ver { background: var(--key); color: var(--cream); }
+.date { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.now { font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: 1.6px; color: var(--ink); background: var(--yellow); border-radius: 4px; padding: 2px 7px; }
+.rel h2 { font-family: var(--display); font-weight: 700; font-size: 28px; line-height: 1.1; color: var(--cream); margin: 0 0 12px; letter-spacing: .3px; }
+.rel ul { padding-left: 0; list-style: none; }
+.rel li { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 10px; margin-bottom: 9px; }
+.tag { font-family: var(--display); font-weight: 700; font-size: 11px; letter-spacing: 1.2px; text-align: center; border-radius: 4px; padding: 3px 0 2px; height: fit-content; margin-top: 3px; }
+.tag.new { background: var(--orange); color: var(--ink); }
+.tag.up { background: var(--yellow); color: var(--ink); }
+.tag.fix { background: var(--red); color: var(--white); }
+.tag.web { background: var(--key); color: var(--cream); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); align-items: center; }
+.legend span { display: flex; gap: 6px; align-items: center; }
+.legend .tag { width: 54px; margin: 0; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="../" aria-label="PONY84, apri l'app">PONY<b>84</b><small class="it">NOVITÀ</small><small class="en">WHAT'S NEW</small></a>
+    <nav>
+      <a class="btn primary" href="../"><span class="it">APRI L'APP</span><span class="en">OPEN THE APP</span></a>
+      <a class="btn" href="../guide/"><span class="it">GUIDA</span><span class="en">GUIDE</span></a>
+      <div class="lang" role="group" aria-label="Lingua / Language">
+        <button type="button" data-lang="it" aria-pressed="true">IT</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <main>
+    <div class="hero">
+      <span class="eyebrow"><span class="it">Registro dei rilasci</span><span class="en">Release notes</span></span>
+      <h1><span class="it">Novità di PONY<b>84</b></span><span class="en">What's new in PONY<b>84</b></span></h1>
+      <p class="lead"><span class="it">Cosa è cambiato in ogni versione, dalla più recente. Il numero di versione è in basso nel menu PROGETTO &amp; MIDI.</span><span class="en">What changed in each version, newest first. The version number is at the bottom of the PROJECT &amp; MIDI menu.</span></p>
+      <div class="legend"><span><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span class="it">funzione nuova</span><span class="en">new feature</span></span><span><span class="tag up"><span class="it">MEGLIO</span><span class="en">BETTER</span></span><span class="it">miglioria</span><span class="en">improvement</span></span><span><span class="tag fix"><span class="it">FIX</span><span class="en">FIX</span></span><span class="it">correzione</span><span class="en">fix</span></span><span><span class="tag web"><span class="it">SITO</span><span class="en">SITE</span></span><span class="it">sito</span><span class="en">site</span></span></div>
+    </div>
+    <article class="rel" id="v0.6.0">
+      <div class="rel-head"><span class="ver">v0.6.0</span><time class="date" datetime="2026-10-19"><span class="it">19 ott 2026</span><span class="en">Oct 19, 2026</span></time><span class="now"><span class="it">ATTUALE</span><span class="en">CURRENT</span></span></div>
+      <h2><span class="it">Nuovi suoni: SYNTH, decay e WAVE</span><span class="en">New sounds: SYNTH, decay and WAVE</span></h2>
+      <ul>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><span class="k">SYNTH</span> al posto di TONE, con quattro modelli: <strong>FM2</strong> (il TONE di prima), <strong>FM4</strong> (4 operatori, algoritmi e feedback), <strong>CZ</strong> (phase distortion stile Casio) e <strong>MOD</strong> (modale: marimba, campana, metallo, vetro, tamburo).</span><span class="en"><span class="k">SYNTH</span> replaces TONE, with four models: <strong>FM2</strong> (the old TONE), <strong>FM4</strong> (4 operators, algorithms and feedback), <strong>CZ</strong> (Casio-style phase distortion) and <strong>MOD</strong> (modal: marimba, bell, metal, glass, drum).</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">Editor <span class="k">WAVE</span>: <strong>E prima di S = suono al contrario</strong>, anche su singoli step in P-LOCK.</span><span class="en"><span class="k">WAVE</span> editor: <strong>E before S = reversed sound</strong>, even on single p-locked steps.</span></span></li>
+        <li><span class="tag up"><span class="it">MEGLIO</span><span class="en">BETTER</span></span><span><span class="it">Editor WAVE più immediato: zoom a due dita e scorrimento, ascolto automatico quando lasci la maniglia, AGGANCIO ZERO contro i clic, PITCH/DECAY/FILTER/GAIN nell'editor, interruttore TRACCIA / STEP.</span><span class="en">A friendlier WAVE editor: two-finger zoom and scrolling, automatic playback when you release a handle, ZERO SNAP against clicks, PITCH/DECAY/FILTER/GAIN inside the editor, TRACK / STEP switch.</span></span></li>
+        <li><span class="tag fix"><span class="it">FIX</span><span class="en">FIX</span></span><span><span class="it"><span class="k">DECAY</span> a 0 ora è un "tic" di 3–4 ms su tutte le machine (prima restavano da 70 a 350 ms).</span><span class="en"><span class="k">DECAY</span> at 0 is now a 3–4 ms "tick" on every machine (before, 70 to 350 ms were left).</span></span></li>
+        <li><span class="tag up"><span class="it">MEGLIO</span><span class="en">BETTER</span></span><span><span class="it">I progetti salvati si aggiornano da soli e suonano come prima.</span><span class="en">Saved projects update themselves and sound the same as before.</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">Laboratorio dei motori su <a href="../lab/">/lab/</a>: confronto dei modelli e test di carico.</span><span class="en">Engine lab at <a href="../lab/">/lab/</a>: model comparison and load test.</span></span></li>
+      </ul>
+    </article>
+    <article class="rel" id="v0.5.1">
+      <div class="rel-head"><span class="ver">v0.5.1</span><time class="date" datetime="2026-10-19"><span class="it">19 ott 2026</span><span class="en">Oct 19, 2026</span></time></div>
+      <h2><span class="it">Nuova casa</span><span class="en">A new home</span></h2>
+      <ul>
+        <li><span class="tag web"><span class="it">SITO</span><span class="en">SITE</span></span><span><span class="it">PONY84 si trasferisce su <strong>app.sadponygirl.com</strong> (Cloudflare). Per portarti i progetti: ESPORTA FILE dal vecchio indirizzo, IMPORTA FILE sul nuovo.</span><span class="en">PONY84 moves to <strong>app.sadponygirl.com</strong> (Cloudflare). To bring your projects: EXPORT FILE from the old address, IMPORT FILE on the new one.</span></span></li>
+      </ul>
+    </article>
+    <article class="rel" id="v0.5.0">
+      <div class="rel-head"><span class="ver">v0.5.0</span><time class="date" datetime="2026-10-17"><span class="it">17 ott 2026</span><span class="en">Oct 17, 2026</span></time></div>
+      <h2><span class="it">Ableton Move e skin Sad Pony Girl</span><span class="en">Ableton Move and the Sad Pony Girl skin</span></h2>
+      <ul>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><strong>Ableton Move</strong> come controller (step, pad, encoder, tasti e LED) grazie a movewire di Auri.</span><span class="en"><strong>Ableton Move</strong> as a controller (steps, pads, encoders, buttons and LEDs) thanks to Auri's movewire.</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">Skin <strong>SAD PONY GIRL</strong>: giallo "Guerrilla", maschere rosa, display VHS. Si sceglie nel menu PROGETTO.</span><span class="en"><strong>SAD PONY GIRL</strong> skin: "Guerrilla" yellow, pink masks, VHS display. Pick it in the PROJECT menu.</span></span></li>
+      </ul>
+    </article>
+    <article class="rel" id="v0.4.0">
+      <div class="rel-head"><span class="ver">v0.4.0</span><time class="date" datetime="2026-10-17"><span class="it">17 ott 2026</span><span class="en">Oct 17, 2026</span></time></div>
+      <h2><span class="it">Banchi e campioni</span><span class="en">Banks and samples</span></h2>
+      <ul>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><strong>128 pattern</strong> in 8 banchi A–H, con COPIA / INCOLLA di pattern e tracce.</span><span class="en"><strong>128 patterns</strong> in 8 banks A–H, with COPY / PASTE of patterns and tracks.</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">Editor <span class="k">WAVE</span> in stile MPC: START ed END sulla forma d'onda, zoom e ascolto.</span><span class="en">MPC-style <span class="k">WAVE</span> editor: START and END on the waveform, zoom and playback.</span></span></li>
+        <li><span class="tag up"><span class="it">MEGLIO</span><span class="en">BETTER</span></span><span><span class="it">Il sequencer resta nello stesso punto in tutte le modalità.</span><span class="en">The sequencer stays in the same place in every mode.</span></span></li>
+        <li><span class="tag up"><span class="it">MEGLIO</span><span class="en">BETTER</span></span><span><span class="it">Su Android CARICA WAV permette anche di registrare un audio al volo.</span><span class="en">On Android, LOAD WAV also lets you record audio on the spot.</span></span></li>
+      </ul>
+    </article>
+    <article class="rel" id="v0.3.0">
+      <div class="rel-head"><span class="ver">v0.3.0</span><time class="date" datetime="2026-10-17"><span class="it">17 ott 2026</span><span class="en">Oct 17, 2026</span></time></div>
+      <h2><span class="it">Progetto, MIDI e mixer</span><span class="en">Project, MIDI and mixer</span></h2>
+      <ul>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">Menu <span class="k">PROGETTO &amp; MIDI</span>: esporta e importa file .pony84, nuovo progetto, WAV salvati nel browser.</span><span class="en"><span class="k">PROJECT &amp; MIDI</span> menu: export and import .pony84 files, new project, WAVs saved in the browser.</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">Controller MIDI con MIDI LEARN.</span><span class="en">MIDI controllers with MIDI LEARN.</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">Mixer con <strong>3 BUS + MASTER</strong> e catene di 3 effetti: filter, sidechain, lo-fi, vinyl, drive, chorus, tape echo, isolator, reverb.</span><span class="en">Mixer with <strong>3 BUSES + MASTER</strong> and 3-effect chains: filter, sidechain, lo-fi, vinyl, drive, chorus, tape echo, isolator, reverb.</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><a href="../guide/">Guida</a> completa in italiano e inglese.</span><span class="en">Full <a href="../guide/">guide</a> in Italian and English.</span></span></li>
+      </ul>
+    </article>
+    <article class="rel" id="v0.2.0">
+      <div class="rel-head"><span class="ver">v0.2.0</span><time class="date" datetime="2026-10-17"><span class="it">17 ott 2026</span><span class="en">Oct 17, 2026</span></time></div>
+      <h2><span class="it">Sul telefono e dal vivo</span><span class="en">On the phone and live</span></h2>
+      <ul>
+        <li><span class="tag up"><span class="it">MEGLIO</span><span class="en">BETTER</span></span><span><span class="it">Schermata che si adatta al telefono; BPM trascinabile sul display e <span class="k">TAP</span>.</span><span class="en">Screen that fits the phone; BPM draggable on the display, and <span class="k">TAP</span>.</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><span class="k">ROLL</span>: pad KEYS e KIT con scale, ripetizione a tempo e registrazione.</span><span class="en"><span class="k">ROLL</span>: KEYS and KIT pads with scales, note repeat and recording.</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">Vista larga per tablet e PC: SEQ, ROLL e MIXER affiancati.</span><span class="en">Wide view for tablets and computers: SEQ, ROLL and MIXER side by side.</span></span></li>
+        <li><span class="tag up"><span class="it">MEGLIO</span><span class="en">BETTER</span></span><span><span class="it">Demo minimal techno alla prima apertura; COND diventa <span class="k">PROB</span>, TRIG diventa <span class="k">STEP</span>.</span><span class="en">Minimal techno demo on first launch; COND becomes <span class="k">PROB</span>, TRIG becomes <span class="k">STEP</span>.</span></span></li>
+      </ul>
+    </article>
+    <article class="rel" id="v0.1.0">
+      <div class="rel-head"><span class="ver">v0.1.0</span><time class="date" datetime="2026-10-16"><span class="it">16 ott 2026</span><span class="en">Oct 16, 2026</span></time></div>
+      <h2><span class="it">La prima webapp</span><span class="en">The first web app</span></h2>
+      <ul>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it">6 tracce con motori FM e SAMPLE, sequencer a 16 step con P-LOCK e condizioni.</span><span class="en">6 tracks with FM and SAMPLE machines, 16-step sequencer with p-locks and conditions.</span></span></li>
+        <li><span class="tag new"><span class="it">NUOVO</span><span class="en">NEW</span></span><span><span class="it"><span class="k">SCATTER</span> in stile SP-404, delay e riverbero globali, mixer a 6 canali. Colori della 808.</span><span class="en">SP-404-style <span class="k">SCATTER</span>, global delay and reverb, 6-channel mixer. 808 colours.</span></span></li>
+      </ul>
+    </article>
+    <footer><span class="it">PONY84 · groovebox di Fabio / Sad Pony Girl.</span><span class="en">PONY84 · a groovebox by Fabio / Sad Pony Girl.</span> <a href="https://github.com/puck1e/pony84">GitHub</a></footer>
+  </main>
+</div>
+<script>
+(() => {
+  const root = document.documentElement, btns = document.querySelectorAll('[data-lang]');
+  function setLang(l) {
+    root.lang = l;
+    btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === l)));
+    document.title = l === 'it' ? 'PONY84 · Novità' : "PONY84 · What's new";
+    try { localStorage.setItem('pony84-guide-lang', l); } catch (e) { /* ok */ }
+  }
+  let start = 'it';
+  try { start = localStorage.getItem('pony84-guide-lang') || ((navigator.language || 'it').toLowerCase().startsWith('it') ? 'it' : 'en'); } catch (e) { /* ok */ }
+  setLang(start);
+  btns.forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
+})();
+</script>
+</body>
+</html>
