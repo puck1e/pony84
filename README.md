@@ -13,7 +13,7 @@ Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer
 
 ## Provare la webapp
 
-Online: **https://pony84.raptuzbass.workers.dev** (la guida è su `/guide/`). In locale: apri `web/index.html` nel browser.
+Online: **https://app.sadponygirl.com** (anche https://pony84.raptuzbass.workers.dev) (la guida è su `/guide/`). In locale: apri `web/index.html` nel browser.
 
 - **Tracce**: 6 tracce, ognuna assegnabile a KICK, SNARE, METAL, PERC, TONE o SAMPLE.
 - **WAVE** (motore SAMPLE): editor della forma d'onda con maniglie START/END, zoom fino a 64× e ascolto; in P-LOCK i punti valgono per il singolo step. Su Android, CARICA WAV permette anche di registrare un audio al momento.

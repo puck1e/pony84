@@ -4,5 +4,10 @@
   "compatibility_date": "2026-06-01",
   "assets": {
     "directory": "./web"
-  }
+  },
+  // indirizzo ufficiale; resta attivo anche pony84.raptuzbass.workers.dev
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "app.sadponygirl.com", "custom_domain": true }
+  ]
 }
