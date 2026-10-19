@@ -1,6 +1,6 @@
 # PONY84
 
-Versione **0.7.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
+Versione **0.7.1** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
 
 Groovebox ispirata a Elektron Model:Cycles e alla Roland SP-404, con i colori della 808.
 Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer a 6 canali.
@@ -10,6 +10,7 @@ Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer
 - `web/manifest.webmanifest`, `web/sw.js`, `web/icons/` — app installabile (PWA): icona, avvio a tutto schermo, funzionamento offline. `web/_headers` evita che Cloudflare tenga in cache il service worker.
 
 - `web/guide/` — la guida completa (italiano/inglese), online su `/guide/`.
+- `web/crediti/` — crediti e licenze (MIT, movewire, caratteri), online su `/crediti/`.
 - `web/novita/` — le novità di ogni versione (italiano/inglese), online su `/novita/`; la stessa lista è in `CHANGELOG.md`.
 - `web/lab/` — laboratorio dei motori di sintesi (confronto, decay prima/dopo, test di carico), online su `/lab/`.
 - `web/vendor/movewire/` — libreria movewire 0.1.0 di Aureliano Bergese (MIT) per l'Ableton Move.
@@ -61,3 +62,7 @@ Il sito è un Worker di Cloudflare con soli file statici, collegato a questo rep
 - La configurazione è in `wrangler.jsonc`: nome del Worker (`pony84`) e cartella da pubblicare (`web`). Non serve nessun comando di build.
 - Le richieste ai file statici non hanno costi né limiti mensili sul piano gratuito.
 - Nota: progetto, WAV e mappature MIDI salvati nel browser sono legati all'indirizzo del sito. Cambiando indirizzo, usa ESPORTA FILE sul vecchio e IMPORTA FILE sul nuovo.
+
+## Licenza
+
+© 2026 Fabio Anghilante · Sad Pony Girl. Codice con [licenza MIT](LICENSE). movewire (`web/vendor/movewire/`) è © 2026 Aureliano Bergese, licenza MIT. I nomi PONY84 e Sad Pony Girl e le grafiche della band (maschera, icona, skin) identificano l'autore: se fai una tua versione, dalle un nome e un aspetto diversi. Crediti completi: https://app.sadponygirl.com/crediti/

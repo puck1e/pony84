@@ -2,6 +2,10 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## v0.7.1 — 2026-10-19 · Licenza e crediti
+
+- **Sito**: PONY84 è open source con **licenza MIT** (file `LICENSE`). In fondo al menu PROGETTO: © e link alla pagina Crediti e licenze (`/crediti/`).
+
 ## v0.7.0 — 2026-10-19 · PONY84 diventa un'app
 
 - **Nuovo**: **PONY84 si installa come app**: tasto `INSTALLA L'APP` nel menu PROGETTO, icona con la maschera da luchador, apertura a tutto schermo.

@@ -263,7 +263,8 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .ghost.news.fresh { position: relative; }
 .ghost.news.fresh::after, .logo .caret.fresh::after { content: ""; position: absolute; top: -4px; right: -4px; width: 9px; height: 9px; border-radius: 50%; background: var(--led); box-shadow: 0 0 6px var(--led); }
 .logo .caret { position: relative; }
-.mmsg.ver { color: var(--muted); }
+.mmsg.ver { color: var(--muted); line-height: 1.6; }
+.mmsg.ver a { color: var(--muted); }
 .mbtn.install { grid-column: 1 / -1; background: var(--orange); color: var(--ink); }
 .mlist { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
 .mmsg { margin: 0; min-height: 16px; font-family: var(--mono); font-size: 12px; letter-spacing: .5px; color: var(--lcd); }
@@ -724,7 +725,7 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
-const VERSION = '0.7.0';   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
+const VERSION = '0.7.1';   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
 const SAMPLE_LABELS = ['PITCH', 'START', 'END', 'DECAY', 'FILTER', 'GAIN', 'DELAY', 'REVERB'];
@@ -2998,7 +2999,10 @@ function setSkin(k, save) {
 setSkin(document.documentElement.dataset.skin === 'spg' ? 'spg' : '808', false);
 setInterval(vhsDate, 30000);
 // versione e "novità non ancora lette" (pallino sul logo e sul tasto NOVITÀ)
-$('verLine').textContent = 'PONY84 v' + VERSION;
+{
+  const y = new Date().getFullYear(), years = y > 2026 ? '2026–' + y : '2026';
+  $('verLine').innerHTML = 'PONY84 v' + VERSION + ' · © ' + years + ' Fabio Anghilante · Sad Pony Girl<br><a href="crediti/" target="_blank" rel="noopener">Crediti e licenze</a> · licenza MIT';
+}
 function markNews() {
   let seen = null; try { seen = localStorage.getItem('pony84-seen'); } catch (e) { /* ok */ }
   const fresh = seen !== VERSION;
