@@ -6,6 +6,7 @@ Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer
 ## Struttura
 
 - `web/guide/` — la guida completa (italiano/inglese), online su `/guide/`.
+- `web/lab/` — laboratorio dei motori di sintesi (confronto, decay prima/dopo, test di carico), online su `/lab/`.
 - `web/vendor/movewire/` — libreria movewire 0.1.0 di Aureliano Bergese (MIT) per l'Ableton Move.
 - `web/` — la webapp giocabile (un solo file `index.html`, Web Audio API). È la cartella che pubblica Cloudflare.
 - `prototype/` — il prototipo Python che genera un groove in `groove.wav`.
@@ -15,8 +16,9 @@ Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer
 
 Online: **https://app.sadponygirl.com** (anche https://pony84.raptuzbass.workers.dev) (la guida è su `/guide/`). In locale: apri `web/index.html` nel browser.
 
-- **Tracce**: 6 tracce, ognuna assegnabile a KICK, SNARE, METAL, PERC, TONE o SAMPLE.
-- **WAVE** (motore SAMPLE): editor della forma d'onda con maniglie START/END, zoom fino a 64× e ascolto; in P-LOCK i punti valgono per il singolo step. Su Android, CARICA WAV permette anche di registrare un audio al momento.
+- **Tracce**: 6 tracce, ognuna assegnabile a KICK, SNARE, METAL, PERC, SYNTH o SAMPLE. DECAY a 0 = un "tic" di pochi millisecondi.
+- **SYNTH**: quattro modelli: FM2 (il vecchio TONE), FM4 (4 operatori, algoritmi e feedback), CZ (phase distortion stile Casio) e MOD (modale: marimba, campana, metallo, vetro, tamburo). I modelli nuovi girano in un AudioWorklet.
+- **WAVE** (motore SAMPLE): editor della forma d'onda con maniglie START/END; END prima di START = suono al contrario. Zoom a due dita fino a 64×, ascolto automatico quando lasci la maniglia, aggancio allo zero, PITCH/DECAY/FILTER/GAIN nell'editor, interruttore TRACCIA/STEP per i p-lock. Su Android, CARICA WAV permette anche di registrare un audio al momento.
 - **STEP**: tocca gli step per accenderli.
 - **P-LOCK**: scegli uno step e gira le manopole per dargli valori propri.
 - **PROB**: tocca uno step acceso per cambiare quando suona: sempre → 75% → 50% → 25% → 1:2 → 2:2 → 1:4 → 4:4 (1:2 = prima battuta ogni due, 4:4 = quarta battuta ogni quattro).
