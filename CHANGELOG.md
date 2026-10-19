@@ -2,6 +2,12 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## v0.7.0 — 2026-10-19 · PONY84 diventa un'app
+
+- **Nuovo**: **PONY84 si installa come app**: tasto `INSTALLA L'APP` nel menu PROGETTO, icona con la maschera da luchador, apertura a tutto schermo.
+- **Nuovo**: **Funziona senza internet**: app, guida e novità restano disponibili offline; gli aggiornamenti arrivano da soli quando torni online.
+- **Meglio**: Mentre il sequencer suona lo schermo resta acceso.
+
 ## v0.6.0 — 2026-10-19 · Nuovi suoni: SYNTH, decay e WAVE
 
 - **Nuovo**: `SYNTH` al posto di TONE, con quattro modelli: **FM2** (il TONE di prima), **FM4** (4 operatori, algoritmi e feedback), **CZ** (phase distortion stile Casio) e **MOD** (modale: marimba, campana, metallo, vetro, tamburo).

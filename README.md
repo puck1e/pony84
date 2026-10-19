@@ -1,11 +1,13 @@
 # PONY84
 
-Versione **0.6.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
+Versione **0.7.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
 
 Groovebox ispirata a Elektron Model:Cycles e alla Roland SP-404, con i colori della 808.
 Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer a 6 canali.
 
 ## Struttura
+
+- `web/manifest.webmanifest`, `web/sw.js`, `web/icons/` — app installabile (PWA): icona, avvio a tutto schermo, funzionamento offline. `web/_headers` evita che Cloudflare tenga in cache il service worker.
 
 - `web/guide/` — la guida completa (italiano/inglese), online su `/guide/`.
 - `web/novita/` — le novità di ogni versione (italiano/inglese), online su `/novita/`; la stessa lista è in `CHANGELOG.md`.
