@@ -1,0 +1,8 @@
+// Configurazione Cloudflare: PONY84 è un sito statico, pubblicato dalla cartella web/.
+{
+  "name": "pony84",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./web"
+  }
+}
