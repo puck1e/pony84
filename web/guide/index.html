@@ -258,8 +258,8 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <tr><td>DECAY</td><td colspan="5"><span class="it">durata del suono</span><span class="en">length of the sound</span></td></tr>
           <tr><td>COLOR</td><td colspan="5"><span class="it">quantità di FM: più alto = più armoniche e più grinta</span><span class="en">FM amount: higher = more harmonics and bite</span></td></tr>
           <tr><td>SHAPE</td><td><span class="it">rapporto FM</span><span class="en">FM ratio</span></td><td><span class="it">quantità di rumore</span><span class="en">noise amount</span></td><td><span class="it">rapporto FM (metallico)</span><span class="en">FM ratio (metallic)</span></td><td><span class="it">rapporto FM</span><span class="en">FM ratio</span></td><td><span class="it">rapporto FM</span><span class="en">FM ratio</span></td></tr>
-          <tr><td>SWEEP</td><td colspan="5"><span class="it">caduta di intonazione all'attacco (il "tump" della cassa); sulla KICK fino a +72 semitoni: alta = il "tick"</span><span class="en">pitch drop on the attack (the kick's "thump"); on the KICK up to +72 semitones: high = the "tick"</span></td></tr>
-          <tr><td>CONTOUR</td><td><span class="it">velocità dello sweep (0,8–150 ms)</span><span class="en">sweep speed (0.8–150 ms)</span></td><td><span class="it">brillantezza del rumore</span><span class="en">noise brightness</span></td><td><span class="it">quantità di rumore</span><span class="en">noise amount</span></td><td><span class="it">velocità dello sweep</span><span class="en">sweep speed</span></td><td><span class="it">durata della modulazione</span><span class="en">modulation length</span></td></tr>
+          <tr><td>SWEEP</td><td colspan="5"><span class="it">caduta di intonazione all'attacco (il "tump" della cassa)</span><span class="en">pitch drop on the attack (the kick's "thump")</span></td></tr>
+          <tr><td>CONTOUR</td><td><span class="it">velocità dello sweep</span><span class="en">sweep speed</span></td><td><span class="it">brillantezza del rumore</span><span class="en">noise brightness</span></td><td><span class="it">quantità di rumore</span><span class="en">noise amount</span></td><td><span class="it">velocità dello sweep</span><span class="en">sweep speed</span></td><td><span class="it">durata della modulazione</span><span class="en">modulation length</span></td></tr>
           <tr><td>DELAY</td><td colspan="5"><span class="it">mandata al delay globale</span><span class="en">send to the global delay</span></td></tr>
           <tr><td>REVERB</td><td colspan="5"><span class="it">mandata al riverbero globale</span><span class="en">send to the global reverb</span></td></tr>
         </tbody>
@@ -694,7 +694,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       <div class="tbl"><table>
         <thead><tr><th>MIDI</th><th>PONY84</th></tr></thead>
         <tbody>
-          <tr><td><span class="it">Note sul canale 10 (pad)</span><span class="en">Notes on channel 10 (pads)</span></td><td><span class="it">36–41 suonano le tracce 1–6</span><span class="en">36–41 play tracks 1–6</span></td></tr>
+          <tr><td><span class="it">Note sul canale 10 (pad)</span><span class="en">Notes on channel 10 (pads)</span></td><td><span class="it">36–41 (banco A dei pad) suonano le tracce 1–6; 44–49 (banco B) <strong>tieni premuto = mute</strong> delle tracce 1–6, anche più insieme</span><span class="en">36–41 (pad bank A) play tracks 1–6; 44–49 (bank B) <strong>hold = mute</strong> tracks 1–6, several at once too</span></td></tr>
           <tr><td><span class="it">Note sugli altri canali (tastiera)</span><span class="en">Notes on other channels (keys)</span></td><td><span class="it">suonano la traccia selezionata; C4 = intonazione della traccia</span><span class="en">play the selected track; C4 = the track's pitch</span></td></tr>
           <tr><td>CC 70–77</td><td><span class="it">le 8 manopole della pagina aperta (traccia o FX)</span><span class="en">the 8 knobs of the open page (track or FX)</span></td></tr>
           <tr><td>Program change 1–128</td><td><span class="it">pattern da A01 a H16</span><span class="en">patterns A01 to H16</span></td></tr>
@@ -708,6 +708,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li>Nel menu tocca <span class="k">MIDI LEARN</span>: in alto compare una barra gialla e i controlli assegnabili hanno un bordo tratteggiato.</li>
           <li>Tocca una manopola o un fader sullo schermo (anche quelle degli effetti dei bus).</li>
           <li>Muovi una manopola o un fader del controller: è assegnato. Passa al successivo.</li>
+          <li><strong>Mute tenuto</strong>: tocca invece un <strong>tasto traccia</strong> (1–6) e premi un pad del controller (nota o CC). Da quel momento tenere premuto quel pad mette in mute la traccia, rilasciarlo la fa ripartire. Quando assegni almeno un mute così, il banco B smette di fare i mute predefiniti.</li>
           <li>Premi <span class="k y">FINE</span>. Le assegnazioni restano salvate; <span class="k">AZZERA MAPPATURE</span> le cancella.</li>
         </ol>
       </div>
@@ -719,6 +720,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li>Tap a knob or fader on screen (bus effect knobs too).</li>
           <li>Move a knob or fader on the controller: it's assigned. Move on to the next one.</li>
           <li>Press <span class="k y">FINE</span> (done). Assignments stay saved; <span class="k">AZZERA MAPPATURE</span> (reset mappings) clears them.</li>
+          <li><strong>Hold-to-mute</strong>: tap a <strong>track button</strong> (1–6) instead and press a pad on the controller (note or CC). From then on, holding that pad mutes the track and releasing it brings it back. Once you learn at least one mute this way, bank B stops doing the default mutes.</li>
         </ol>
       </div>
     </section>

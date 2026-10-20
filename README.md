@@ -1,6 +1,6 @@
 # PONY84
 
-Versione **0.12.1** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
+Versione **0.10.1** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
 
 Groovebox ispirata a Elektron Model:Cycles e alla Roland SP-404, con i colori della 808.
 Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer a 6 canali.
@@ -15,7 +15,6 @@ Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer
 - `web/lab/` — laboratorio dei motori di sintesi (confronto, decay prima/dopo, test di carico), online su `/lab/`.
 - `web/vendor/movewire/` — libreria movewire 0.1.0 di Aureliano Bergese (MIT) per l'Ableton Move.
 - `web/` — la webapp giocabile (un solo file `index.html`, Web Audio API). È la cartella che pubblica Cloudflare.
-- `web/drone/` — **PonyDrone** v0.1.1, la seconda app (ambient, drone, glitch; per ora indipendente da PONY84), online su `/drone/`: `index.html` (interfaccia, `VERSION`), `app.js` (stato, UI, scene), `audio.js` (grafo, microfono, export), `tape.js` (rocchetti e pad XY), `worklets/drone-processor.js` (buffer, motore, pedali, riverbero), `sw.js` (offline, scope `/drone/`). Specifica: `claude/ponydrone-design.md` nel Project.
 - `prototype/` — il prototipo Python che genera un groove in `groove.wav`.
 - `prototype/samples/` — i WAV per il motore SAMPLE.
 
@@ -47,7 +46,7 @@ Online: **https://app.sadponygirl.com** (anche https://pony84.raptuzbass.workers
   - **Esporta / Importa**: file `.pony84` con pattern, suoni, mixer, effetti e WAV, da riaprire su qualsiasi dispositivo.
   - **Nuovo vuoto / Nuovo da demo**: due tocchi per confermare.
   - **Skin**: 808 oppure SAD PONY GIRL (giallo acido, maschere rosa, display VHS in stile weirdcore/nostalgiacore). La scelta resta salvata.
-  - **Controller MIDI** (Chrome su PC e Android, sul telefono con adattatore USB-C OTG): pad sul canale 10 (note 36–41) → tracce 1–6; tastiera sugli altri canali → note della traccia scelta (C4 = intonazione della traccia); CC 70–77 → le 8 manopole della pagina aperta; program change 1–128 → pattern A01–H16; Start/Stop MIDI → play/stop. Con **MIDI LEARN** tocchi una manopola o un fader e muovi un controllo del controller per assegnarlo.
+  - **Controller MIDI** (Chrome su PC e Android, sul telefono con adattatore USB-C OTG): pad sul canale 10: note 36–41 → tracce 1–6, note 44–49 (banco B dell'MPK Mini) → mute tenuto delle tracce 1–6; tastiera sugli altri canali → note della traccia scelta (C4 = intonazione della traccia); CC 70–77 → le 8 manopole della pagina aperta; program change 1–128 → pattern A01–H16; Start/Stop MIDI → play/stop. Con **MIDI LEARN** tocchi una manopola o un fader e muovi un controllo del controller per assegnarlo; toccando un tasto traccia e premendo un pad assegni il mute tenuto.
   - **Ableton Move**: COLLEGA MOVE trasforma la Move nel controller di PONY84 (step, pad, encoder, LED), grazie a [movewire](https://github.com/auridevil/movewire) di Auri, incluso in `web/vendor/movewire/` (licenza MIT). Mappatura completa nella guida.
 
 Il progetto e i WAV caricati vengono salvati nel browser in automatico.

@@ -290,7 +290,8 @@ html[data-skin="spg"] .follow[aria-pressed="true"] { background: var(--dark); co
   background: var(--yellow); color: var(--ink); border-radius: 10px; padding: 8px 8px 8px 14px; display: flex; gap: 12px; align-items: center;
   font-weight: 700; letter-spacing: 1px; font-size: 13px; box-shadow: 0 6px 20px rgba(0,0,0,.5); }
 .learnbar .ghost { border-color: var(--ink); color: var(--ink); flex: none; }
-.app.learning [data-knob] .cap, .app.learning [data-fader] { outline: 2px dashed var(--yellow); outline-offset: 3px; }
+.app.learning [data-knob] .cap, .app.learning [data-fader], .app.learning .trk { outline: 2px dashed var(--yellow); outline-offset: 3px; }
+.app.learning .trk.learn-sel { outline: 3px solid var(--yellow); }
 .app.learning .learn-sel .cap, .app.learning [data-fader].learn-sel { outline: 3px solid var(--yellow); }
 
 /* vista larga (tablet in orizzontale, PC): SEQ | ROLL | MIXER affiancati */
@@ -704,7 +705,7 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
       </div>
       <p class="mmsg" id="midiMsg" aria-live="polite">MIDI SPENTO</p>
       <ul class="mnote mlist">
-        <li><b>Pad</b> (canale 10, note 36–41): suonano le tracce 1–6.</li>
+        <li><b>Pad</b> (canale 10): banco A (note 36–41) suona le tracce 1–6; banco B (note 44–49) <b>tieni premuto = mute</b> delle tracce 1–6, anche più insieme. Con MIDI LEARN puoi assegnare il mute tenuto a qualsiasi pad: tocca un tasto traccia e premi il pad.</li>
         <li><b>Tastiera</b> (altri canali): suona la traccia scelta; C4 = intonazione della traccia.</li>
         <li><b>Manopole</b> CC 70–77: le 8 manopole della pagina aperta. Con MIDI LEARN assegni qualsiasi manopola o fader.</li>
         <li><b>Program change</b> 1–128: cambia pattern. <b>Start/Stop</b> MIDI: play e stop.</li>
@@ -787,7 +788,7 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
-const VERSION = '0.12.1';
+const VERSION = '0.10.1';
 const audioMode = () => { try { return localStorage.getItem('pony84-audio') === 'stable' ? 'stable' : 'fast'; } catch (e) { return 'fast'; } };   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
@@ -813,11 +814,9 @@ const MATERIALS = [
 ];
 const zone = (v, n) => Math.min(n - 1, Math.floor(v / 127 * n));   // manopola divisa in n zone
 const decayT = (v) => 0.003 * Math.pow(4 / 0.003, v / 127);       // DECAY dei modelli nuovi: da 3 ms a 4 s
-// KICK dalla 0.11.0: SWEEP in semitoni fino a +72 (6 ottave, arriva al "tick" di 2–3 kHz) e CONTOUR esponenziale da 0,8 ms a 150 ms
-const KICK_SWEEP = 72, kickSweepT = (x) => 0.0008 * Math.pow(0.15 / 0.0008, x);   // x = manopola 0..1
 const fmtT = (t) => (t < 1 ? Math.round(t * 1000) + 'ms' : t.toFixed(2) + 's');
 const DEF = {
-  KICK:   [25, 57, 25, 25, 100, 30, 0, 8],   // SWEEP +57st in 3 ms: tick e pancia
+  KICK:   [25, 57, 25, 25, 48, 32, 0, 8],
   SNARE:  [38, 49, 32, 76, 13, 38, 19, 25],
   METAL:  [24, 25, 44, 15, 0, 64, 13, 20],
   PERC:   [39, 40, 51, 56, 48, 18, 32, 20],
@@ -932,11 +931,7 @@ function demoProject() {
 // - la manopola 3 del SAMPLE passa da LENGTH (relativa a START) a END (punto assoluto nel file).
 const OLD_DMIN = { KICK: [0.05, 1.5], SNARE: [0.03, 0.6], METAL: [0.01, 0.8], PERC: [0.02, 0.6], TONE: [0.03, 1.5], SAMPLE: [0.02, 3] };
 function upgradeProject(p) {
-  if ((p.ver || 1) < 2) upgradeTo2(p);
-  if (p.ver < 3) upgradeTo3(p);
-  return p;
-}
-function upgradeTo2(p) {
+  if ((p.ver || 1) >= 2) return p;
   const conv = (m, v) => {   // stessa costante di tempo con il nuovo minimo
     if (v == null || (m === 'SAMPLE' && v >= 127)) return v;
     const [off, sc] = OLD_DMIN[m], tau = off + Math.pow(v / 127, 2) * sc;
@@ -959,23 +954,7 @@ function upgradeTo2(p) {
     if (m === 'TONE') { t.machine = 'SYNTH'; t.model = 'FM2'; }
   });
   p.ver = 2;
-}
-// Progetti fino alla 0.10 → 3: SWEEP e CONTOUR della KICK cambiano scala (vedi KICK_SWEEP);
-// le manopole vengono ricalcolate perché la cassa suoni identica.
-function upgradeTo3(p) {
-  const r2 = (x) => Math.round(Math.min(127, Math.max(0, x)) * 100) / 100;
-  const conv = [
-    [4, (v) => r2(Math.log2(1 + 8 * v / 127) * 12 / KICK_SWEEP * 127)],
-    [5, (v) => r2(Math.log((0.005 + 0.1 * v / 127) / 0.0008) / Math.log(0.15 / 0.0008) * 127)]
-  ];
-  p.tracks.forEach((t, ti) => {
-    if (t.machine !== 'KICK') return;
-    conv.forEach(([k, fn]) => {
-      if (t.params[k] != null) t.params[k] = fn(t.params[k]);
-      p.patterns.forEach((pt) => pt && pt[ti] && pt[ti].forEach((st) => { if (st && st.locks && st.locks[k] != null) st.locks[k] = fn(st.locks[k]); }));
-    });
-  });
-  p.ver = 3;
+  return p;
 }
 // controlla e aggiorna un progetto (salvato nel browser o importato da file); null se non è valido
 function normalizeProject(p) {
@@ -1039,6 +1018,13 @@ function histPush(json) {
 const UI = { view: 'seq', track: 0, mode: 'TRIG', fx: false, selStep: null, latch: false, scatter: null, head: -1, pendingPat: null, rec: false, lastNote: '' };
 const VIEWS = ['seq', 'mix', 'roll'];
 UI.holdMute = new Set();
+const muteKeys = new Map();   // chi tiene premuto il mute: dito sullo schermo, nota o CC del controller → traccia
+function muteHold(key, i, on) {
+  if (on) muteKeys.set(key, i); else if (!muteKeys.has(key)) return; else muteKeys.delete(key);
+  UI.holdMute = new Set(muteKeys.values());
+  if (ctx) applyMix();
+  needRender = true;
+}
 let velDrag = null, velSuppress = false;   // trascinamento della velocity sugli step (vedi sotto)
 UI.wide = false;
 const shows = (v) => UI.wide || UI.view === v;   // nella vista larga si vedono tutte e tre
@@ -1061,7 +1047,7 @@ function voiceParams(m, K) {
   const [a, b, c, d, e, f] = n;
   let v;
   switch (m) {
-    case 'KICK':  v = { freq: 30 + a * 90, decay: DMIN + b * b * 1.5, index: c * 6, ratio: 0.5 + d * 2.5, sweep: Math.pow(2, e * KICK_SWEEP / 12) - 1, sweepTime: kickSweepT(f), noise: 0, att: 0.0002 }; break;   // attacco 0,2 ms: il transiente non viene smussato
+    case 'KICK':  v = { freq: 30 + a * 90, decay: DMIN + b * b * 1.5, index: c * 6, ratio: 0.5 + d * 2.5, sweep: e * 8, sweepTime: 0.005 + f * 0.1, noise: 0 }; break;
     case 'SNARE': v = { freq: 100 + a * 300, decay: DMIN + b * b * 0.6, index: c * 4, ratio: 1.5, noise: d, noiseFreq: 800 + f * 7200, sweep: e * 2, sweepTime: 0.02 }; break;
     case 'METAL': v = { freq: 300 + a * 1700, decay: DMIN + b * b * 0.8, index: c * 10, ratio: 1.05 + d * 3, sweep: e, sweepTime: 0.01, noise: f * 0.8, noiseFreq: 6000 }; break;
     case 'PERC':  v = { freq: 80 + a * 820, decay: DMIN + b * b * 0.6, index: c * 5, ratio: 1 + d * 4, sweep: e * 4, sweepTime: 0.003 + f * 0.05, noise: 0 }; break;
@@ -1091,8 +1077,6 @@ function fmtParam(m, i, v, model) {
     if (i === 4) return fmtHz(200 * Math.pow(100, v / 127));
     return String(Math.round(v));   // START e LENGTH possono avere decimali (editor WAVE)
   }
-  if (m === 'KICK' && i === 4) return '+' + Math.round(v / 127 * KICK_SWEEP) + 'st';
-  if (m === 'KICK' && i === 5) return fmtT(kickSweepT(v / 127));
   if (i === 0) {
     if (m === 'SYNTH') { const nn = 24 + Math.round(v / 127 * 60); return NOTE[nn % 12] + (Math.floor(nn / 12) - 1); }
     return fmtHz(voiceParams(m, [v, 64, 64, 64, 64, 64, 0, 0]).freq);
@@ -1579,10 +1563,9 @@ function playFM(ti, v, t, vel = 1, choke = false) {
       prev.srcs.forEach((n) => { try { n.stop(t + 0.03); } catch (e) { /* ok */ } });
     }
   }
-  const att = v.att || 0.002;   // la KICK attacca in 0,2 ms (l'oscillatore parte da zero: niente clic sporco)
   out.gain.setValueAtTime(0, t);
-  out.gain.linearRampToValueAtTime(0.8 * vel, t + att);
-  out.gain.setTargetAtTime(0, t + att, v.decay);
+  out.gain.linearRampToValueAtTime(0.8 * vel, t + 0.002);
+  out.gain.setTargetAtTime(0, t + 0.002, v.decay);
   out.connect(A.tr[ti].inp);
   const end = t + v.decay * 6 + 0.05;
   const car = ctx.createOscillator(), mod = ctx.createOscillator(), mg = ctx.createGain(), cg = ctx.createGain();
@@ -2774,6 +2757,7 @@ try { midiMap = JSON.parse(localStorage.getItem(MIDI_STORE) || '{}') || {}; } ca
 UI.midiMsg = 'MIDI SPENTO'; UI.learn = false; UI.learnTarget = null;
 function saveMidiMap() { try { localStorage.setItem(MIDI_STORE, JSON.stringify(midiMap)); } catch (e) { /* ok */ } }
 function targetName(id) {
+  if (id.startsWith('mute')) return 'MUTE TENUTO T' + (Number(id.slice(4)) + 1);
   if (id.startsWith('m')) return 'MANOPOLA ' + (Number(id.slice(1)) + 1);
   if (id.startsWith('pan')) return 'PAN ' + (Number(id.slice(3)) + 1);
   if (id.startsWith('dly')) return 'DLY ' + (Number(id.slice(3)) + 1);
@@ -2804,7 +2788,7 @@ function onMidi(e) {
   if (st === 0xFA || st === 0xFB) { if (!playing && ctx) play(); return; }   // start / continue
   if (st === 0xFC) { if (playing) stop(); return; }                           // stop
   if (type === 0x90 && d2 > 0) { midiNoteOn(ch, d1, d2); return; }
-  if (type === 0x80 || type === 0x90) { padUp('midi' + ch + ':' + d1); return; }
+  if (type === 0x80 || type === 0x90) { padUp('midi' + ch + ':' + d1); muteHold('midi' + ch + ':' + d1, 0, false); return; }
   if (type === 0xB0) { midiCC(ch, d1, d2); return; }
   if (type === 0xC0) {                                                          // program change = pattern
     const n = d1 % PATTERNS;
@@ -2814,11 +2798,23 @@ function onMidi(e) {
   }
 }
 function midiNoteOn(ch, note, vel) {
+  const nk = 'n' + ch + ':' + note;
+  if (UI.learn && UI.learnTarget && UI.learnTarget.startsWith('mute')) {   // MIDI LEARN di un mute tenuto
+    for (const k of Object.keys(midiMap)) if (midiMap[k] === UI.learnTarget) delete midiMap[k];
+    midiMap[nk] = UI.learnTarget; saveMidiMap();
+    $('learnTxt').textContent = 'NOTA ' + note + ' → ' + targetName(UI.learnTarget) + ' · TOCCA IL PROSSIMO';
+    setLearnTarget(null); return;
+  }
+  const mapped = midiMap[nk];
+  if (mapped && mapped.startsWith('mute')) { muteHold('midi' + ch + ':' + note, Number(mapped.slice(4)), true); return; }
+  if (ch === 9 && note >= 44 && note <= 49 && !Object.values(midiMap).some((v) => v.startsWith('mute'))) {
+    muteHold('midi' + ch + ':' + note, note - 44, true); return;   // banco B dei pad: tieni premuto = mute della traccia
+  }
   if (!ctx) { UI.midiMsg = 'TOCCA ACCENDI PER SENTIRE IL CONTROLLER'; drawMenu(); return; }
   let tg;
-  if (ch === 9) {                                   // canale 10: pad batteria → tracce 1–6
-    const i = (((note - 36) % 8) + 8) % 8;
-    if (i > 5) return;
+  if (ch === 9) {                                   // canale 10: pad batteria → tracce 1–6 (banco A, note 36–41)
+    const i = note - 36;
+    if (i < 0 || i > 5) return;
     tg = { ti: i, tp: 0, kit: true };
   } else tg = { ti: UI.track, tp: note - 60, kit: false };   // tastiera: C4 = intonazione della traccia
   const el = tg.kit && P.roll.mode === 'KIT' && shows('roll') ? rpadBtns[tg.ti] : null;
@@ -2827,7 +2823,7 @@ function midiNoteOn(ch, note, vel) {
 function midiCC(ch, cc, val) {
   const key = ch + ':' + cc;
   if (UI.learn) {
-    if (!UI.learnTarget) { $('learnTxt').textContent = 'PRIMA TOCCA UNA MANOPOLA O UN FADER SULLO SCHERMO'; return; }
+    if (!UI.learnTarget) { $('learnTxt').textContent = 'PRIMA TOCCA UNA MANOPOLA, UN FADER O UNA TRACCIA SULLO SCHERMO'; return; }
     for (const k of Object.keys(midiMap)) if (midiMap[k] === UI.learnTarget) delete midiMap[k];
     midiMap[key] = UI.learnTarget; saveMidiMap();
     $('learnTxt').textContent = 'CC ' + cc + ' → ' + targetName(UI.learnTarget) + ' · TOCCA IL PROSSIMO';
@@ -2836,6 +2832,7 @@ function midiCC(ch, cc, val) {
   }
   const id = midiMap[key] || MIDI_DEFAULT_CC[cc];
   if (!id) return;
+  if (id.startsWith('mute')) { muteHold('cc' + key, Number(id.slice(4)), val > 0); return; }   // pad in modalità CC: premuto = mute
   if (id.startsWith('lvl') || id === 'master') { setFader(id, val / 127, 0); return; }
   const def = resolveKnob(id);
   def.set(clamp(val)); redrawAfterKnob(id);
@@ -2844,9 +2841,9 @@ function setLearnTarget(id) {
   UI.learnTarget = id;
   document.querySelectorAll('.learn-sel').forEach((el) => el.classList.remove('learn-sel'));
   if (!id) return;
-  const el = document.querySelector('[data-knob="' + id + '"]') || document.querySelector('[data-fader="' + id + '"]');
+  const el = document.querySelector('[data-knob="' + id + '"]') || document.querySelector('[data-fader="' + id + '"]') || (id.startsWith('mute') ? document.querySelector('.trk[data-i="' + id.slice(4) + '"]') : null);
   if (el) el.classList.add('learn-sel');
-  $('learnTxt').textContent = targetName(id) + ': ORA MUOVI UNA MANOPOLA DEL CONTROLLER';
+  $('learnTxt').textContent = targetName(id) + (id.startsWith('mute') ? ': ORA PREMI UN PAD DEL CONTROLLER' : ': ORA MUOVI UNA MANOPOLA DEL CONTROLLER');
 }
 function setLearn(on) {
   UI.learn = on;
@@ -2854,7 +2851,7 @@ function setLearn(on) {
   $('learnBar').hidden = !on;
   setLearnTarget(null);
   if (on) {
-    $('learnTxt').textContent = 'MIDI LEARN: TOCCA UNA MANOPOLA O UN FADER';
+    $('learnTxt').textContent = 'MIDI LEARN: TOCCA UNA MANOPOLA, UN FADER O UNA TRACCIA';
     closeMenu();
     if (!midiAccess) midiEnable();
   }
@@ -3280,7 +3277,8 @@ document.addEventListener('pointerdown', (e) => {
   if (!b) return;
   trkSuppress = false;
   const i = Number(b.dataset.i), h = { i, on: false };
-  h.timer = setTimeout(() => { h.on = true; UI.holdMute.add(i); applyMix(); drawTracks(); if (UI.view === 'mix') drawMixer(); }, 220);
+  if (UI.learn) { e.preventDefault(); setLearnTarget('mute' + i); trkSuppress = true; return; }   // MIDI LEARN: questo tasto traccia
+  h.timer = setTimeout(() => { h.on = true; muteHold('touch' + e.pointerId, i, true); }, 220);
   trkHold.set(e.pointerId, h);
 }, true);
 const trkRelease = (e) => {
@@ -3289,8 +3287,7 @@ const trkRelease = (e) => {
   trkHold.delete(e.pointerId); clearTimeout(h.timer);
   if (h.on) {
     trkSuppress = true;   // era un mute tenuto: il click che segue non cambia traccia
-    if (![...trkHold.values()].some((o) => o.on && o.i === h.i)) UI.holdMute.delete(h.i);
-    applyMix(); drawTracks(); if (UI.view === 'mix') drawMixer();
+    muteHold('touch' + e.pointerId, h.i, false);
   }
 };
 window.addEventListener('pointerup', trkRelease, true); window.addEventListener('pointercancel', trkRelease, true);

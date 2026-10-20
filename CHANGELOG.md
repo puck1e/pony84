@@ -2,36 +2,10 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
-## PonyDrone v0.1.1 — 2026-10-20 · Per conto suo
+## v0.10.1 — 2026-10-20 · Mute dal vivo con il controller
 
-- **Meglio**: tolto per ora il collegamento con PONY84 (tasto ⇄ PONY84, suoni presi da PONY84, SEGUI PONY84). Restano WAV e microfono.
-
-## v0.12.1 — 2026-10-20 · Ponte in pausa
-
-- **Meglio**: tolto per ora il ponte con PonyDrone (link nel menu, `BroadcastChannel('pony')` per WAV, BPM e play/stop). Resta l'esclusione di `/drone/` nel service worker.
-
-## PonyDrone v0.1.0 — 2026-10-20 · Il nastro che suona da solo
-
-Seconda app dell'ecosistema, in `web/drone/`, online su https://app.sadponygirl.com/drone/. Versione indipendente da PONY84.
-
-- **Nuovo**: nastro da 45 s: WAV, microfono (REC, OVERDUB, FREEZE; senza cancellazione d'eco, riduzione del rumore e guadagno automatico) o suoni di PONY84.
-- **Nuovo**: motore GRANI e GLITCH, 4 varianti ciascuno; macro ATTIVITÀ, RIPETI, FORMA, TEMPO, CAOS; pad XY con due macro per algoritmo; TEMPO libero o a divisioni di BPM.
-- **Nuovo**: pedaliera da 3–4 slot: TAPE, VHS, FILTRO, BITCRUSH, con bypass.
-- **Nuovo**: SPAZIO (riverbero FDN 2–20 s con freeze), MIX, LIVELLO, limiter sempre attivo; STOP = tape stop.
-- **Nuovo**: rocchetti animati dalla telemetria del worklet; scene `.ponydrone` (formato `ver` 1), export WAV 1–10 min, PWA con service worker su `/drone/`.
-
-## v0.12.0 — 2026-10-20 · Arriva PonyDrone
-
-- **Nuovo**: link a PonyDrone nel menu PROGETTO & MIDI.
-- **Nuovo**: ponte con PonyDrone su `BroadcastChannel('pony')`: i WAV registrati (LOOP e JAM LIBERA) arrivano a PonyDrone aperto in un'altra scheda; BPM, play e stop vengono inviati a ogni cambio.
-- **Fix**: il service worker di PONY84 ignora le richieste sotto `/drone/` (PonyDrone ha il suo).
-
-## v0.11.0 — 2026-10-20 · La cassa con la punta
-
-- **Meglio**: SWEEP della KICK fino a +72 semitoni (prima +38): l'attacco parte dai kHz e dà il tick, poi scende sulla pancia. Il display mostra i semitoni.
-- **Meglio**: CONTOUR della KICK esponenziale da 0,8 a 150 ms (prima 5–105 ms lineare).
-- **Meglio**: la KICK attacca in 0,2 ms invece di 2: il transiente non viene smussato.
-- **Fix**: progetti e file .pony84 precedenti convertiti (formato `ver` 3): SWEEP e CONTOUR della KICK, p-lock compresi, ricalcolati perché la cassa suoni come prima.
+- **Nuovo**: mute tenuto dal controller MIDI: canale 10, note 44–49 (banco B dei pad MPK Mini) → tracce 1–6, anche più insieme.
+- **Nuovo**: MIDI LEARN anche per il mute tenuto: tocca un tasto traccia e premi un pad (nota o CC).
 
 ## v0.10.0 — 2026-10-20 · Pattern lunghi
 
