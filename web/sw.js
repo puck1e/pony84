@@ -2,7 +2,7 @@
 // Pagine: prima la rete (così gli aggiornamenti arrivano subito), poi la copia salvata.
 // Altri file: la copia salvata subito, aggiornata in sottofondo. Il nome della cache segue la versione.
 // Le cache di PonyDrone (ponydrone-*) stanno nello stesso sito: non si toccano.
-const VERSION = '0.12.0';
+const VERSION = '0.12.1';
 const CACHE = 'pony84-' + VERSION, FONTS = 'pony84-fonts';
 const SHELL = [
   '/', '/guide/', '/novita/', '/crediti/', '/manifest.webmanifest',

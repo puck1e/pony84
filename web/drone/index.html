@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<script>const VERSION = '0.1.0';</script>
+<script>const VERSION = '0.1.1';</script>
 <script>try { if (localStorage.getItem('pony84-skin') === 'spg') document.documentElement.dataset.skin = 'spg'; } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Narrow:wght@500;600;700&family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,800&family=DM+Mono:wght@400;500&family=VT323&display=swap">
@@ -147,7 +147,6 @@ html[data-skin="spg"] .sheet-card { border: 2px solid var(--edge); }
     <span class="logo" aria-label="PonyDrone">PONY<b>DRONE</b></span>
     <span class="hdr">
       <span class="recbadge" id="recBadge" hidden></span>
-      <a class="hw" href="/" target="pony84" rel="opener" style="display:inline-flex;align-items:center;text-decoration:none" title="Apri PONY84 in un'altra scheda">⇄ PONY84</a>
       <button class="hw" id="menuBtn" aria-label="Menu" aria-haspopup="dialog">☰</button>
     </span>
   </header>
@@ -246,12 +245,6 @@ html[data-skin="spg"] .sheet-card { border: 2px solid var(--edge); }
       <p class="mnote">Registra quello che senti, in tempo reale, fino alla durata scelta o finché premi FERMA. Il WAV finisce nella cartella Download.</p>
     </section>
 
-    <section class="list" aria-label="Campioni di PONY84">
-      <span class="label">DA PONY84</span>
-      <div class="list" id="ponyList"></div>
-      <p class="mnote">I WAV caricati in PONY84 su questo browser. Le registrazioni WAV fatte in PONY84 arrivano qui da sole, se PonyDrone è aperto in un'altra scheda.</p>
-    </section>
-
     <section class="list" aria-label="Tempo">
       <span class="label">TEMPO</span>
       <div class="row">
@@ -259,9 +252,8 @@ html[data-skin="spg"] .sheet-card { border: 2px solid var(--edge); }
         <button class="hw" data-bpm="-1" aria-label="BPM meno">−</button>
         <span class="bpm" id="bpmVal">90</span>
         <button class="hw" data-bpm="1" aria-label="BPM più">+</button>
-        <button class="hw" id="followBtn" aria-pressed="false">SEGUI PONY84</button>
       </div>
-      <p class="mnote">Con <b>SYNC</b> la manopola TEMPO va a divisioni di battuta. <b>SEGUI PONY84</b> prende BPM, play e stop da PONY84 aperto in un'altra scheda.</p>
+      <p class="mnote">Con <b>SYNC</b> la manopola TEMPO va a divisioni di battuta.</p>
     </section>
 
     <section class="list" aria-label="Microfono">

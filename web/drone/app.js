@@ -1,4 +1,4 @@
-// PonyDrone · stato, interfaccia, salvataggio e ponte con PONY84.
+// PonyDrone · stato, interfaccia e salvataggio.
 // Il suono vive in audio.js + worklets/drone-processor.js; qui si decidono valori e si disegna.
 import { Engine, wavFromFloat } from './audio.js';
 import { TapeView, PadView } from './tape.js';
@@ -63,7 +63,7 @@ function defaultScene() {
       { fx: 'vhs', byp: false, p: FX_DEFS.vhs.def.slice() },
       { fx: 'filtro', byp: false, p: FX_DEFS.filtro.def.slice() }
     ],
-    sel: 0, sync: false, bpm: 90, follow: false, monitor: false, expMin: 2,
+    sel: 0, sync: false, bpm: 90, monitor: false, expMin: 2,
     source: { name: '' }
   };
 }
@@ -97,7 +97,7 @@ function sanitize(s) {
     });
   }
   out.sel = n(s.sel, 0, 0, out.slots.length - 1) | 0;
-  out.sync = !!s.sync; out.follow = !!s.follow; out.monitor = !!s.monitor;
+  out.sync = !!s.sync; out.monitor = !!s.monitor;
   out.bpm = n(s.bpm, 90, 30, 240);
   out.expMin = [1, 2, 5, 10].includes(s.expMin) ? s.expMin : 2;
   out.source = { name: s.source && typeof s.source.name === 'string' ? s.source.name.slice(0, 40) : '' };
@@ -345,7 +345,7 @@ function drawSource() {
   if (S.source.name) parts.push(S.source.name);
   if (live.len > 0) parts.push(live.len.toFixed(1).replace('.', ',') + ' s');
   if (eng.micActive) parts.push('MIC ACCESO');
-  $('srcInfo').textContent = parts.join(' · ') || 'Carica un WAV, registra dal MIC o prendi un suono da PONY84 (☰)';
+  $('srcInfo').textContent = parts.join(' · ') || 'Carica un WAV o registra dal MIC';
 }
 $('wavBtn').addEventListener('click', () => $('fileIn').click());
 $('fileIn').addEventListener('change', async () => {
@@ -383,7 +383,7 @@ $('micBtn').addEventListener('click', async () => {
 });
 async function micOn() {
   try { await eng.micOn(); }
-  catch (e) { toast('MICROFONO NON DISPONIBILE: controlla i permessi del browser. WAV e suoni di PONY84 funzionano lo stesso.'); return false; }
+  catch (e) { toast('MICROFONO NON DISPONIBILE: controlla i permessi del browser. Puoi sempre caricare un WAV.'); return false; }
   eng.post({ t: 'monitor', v: S.monitor });
   if (!localStorage.getItem('ponydrone-cuffie')) {
     toast('Con il microfono usa le cuffie: dalle casse il suono rientra e fischia.');
@@ -500,7 +500,6 @@ $('powerBtn').addEventListener('click', () => ensureAudio());
 function openDb(name, store) {
   return new Promise((res) => {
     try {
-      // versione 1 e store creato qui come fa PONY84: aprire il suo archivio non lo rompe mai
       const r = indexedDB.open(name, 1);
       r.onupgradeneeded = () => { if (!r.result.objectStoreNames.contains(store)) r.result.createObjectStore(store); };
       r.onsuccess = () => res(r.result);
@@ -531,48 +530,15 @@ async function restoreAudio() {
 }
 
 // ===================================================================
-// PONTE CON PONY84: campioni salvati e messaggi tra schede
-// ===================================================================
-async function drawPonyList() {
-  const host = $('ponyList');
-  host.innerHTML = '';
-  const found = [];
-  for (let i = 0; i < 6; i++) {
-    const rec = await idb('pony84', 'samples', 'readonly', (s) => s.get(i));
-    if (rec && rec.data) found.push([i, rec]);
-  }
-  if (!found.length) { host.innerHTML = '<p class="mnote">Nessun WAV caricato in PONY84 su questo browser.</p>'; return; }
-  for (const [i, rec] of found) {
-    const b = document.createElement('button');
-    b.className = 'hw'; b.innerHTML = '<span>' + escapeHtml(rec.name || 'WAV') + '</span><small>TRACCIA ' + (i + 1) + '</small>';
-    b.addEventListener('click', async () => { closeSheets(); await loadAudio(rec.data, rec.name); });
-    host.appendChild(b);
-  }
-}
-const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-
-const bc = 'BroadcastChannel' in window ? new BroadcastChannel('pony') : null;
-if (bc) bc.onmessage = (e) => {
-  const m = e.data || {};
-  if (m.type === 'send-audio' && m.wav instanceof ArrayBuffer) {
-    toast('Da PONY84: ' + cleanName(m.name), 'CARICA', () => loadAudio(m.wav, m.name));
-  } else if (m.type === 'transport' && S.follow) {
-    if (Number.isFinite(m.bpm)) { S.bpm = clamp(Math.round(m.bpm * 10) / 10, 30, 240); eng.post({ t: 'bpm', v: S.bpm }); drawMenu(); drawKnob(macroK.tempo); save(); }
-    if (typeof m.playing === 'boolean' && eng.running && m.playing !== live.playing) setPlay(m.playing);
-  }
-};
-
-// ===================================================================
 // MENU: scena, export, tempo, microfono
 // ===================================================================
 function openSheet(id) { $(id).hidden = false; const f = $(id).querySelector('button'); if (f) f.focus(); }
 function closeSheets() { $('menu').hidden = true; $('fxSheet').hidden = true; }
 document.querySelectorAll('.sheet').forEach((sh) => sh.addEventListener('click', (e) => { if (e.target === sh || e.target.closest('[data-close]')) closeSheets(); }));
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheets(); });
-$('menuBtn').addEventListener('click', () => { drawMenu(); drawPonyList(); openSheet('menu'); });
+$('menuBtn').addEventListener('click', () => { drawMenu(); openSheet('menu'); });
 function drawMenu() {
   $('syncBtn').setAttribute('aria-pressed', String(S.sync));
-  $('followBtn').setAttribute('aria-pressed', String(S.follow));
   $('monBtn').setAttribute('aria-pressed', String(S.monitor));
   $('bpmVal').textContent = String(S.bpm).replace('.', ',');
   document.querySelectorAll('[data-min]').forEach((b) => b.setAttribute('aria-checked', String(+b.dataset.min === S.expMin)));
@@ -582,7 +548,6 @@ function drawMenu() {
   $('verLine').innerHTML = 'PonyDrone v' + VERSION + cpu + ' · © 2026 Fabio Anghilante · Sad Pony Girl<br><a href="/crediti/" target="_blank" rel="noopener">Crediti e licenze</a> · licenza MIT';
 }
 $('syncBtn').addEventListener('click', () => { S.sync = !S.sync; eng.post({ t: 'sync', v: S.sync }); drawMenu(); drawKnob(macroK.tempo); save(); });
-$('followBtn').addEventListener('click', () => { S.follow = !S.follow; drawMenu(); save(); });
 $('monBtn').addEventListener('click', () => { S.monitor = !S.monitor; eng.post({ t: 'monitor', v: S.monitor }); drawMenu(); save(); });
 document.querySelectorAll('[data-bpm]').forEach((b) => b.addEventListener('click', () => {
   S.bpm = clamp(Math.round(S.bpm) + Number(b.dataset.bpm), 30, 240); eng.post({ t: 'bpm', v: S.bpm }); drawMenu(); drawKnob(macroK.tempo); save();

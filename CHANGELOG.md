@@ -2,6 +2,14 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## PonyDrone v0.1.1 — 2026-10-20 · Per conto suo
+
+- **Meglio**: tolto per ora il collegamento con PONY84 (tasto ⇄ PONY84, suoni presi da PONY84, SEGUI PONY84). Restano WAV e microfono.
+
+## v0.12.1 — 2026-10-20 · Ponte in pausa
+
+- **Meglio**: tolto per ora il ponte con PonyDrone (link nel menu, `BroadcastChannel('pony')` per WAV, BPM e play/stop). Resta l'esclusione di `/drone/` nel service worker.
+
 ## PonyDrone v0.1.0 — 2026-10-20 · Il nastro che suona da solo
 
 Seconda app dell'ecosistema, in `web/drone/`, online su https://app.sadponygirl.com/drone/. Versione indipendente da PONY84.

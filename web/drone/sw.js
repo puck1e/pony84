@@ -1,7 +1,7 @@
 // PonyDrone service worker (scope /drone/): l'app funziona anche senza rete.
 // Stesso schema di PONY84: pagine prima dalla rete, altri file dalla copia salvata aggiornata in sottofondo.
 // Il nome della cache segue la versione; quello di PONY84 ignora tutto ciò che sta sotto /drone/.
-const VERSION = '0.1.0';
+const VERSION = '0.1.1';
 const CACHE = 'ponydrone-' + VERSION, FONTS = 'ponydrone-fonts';
 const SHELL = [
   './', './app.js', './audio.js', './tape.js', './worklets/drone-processor.js', './manifest.webmanifest',
