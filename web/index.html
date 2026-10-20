@@ -787,7 +787,7 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
-const VERSION = '0.10.0';
+const VERSION = '0.11.0';
 const audioMode = () => { try { return localStorage.getItem('pony84-audio') === 'stable' ? 'stable' : 'fast'; } catch (e) { return 'fast'; } };   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
@@ -813,9 +813,11 @@ const MATERIALS = [
 ];
 const zone = (v, n) => Math.min(n - 1, Math.floor(v / 127 * n));   // manopola divisa in n zone
 const decayT = (v) => 0.003 * Math.pow(4 / 0.003, v / 127);       // DECAY dei modelli nuovi: da 3 ms a 4 s
+// KICK dalla 0.11.0: SWEEP in semitoni fino a +72 (6 ottave, arriva al "tick" di 2–3 kHz) e CONTOUR esponenziale da 0,8 ms a 150 ms
+const KICK_SWEEP = 72, kickSweepT = (x) => 0.0008 * Math.pow(0.15 / 0.0008, x);   // x = manopola 0..1
 const fmtT = (t) => (t < 1 ? Math.round(t * 1000) + 'ms' : t.toFixed(2) + 's');
 const DEF = {
-  KICK:   [25, 57, 25, 25, 48, 32, 0, 8],
+  KICK:   [25, 57, 25, 25, 100, 30, 0, 8],   // SWEEP +57st in 3 ms: tick e pancia
   SNARE:  [38, 49, 32, 76, 13, 38, 19, 25],
   METAL:  [24, 25, 44, 15, 0, 64, 13, 20],
   PERC:   [39, 40, 51, 56, 48, 18, 32, 20],
@@ -930,7 +932,11 @@ function demoProject() {
 // - la manopola 3 del SAMPLE passa da LENGTH (relativa a START) a END (punto assoluto nel file).
 const OLD_DMIN = { KICK: [0.05, 1.5], SNARE: [0.03, 0.6], METAL: [0.01, 0.8], PERC: [0.02, 0.6], TONE: [0.03, 1.5], SAMPLE: [0.02, 3] };
 function upgradeProject(p) {
-  if ((p.ver || 1) >= 2) return p;
+  if ((p.ver || 1) < 2) upgradeTo2(p);
+  if (p.ver < 3) upgradeTo3(p);
+  return p;
+}
+function upgradeTo2(p) {
   const conv = (m, v) => {   // stessa costante di tempo con il nuovo minimo
     if (v == null || (m === 'SAMPLE' && v >= 127)) return v;
     const [off, sc] = OLD_DMIN[m], tau = off + Math.pow(v / 127, 2) * sc;
@@ -953,7 +959,23 @@ function upgradeProject(p) {
     if (m === 'TONE') { t.machine = 'SYNTH'; t.model = 'FM2'; }
   });
   p.ver = 2;
-  return p;
+}
+// Progetti fino alla 0.10 → 3: SWEEP e CONTOUR della KICK cambiano scala (vedi KICK_SWEEP);
+// le manopole vengono ricalcolate perché la cassa suoni identica.
+function upgradeTo3(p) {
+  const r2 = (x) => Math.round(Math.min(127, Math.max(0, x)) * 100) / 100;
+  const conv = [
+    [4, (v) => r2(Math.log2(1 + 8 * v / 127) * 12 / KICK_SWEEP * 127)],
+    [5, (v) => r2(Math.log((0.005 + 0.1 * v / 127) / 0.0008) / Math.log(0.15 / 0.0008) * 127)]
+  ];
+  p.tracks.forEach((t, ti) => {
+    if (t.machine !== 'KICK') return;
+    conv.forEach(([k, fn]) => {
+      if (t.params[k] != null) t.params[k] = fn(t.params[k]);
+      p.patterns.forEach((pt) => pt && pt[ti] && pt[ti].forEach((st) => { if (st && st.locks && st.locks[k] != null) st.locks[k] = fn(st.locks[k]); }));
+    });
+  });
+  p.ver = 3;
 }
 // controlla e aggiorna un progetto (salvato nel browser o importato da file); null se non è valido
 function normalizeProject(p) {
@@ -1039,7 +1061,7 @@ function voiceParams(m, K) {
   const [a, b, c, d, e, f] = n;
   let v;
   switch (m) {
-    case 'KICK':  v = { freq: 30 + a * 90, decay: DMIN + b * b * 1.5, index: c * 6, ratio: 0.5 + d * 2.5, sweep: e * 8, sweepTime: 0.005 + f * 0.1, noise: 0 }; break;
+    case 'KICK':  v = { freq: 30 + a * 90, decay: DMIN + b * b * 1.5, index: c * 6, ratio: 0.5 + d * 2.5, sweep: Math.pow(2, e * KICK_SWEEP / 12) - 1, sweepTime: kickSweepT(f), noise: 0, att: 0.0002 }; break;   // attacco 0,2 ms: il transiente non viene smussato
     case 'SNARE': v = { freq: 100 + a * 300, decay: DMIN + b * b * 0.6, index: c * 4, ratio: 1.5, noise: d, noiseFreq: 800 + f * 7200, sweep: e * 2, sweepTime: 0.02 }; break;
     case 'METAL': v = { freq: 300 + a * 1700, decay: DMIN + b * b * 0.8, index: c * 10, ratio: 1.05 + d * 3, sweep: e, sweepTime: 0.01, noise: f * 0.8, noiseFreq: 6000 }; break;
     case 'PERC':  v = { freq: 80 + a * 820, decay: DMIN + b * b * 0.6, index: c * 5, ratio: 1 + d * 4, sweep: e * 4, sweepTime: 0.003 + f * 0.05, noise: 0 }; break;
@@ -1069,6 +1091,8 @@ function fmtParam(m, i, v, model) {
     if (i === 4) return fmtHz(200 * Math.pow(100, v / 127));
     return String(Math.round(v));   // START e LENGTH possono avere decimali (editor WAVE)
   }
+  if (m === 'KICK' && i === 4) return '+' + Math.round(v / 127 * KICK_SWEEP) + 'st';
+  if (m === 'KICK' && i === 5) return fmtT(kickSweepT(v / 127));
   if (i === 0) {
     if (m === 'SYNTH') { const nn = 24 + Math.round(v / 127 * 60); return NOTE[nn % 12] + (Math.floor(nn / 12) - 1); }
     return fmtHz(voiceParams(m, [v, 64, 64, 64, 64, 64, 0, 0]).freq);
@@ -1555,9 +1579,10 @@ function playFM(ti, v, t, vel = 1, choke = false) {
       prev.srcs.forEach((n) => { try { n.stop(t + 0.03); } catch (e) { /* ok */ } });
     }
   }
+  const att = v.att || 0.002;   // la KICK attacca in 0,2 ms (l'oscillatore parte da zero: niente clic sporco)
   out.gain.setValueAtTime(0, t);
-  out.gain.linearRampToValueAtTime(0.8 * vel, t + 0.002);
-  out.gain.setTargetAtTime(0, t + 0.002, v.decay);
+  out.gain.linearRampToValueAtTime(0.8 * vel, t + att);
+  out.gain.setTargetAtTime(0, t + att, v.decay);
   out.connect(A.tr[ti].inp);
   const end = t + v.decay * 6 + 0.05;
   const car = ctx.createOscillator(), mod = ctx.createOscillator(), mg = ctx.createGain(), cg = ctx.createGain();

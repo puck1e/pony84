@@ -2,6 +2,13 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## v0.11.0 — 2026-10-20 · La cassa con la punta
+
+- **Meglio**: SWEEP della KICK fino a +72 semitoni (prima +38): l'attacco parte dai kHz e dà il tick, poi scende sulla pancia. Il display mostra i semitoni.
+- **Meglio**: CONTOUR della KICK esponenziale da 0,8 a 150 ms (prima 5–105 ms lineare).
+- **Meglio**: la KICK attacca in 0,2 ms invece di 2: il transiente non viene smussato.
+- **Fix**: progetti e file .pony84 precedenti convertiti (formato `ver` 3): SWEEP e CONTOUR della KICK, p-lock compresi, ricalcolati perché la cassa suoni come prima.
+
 ## v0.10.0 — 2026-10-20 · Pattern lunghi
 
 - **Nuovo**: pattern fino a 64 step (pagine 1–4 sopra gli step); allungando, le pagine vuote nascono come copia delle precedenti; tieni premuto per accorciare (le pagine tolte non si perdono).
