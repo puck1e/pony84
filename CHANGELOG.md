@@ -2,6 +2,18 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## v0.10.0 — 2026-10-20 · Pattern lunghi
+
+- **Nuovo**: pattern fino a 64 step (pagine 1–4 sopra gli step); allungando, le pagine vuote nascono come copia delle precedenti; tieni premuto per accorciare (le pagine tolte non si perdono).
+- **Nuovo**: SEGUI, la vista segue la pagina in riproduzione; Shift + ◀ ▶ sulla Move cambia pagina.
+- **Meglio**: le condizioni 1:2, 1:4… contano i giri del pattern; il cambio di pattern avviene a fine pattern. I progetti salvati diventano pattern da 1 pagina e suonano identici.
+
+## v0.9.1 — 2026-10-20 · Più comoda da suonare
+
+- **Nuovo**: tieni premuta una traccia per metterla in mute; riparte al rilascio.
+- **Meglio**: su ROLL e SCATTER il dito può scivolare da un pad all'altro (Android).
+- **Fix**: su Mac le manopole (e fader, BPM) restavano agganciate al mouse dopo il rilascio.
+
 ## v0.9.0 — 2026-10-19 · Annulla e registra
 
 - **Nuovo**: **Annulla e ripeti** (↶ ↷ accanto a TAP, 60 passi; Ctrl+Z / Ctrl+Maiusc+Z; Undo e Shift+Undo sulla Move).

@@ -242,12 +242,12 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
     <section id="tracks">
       <h2 class="sec"><span class="n">03</span><span class="it">Tracce e motori</span><span class="en">Tracks and machines</span></h2>
       <div class="it">
-        <p>Ci sono <strong>6 tracce</strong>. Tocca una traccia per selezionarla, poi scegli il suo <strong>motore</strong> nella riga MACHINE. Ogni traccia può usare qualsiasi motore: puoi avere anche sei KICK diverse. Cambiando motore le manopole tornano ai valori di partenza e i p-lock di quella traccia vengono azzerati.</p>
+        <p>Ci sono <strong>6 tracce</strong>. Tocca una traccia per selezionarla, poi scegli il suo <strong>motore</strong> nella riga MACHINE. <strong>Tienila premuta</strong> per metterla in mute al volo: riparte appena la lasci (va bene anche con più dita su più tracce). Ogni traccia può usare qualsiasi motore: puoi avere anche sei KICK diverse. Cambiando motore le manopole tornano ai valori di partenza e i p-lock di quella traccia vengono azzerati.</p>
         <p>I motori KICK, SNARE, METAL e PERC sono voci <strong>FM</strong> a due operatori; <strong>SYNTH</strong> è il motore melodico con quattro modelli; SAMPLE suona un file audio. Le manopole si girano <strong>trascinando su e giù</strong>.</p>
         <p><strong>DECAY</strong> con la manopola a 0 dà un "tic" di pochi millisecondi, perfetto per i suoni glitch; i primi scatti della manopola sono i più fini.</p>
       </div>
       <div class="en">
-        <p>There are <strong>6 tracks</strong>. Tap a track to select it, then pick its <strong>machine</strong> in the MACHINE row. Any track can use any machine: you can even have six different KICKs. Changing machine resets the knobs and clears that track's p-locks.</p>
+        <p>There are <strong>6 tracks</strong>. Tap a track to select it, then pick its <strong>machine</strong> in the MACHINE row. <strong>Hold it down</strong> to mute it on the fly: it comes back as soon as you let go (works with several fingers on several tracks too). Any track can use any machine: you can even have six different KICKs. Changing machine resets the knobs and clears that track's p-locks.</p>
         <p>KICK, SNARE, METAL and PERC are two-operator <strong>FM</strong> voices; <strong>SYNTH</strong> is the melodic machine with four models; SAMPLE plays an audio file. Turn the knobs by <strong>dragging up and down</strong>.</p>
         <p>With the knob at 0, <strong>DECAY</strong> gives a "tick" of a few milliseconds, perfect for glitchy sounds; the first steps of the knob are the finest.</p>
       </div>
@@ -371,6 +371,15 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><code>50%</code>, <code>1:2</code>… ha una condizione <a href="#prob">PROB</a>;</li>
           <li><code>+7</code>, <code>−2</code>… ha una nota registrata con <a href="#roll">ROLL</a> (semitoni rispetto all'intonazione della traccia).</li>
         </ul>
+        <h3>Pagine: pattern fino a 64 step</h3>
+        <p>Sopra gli step c'è la riga delle pagine <span class="k">1</span> <span class="k">2</span> <span class="k">3</span> <span class="k">4</span>: ogni pagina sono 16 step, quindi un pattern può essere lungo 16, 32, 48 o 64 step (da 1 a 4 battute).</p>
+        <ul>
+          <li><strong>Tocca</strong> una pagina per vederla e modificarla.</li>
+          <li>Le pagine <strong>tratteggiate</strong> sono fuori dal pattern: toccane una per allungarlo fin lì. Le pagine nuove nascono come <strong>copia</strong> di quelle prima (da 1 a 2 pagine, la 2 è la copia della 1), così parti da una variazione.</li>
+          <li><strong>Tieni premuta</strong> una pagina per far finire il pattern lì (anche per accorciarlo). Le pagine tolte non si perdono: se lo riallunghi tornano com'erano.</li>
+          <li><span class="k c">SEGUI</span>: mentre suona, la vista va da sola sulla pagina che sta suonando. Toccando un'altra pagina si spegne; un pallino rosso indica la pagina che sta suonando.</li>
+          <li>Il cambio di pattern avviene alla fine del pattern intero. Sulla Move: Shift + ◀ ▶ cambia pagina.</li>
+        </ul>
         <h3>Velocity: colpi piano e forti</h3>
         <p><strong>Trascina su o giù</strong> su uno step per cambiarne la velocity: in giù il colpo diventa più piano, in su torna pieno. Mentre trascini lo step mostra il valore (<code>V87</code>), quando lasci lo senti. Un tocco semplice continua ad accendere e spegnere lo step.</p>
         <p>La <strong>barretta</strong> in fondo allo step mostra la velocity: corta = colpo piano; senza barra = velocity piena. I colpi piano sono anche più scuri, come su uno strumento vero: meno FM, meno DCW, filtro più chiuso sul SAMPLE, colpo più morbido sul MOD. Ghost note e accenti, per groove meno rigidi.</p>
@@ -382,6 +391,15 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><code>●</code> the step has <a href="#plock">p-locks</a>;</li>
           <li><code>50%</code>, <code>1:2</code>… it has a <a href="#prob">PROB</a> condition;</li>
           <li><code>+7</code>, <code>−2</code>… it has a note recorded with <a href="#roll">ROLL</a> (semitones from the track's pitch).</li>
+        </ul>
+        <h3>Pages: patterns up to 64 steps</h3>
+        <p>Above the steps there's the page row <span class="k">1</span> <span class="k">2</span> <span class="k">3</span> <span class="k">4</span>: each page is 16 steps, so a pattern can be 16, 32, 48 or 64 steps long (1 to 4 bars).</p>
+        <ul>
+          <li><strong>Tap</strong> a page to see and edit it.</li>
+          <li><strong>Dashed</strong> pages are outside the pattern: tap one to extend the pattern up to it. New pages start as a <strong>copy</strong> of the ones before (from 1 to 2 pages, page 2 is a copy of page 1), so you start from a variation.</li>
+          <li><strong>Hold</strong> a page to make the pattern end there (to shorten it too). Removed pages aren't lost: extend it again and they come back as they were.</li>
+          <li><span class="k c">SEGUI</span> (follow): while playing, the view jumps to the page that's playing. Tapping another page turns it off; a red dot marks the playing page.</li>
+          <li>Pattern changes happen at the end of the whole pattern. On the Move: Shift + ◀ ▶ changes page.</li>
         </ul>
         <h3>Velocity: soft and hard hits</h3>
         <p><strong>Drag up or down</strong> on a step to change its velocity: down makes the hit softer, up brings it back to full. While you drag, the step shows the value (<code>V87</code>); when you let go, you hear it. A simple tap still turns the step on and off.</p>
@@ -426,12 +444,13 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <tbody>
           <tr><td>—</td><td><span class="it">suona sempre</span><span class="en">always plays</span></td></tr>
           <tr><td>75% · 50% · 25%</td><td><span class="it">probabilità di suonare a ogni giro</span><span class="en">chance of playing on each pass</span></td></tr>
-          <tr><td>1:2</td><td><span class="it">solo nella prima battuta di ogni due</span><span class="en">only on the first bar of every two</span></td></tr>
-          <tr><td>2:2</td><td><span class="it">solo nella seconda battuta di ogni due</span><span class="en">only on the second bar of every two</span></td></tr>
-          <tr><td>1:4</td><td><span class="it">solo nella prima battuta di ogni quattro</span><span class="en">only on the first bar of every four</span></td></tr>
-          <tr><td>4:4</td><td><span class="it">solo nella quarta battuta di ogni quattro: perfetto per i fill</span><span class="en">only on the fourth bar of every four: great for fills</span></td></tr>
+          <tr><td>1:2</td><td><span class="it">solo nella prima giro del pattern di ogni due giri</span><span class="en">only on the first pattern pass of every two passes</span></td></tr>
+          <tr><td>2:2</td><td><span class="it">solo nella seconda giro del pattern di ogni due giri</span><span class="en">only on the second pattern pass of every two passes</span></td></tr>
+          <tr><td>1:4</td><td><span class="it">solo nella prima giro del pattern di ogni quattro giri</span><span class="en">only on the first pattern pass of every four passes</span></td></tr>
+          <tr><td>4:4</td><td><span class="it">solo nella quarta giro del pattern di ogni quattro giri: perfetto per i fill</span><span class="en">only on the fourth pattern pass of every four passes: great for fills</span></td></tr>
         </tbody>
       </table></div>
+      <p><span class="it">Un "giro" è il pattern intero: con un pattern di 1 pagina è una battuta, con 4 pagine sono 4 battute.</span><span class="en">A "pass" is the whole pattern: with a 1-page pattern it's one bar, with 4 pages it's 4 bars.</span></p>
     </section>
 
     <!-- 8 -->
@@ -541,6 +560,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <h3>Intensità e ripetizione</h3>
         <ul>
           <li>Più in <strong>alto</strong> tocchi il pad, più <strong>forte</strong> suona.</li>
+          <li>Puoi <strong>far scivolare il dito</strong> da un pad all'altro senza staccarlo: suona il pad di arrivo. Vale anche per i pad dello SCATTER.</li>
           <li><strong>RIPETI</strong> <span class="k">1/8</span> <span class="k">1/16</span> <span class="k">1/32</span> <span class="k">1/16T</span>: finché tieni premuto, la nota si ripete a tempo con il sequencer (o con i BPM, a sequencer fermo). <span class="k">OFF</span> suona una sola volta.</li>
         </ul>
         <h3>Registrare</h3>
@@ -556,6 +576,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <h3>Intensity and repeat</h3>
         <ul>
           <li>The <strong>higher</strong> you hit the pad, the <strong>louder</strong> it plays.</li>
+          <li>You can <strong>slide your finger</strong> from one pad to another without lifting it: the pad you land on plays. The SCATTER pads work the same way.</li>
           <li><strong>RIPETI</strong> (repeat) <span class="k">1/8</span> <span class="k">1/16</span> <span class="k">1/32</span> <span class="k">1/16T</span>: while you hold the pad, the note repeats in time with the sequencer (or with the BPM when stopped). <span class="k">OFF</span> plays once.</li>
         </ul>
         <h3>Recording</h3>

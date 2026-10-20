@@ -202,6 +202,12 @@ button.logo { background: none; padding: 0; text-align: left; display: flex; ali
 .stepbar .ghost { padding: 0 8px; white-space: nowrap; }
 .ghost.armed { background: var(--red); border-color: var(--red); color: var(--white); }
 .ghost:disabled { opacity: .35; cursor: default; }
+.pages { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 2fr); gap: 4px; }
+.pagebtns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.pageb.off { opacity: .35; border-style: dashed; }
+.pageb.play::after { content: ""; position: absolute; top: 3px; right: 4px; width: 5px; height: 5px; border-radius: 50%; background: var(--led); box-shadow: 0 0 5px var(--led); }
+.follow[aria-pressed="true"] { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+html[data-skin="spg"] .follow[aria-pressed="true"] { background: var(--dark); color: var(--body); }
 .banks { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; }
 .bankb { height: clamp(26px, 3.6dvh, 32px); border-radius: 4px; font-size: 13px; font-weight: 700; color: var(--cream); border: 1px solid var(--line); background: none; position: relative; }
 .models { display: flex; gap: 3px; }
@@ -539,6 +545,12 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
         </span>
       </div>
       <div class="banks" id="banks" role="radiogroup" aria-label="Banco di pattern"></div>
+      <div class="pages" id="pages" hidden>
+        <span class="pagebtns" role="radiogroup" aria-label="Pagina del pattern">
+          <button class="bankb pageb" role="radio" data-page="0">1</button><button class="bankb pageb" role="radio" data-page="1">2</button><button class="bankb pageb" role="radio" data-page="2">3</button><button class="bankb pageb" role="radio" data-page="3">4</button>
+        </span>
+        <button class="bankb follow" id="followBtn" data-act="follow" aria-pressed="true">SEGUI</button>
+      </div>
       <div class="steps" id="steps"></div>
     </section>
 
@@ -775,7 +787,7 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
-const VERSION = '0.9.0';
+const VERSION = '0.10.0';
 const audioMode = () => { try { return localStorage.getItem('pony84-audio') === 'stable' ? 'stable' : 'fast'; } catch (e) { return 'fast'; } };   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
@@ -871,8 +883,10 @@ const stepIsEmpty = (s) => !s.on && !s.cond && s.tp == null && s.v == null && Ob
 function packProject(p) {
   return Object.assign({}, p, { patterns: p.patterns.map((pt) => (pt.every((tr) => tr.every(stepIsEmpty)) ? 0 : pt.map((tr) => tr.map((s) => (stepIsEmpty(s) ? 0 : s))))) });
 }
+const MAXSTEPS = 64;   // 4 pagine da 16 step; P.plen[pattern] = quante pagine suonano (1–4)
+const plenOf = (i) => (P.plen && P.plen[i]) || 1;
 function emptyPattern() {
-  return Array.from({ length: 6 }, () => Array.from({ length: 16 }, () => ({ on: false, locks: {}, cond: null })));
+  return Array.from({ length: 6 }, () => Array.from({ length: MAXSTEPS }, () => ({ on: false, locks: {}, cond: null })));
 }
 // Demo della prima apertura (pattern A01): minimal techno a 126 BPM in Do minore.
 function demoProject() {
@@ -890,6 +904,7 @@ function demoProject() {
     tracks: kit.map(([m, params, level, pan], i) => ({ machine: m, model: 'FM2', params, level, pan, mute: false, solo: false, sample: DEMO_SAMPLE, bus: [0, 1, 1, 1, 2, 3][i] })),
     mix: defaultMix(),
     patterns: Array.from({ length: PATTERNS }, emptyPattern),
+    plen: Array.from({ length: PATTERNS }, () => 1),
     cur: 0,
     roll: Object.assign({}, ROLL_DEFAULT)
   };
@@ -946,7 +961,10 @@ function normalizeProject(p) {
   if (!p.tracks.every((t) => (MACHINES.includes(t.machine) || t.machine === 'TONE') && Array.isArray(t.params) && t.params.length === 8)) return null;
   // ricostruisce gli step vuoti salvati in forma compatta
   p.patterns = p.patterns.map((pt) => (pt ? pt.map((tr) => (Array.isArray(tr) ? tr.map((s) => (s && typeof s === 'object' ? Object.assign({ locks: {}, cond: null }, s) : emptyStep())) : tr)) : emptyPattern()));
-  if (!p.patterns.every((pt) => Array.isArray(pt) && pt.length === 6 && pt.every((tr) => Array.isArray(tr) && tr.length === 16))) return null;
+  if (!p.patterns.every((pt) => Array.isArray(pt) && pt.length === 6 && pt.every((tr) => Array.isArray(tr) && (tr.length === 16 || tr.length === MAXSTEPS)))) return null;
+  // progetti con pattern da 16 step: si allungano a 64 (pagine 2–4 vuote) e restano lunghi 1 pagina
+  p.patterns.forEach((pt) => pt.forEach((tr) => { while (tr.length < MAXSTEPS) tr.push(emptyStep()); }));
+  p.plen = Array.from({ length: PATTERNS }, (_, i) => { const v = p.plen && p.plen[i]; return v >= 1 && v <= 4 ? v | 0 : 1; });
   while (p.patterns.length < PATTERNS) p.patterns.push(emptyPattern());   // progetti con un solo banco
   upgradeProject(p);
   if (typeof p.fx.tempo !== 'number') p.fx.tempo = bpmOf(p.fx.bpm ?? 63);   // progetti salvati prima del BPM libero
@@ -998,6 +1016,7 @@ function histPush(json) {
 // stato dell'interfaccia
 const UI = { view: 'seq', track: 0, mode: 'TRIG', fx: false, selStep: null, latch: false, scatter: null, head: -1, pendingPat: null, rec: false, lastNote: '' };
 const VIEWS = ['seq', 'mix', 'roll'];
+UI.holdMute = new Set();
 let velDrag = null, velSuppress = false;   // trascinamento della velocity sugli step (vedi sotto)
 UI.wide = false;
 const shows = (v) => UI.wide || UI.view === v;   // nella vista larga si vedono tutte e tre
@@ -1063,6 +1082,7 @@ function fmtParam(m, i, v, model) {
 let ctx = null;
 const A = {};
 const audible = (i) => {
+  if (UI.holdMute.has(i)) return false;   // traccia tenuta premuta: muta finché non la lasci
   const anySolo = P.tracks.some((t) => t.solo);
   return !P.tracks[i].mute && (!anySolo || P.tracks[i].solo);
 };
@@ -1746,14 +1766,18 @@ function condPass(c, bar) {
   const [a, b] = c.split(':').map(Number);
   return bar % b === a - 1;
 }
+let pos = 0, loops = 0;   // step dentro il pattern (0..lunghezza-1) e giri completi del pattern (per 1:2, 1:4…)
 function schedule(n, t) {
-  const s = n % 16, bar = Math.floor(n / 16);
-  if (s === 0 && UI.pendingPat !== null) { P.cur = UI.pendingPat; UI.pendingPat = null; needRender = true; }
+  if (pos >= plenOf(P.cur) * 16) { pos = 0; loops++; }               // il pattern è stato accorciato mentre suonava
+  if (pos === 0 && UI.pendingPat !== null) { P.cur = UI.pendingPat; UI.pendingPat = null; loops = 0; needRender = true; }   // cambio a fine pattern
+  const s = pos;
   const tt = t + (s % 2 === 1 ? P.fx.swing / 127 * 0.6 * stepDur() : 0);
   const pat = P.patterns[P.cur];
-  for (let i = 0; i < 6; i++) { const st = pat[i][s]; if (st.on && condPass(st.cond, bar)) trigger(i, st, tt); }
+  for (let i = 0; i < 6; i++) { const st = pat[i][s]; if (st.on && condPass(st.cond, loops)) trigger(i, st, tt); }
   rollHits(n, t);
   uiQ.push({ s, t: tt });
+  pos++;
+  if (pos >= plenOf(P.cur) * 16) { pos = 0; loops++; }
 }
 function tick() {
   while (nextTime < ctx.currentTime + 0.12) { schedule(count, nextTime); nextTime += stepDur(); count++; }
@@ -1764,13 +1788,13 @@ function play() {
   if (ctx.state === 'suspended') ctx.resume();
   if (playing) { playing = false; keepAwake(false); clearTimeout(timer); restartRollLoop(); drawHeader(); drawLcd(); return; }
   playing = true; keepAwake(true);
-  if (UI.head < 0) count = 0;
+  if (UI.head < 0) { count = 0; pos = 0; loops = 0; }
   nextTime = ctx.currentTime + 0.06;
   tick(); drawHeader(); drawLcd();
 }
 function stop() {
   keepAwake(false);
-  playing = false; clearTimeout(timer); uiQ.length = 0; count = 0; UI.head = -1;
+  playing = false; clearTimeout(timer); uiQ.length = 0; count = 0; pos = 0; loops = 0; UI.head = -1;
   if (UI.pendingPat !== null) { P.cur = UI.pendingPat; UI.pendingPat = null; }
   restartRollLoop();
   renderAll();
@@ -1801,8 +1825,8 @@ function rollHit(h, t) {
   if (UI.rec && playing) recordHit(h, t);
 }
 function recordHit(h, t) {
-  const abs = count + Math.round((t - nextTime) / stepDur());   // step più vicino al colpo
-  const s = ((abs % 16) + 16) % 16;
+  const len = plenOf(P.cur) * 16;
+  const s = (((pos + Math.round((t - nextTime) / stepDur())) % len) + len) % len;   // step più vicino al colpo
   const st = P.patterns[P.cur][h.ti][s];
   st.on = true;
   st.v = Math.round(h.vel * 100) / 100;
@@ -1950,7 +1974,9 @@ function resolveKnob(id) {
 }
 
 // costruzione una tantum
+const pageBtns = [...document.querySelectorAll('[data-page]')];
 const trackBtns = [], machBtns = [], knobEls = [], padBtns = [], stepCells = [], strips = [], rateBtns = [], rpadBtns = [], slotEls = [], bankBtns = [];
+UI.page = 0; UI.follow = true;
 UI.mixPage = 'ch'; UI.busTab = 0; UI.bank = P.cur >> 4; UI.clip = null; UI.pasteArm = null; UI.flash = '';
 let flashTimer = null, pasteTimer = null;
 function flash(t) { UI.flash = t; drawLcd(); clearTimeout(flashTimer); flashTimer = setTimeout(() => { UI.flash = ''; drawLcd(); }, 1800); }
@@ -1997,7 +2023,7 @@ const clone = (x) => JSON.parse(JSON.stringify(x));
     const c = document.createElement('div'); c.className = 'cell';
     c.innerHTML = '<span class="led"></span><button class="key g' + Math.floor(s / 4) + '" data-act="step" data-s="' + s + '"><span class="n">' + (s + 1) + '</span><span class="s"></span><i class="vb" hidden></i></button>';
     $('steps').appendChild(c);
-    stepCells.push({ led: c.querySelector('.led'), key: c.querySelector('.key'), sub: c.querySelector('.s'), vb: c.querySelector('.vb') });
+    stepCells.push({ led: c.querySelector('.led'), key: c.querySelector('.key'), sub: c.querySelector('.s'), vb: c.querySelector('.vb'), n: c.querySelector('.n') });
   }
   for (let i = 0; i < 6; i++) {
     const s = document.createElement('div'); s.className = 'strip';
@@ -2124,10 +2150,11 @@ function patEmpty(p) { return p.every((t) => t.every((s) => !s.on)); }
 function drawSteps() {
   const pat = P.patterns[P.cur][UI.track];
   const isPat = UI.mode === 'PATTERN';
-  stepCells.forEach((c, s) => {
-    const st = pat[s];
+  const pg = Math.min(UI.page, plenOf(P.cur) - 1) * 16;
+  stepCells.forEach((c, k) => {
+    const s = pg + k, st = pat[s];
     if (isPat) {
-      const idx = UI.bank * 16 + s;
+      const idx = UI.bank * 16 + k;
       c.led.className = 'led' + (!patEmpty(P.patterns[idx]) ? ' on' : '');
       c.key.classList.toggle('sel', idx === P.cur);
       c.key.classList.toggle('pending', idx === UI.pendingPat);
@@ -2135,6 +2162,7 @@ function drawSteps() {
       c.sub.textContent = '';
       c.vb.hidden = true;
       c.key.setAttribute('aria-label', 'Pattern ' + patName(idx));
+      c.n.textContent = k + 1;
       c.key.setAttribute('aria-pressed', String(idx === P.cur));
     } else {
       const isHead = s === UI.head;
@@ -2149,18 +2177,21 @@ function drawSteps() {
       if (showV) c.vb.style.width = 'calc((100% - 10px) * ' + st.v.toFixed(3) + ')';
       if (velDrag && velDrag.s === s && velDrag.moved) c.sub.textContent = 'V' + Math.round((st.v != null ? st.v : 1) * 127);
       c.key.setAttribute('aria-label', 'Step ' + (s + 1));
+      c.n.textContent = s + 1;
       c.key.setAttribute('aria-pressed', String(st.on));
     }
   });
   $('stepLabel').textContent = isPat ? 'PATTERN · ' + patName(P.cur) : 'STEP · TRACCIA ' + (UI.track + 1);
   const hint = $('stepHint'), act = $('stepAct'), cp = $('copyBtn'), ps = $('pasteBtn');
   act.hidden = true;
-  // la fila dei banchi è sempre visibile: il sequencer resta fermo in ogni modalità
-  const shownBank = isPat ? UI.bank : (UI.pendingPat ?? P.cur) >> 4;
-  bankBtns.forEach((b, k) => {
-    b.setAttribute('aria-checked', String(k === shownBank));
-    b.classList.toggle('used', P.patterns.slice(k * 16, k * 16 + 16).some((pt) => !patEmpty(pt)));
-  });
+  // stessa riga, stesso posto: in PATTERN i banchi A–H, nelle altre modalità le pagine 1–4 (il sequencer non si sposta)
+  $('banks').hidden = !isPat; $('pages').hidden = isPat;
+  if (isPat) {
+    bankBtns.forEach((b, k) => {
+      b.setAttribute('aria-checked', String(k === UI.bank));
+      b.classList.toggle('used', P.patterns.slice(k * 16, k * 16 + 16).some((pt) => !patEmpty(pt)));
+    });
+  } else drawPages();
   // copia/incolla: pattern intero in PATTERN, una traccia in STEP
   const canCopy = isPat || UI.mode === 'TRIG';
   cp.hidden = ps.hidden = !canCopy;
@@ -2178,6 +2209,29 @@ function drawSteps() {
     if (UI.selStep === null) hint.textContent = 'SCEGLI UNO STEP';
     else { hint.textContent = 'GIRA LE MANOPOLE'; act.hidden = false; act.textContent = 'TOGLI LOCK'; }
   } else if (UI.mode === 'COND') hint.textContent = '% · BATTUTE: TOCCA LO STEP';
+}
+function drawPages() {
+  const len = plenOf(P.cur), shown = Math.min(UI.page, len - 1), playPg = playing && UI.head >= 0 ? UI.head >> 4 : -1;
+  pageBtns.forEach((b, k) => {
+    b.setAttribute('aria-checked', String(k === shown));
+    b.classList.toggle('off', k >= len);
+    b.classList.toggle('play', k === playPg && k !== shown);
+    b.setAttribute('aria-label', 'Pagina ' + (k + 1) + (k >= len ? ': tocca per allungare il pattern' : ''));
+  });
+  $('followBtn').setAttribute('aria-pressed', String(UI.follow));
+}
+// lunghezza del pattern: allungando, le pagine vuote nascono come copia delle precedenti (come sul Model:Cycles)
+function setPatternLength(n) {
+  const cur = P.cur, old = plenOf(cur);
+  if (n === old) return;
+  // una pagina che aveva già qualcosa (il pattern era stato accorciato) torna com'era; una pagina vuota nasce come copia
+  if (n > old) for (let pgN = old; pgN < n; pgN++) {
+    const empty = P.patterns[cur].every((tr) => tr.slice(pgN * 16, pgN * 16 + 16).every(stepIsEmpty));
+    if (empty) P.patterns[cur].forEach((tr) => { for (let i = pgN * 16; i < pgN * 16 + 16; i++) tr[i] = clone(tr[i % (old * 16)]); });
+  }
+  P.plen[cur] = n;
+  if (UI.selStep !== null && UI.selStep >= n * 16) UI.selStep = null;
+  flash('PATTERN DA ' + n * 16 + ' STEP');
 }
 function drawFn() {
   document.querySelectorAll('#fn [data-act="mode"]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.m === UI.mode)));
@@ -2585,7 +2639,7 @@ async function wavRecStart(kind) {
   if (kind === 'loop') {
     // dall'inizio della prossima battuta (se era fermo: parte e salta la prima battuta, così le code del riverbero ci sono già)
     if (!playing) { UI.head = -1; play(); }
-    const steps = (16 - (count % 16)) % 16 + (count < 16 ? 16 : 0);
+    const steps = (16 - (pos % 16)) % 16 + (count < 16 ? 16 : 0);
     const start = nextTime + steps * stepDur(), len = UI.wavBars * 16 * stepDur();
     wavRec.t0 = start; wavRec.total = len;
     node.port.postMessage({ from: Math.round(start * sr), to: Math.round((start + len) * sr) });
@@ -2859,7 +2913,7 @@ function movePad({ index, row, col, on, velocity }) {
 function moveStep({ index, on }) {
   if (!on) return;
   if (mv.del) {
-    const st = P.patterns[P.cur][UI.track][index];
+    const st = P.patterns[P.cur][UI.track][Math.min(UI.page, plenOf(P.cur) - 1) * 16 + index];
     Object.assign(st, emptyStep()); delete st.tp; delete st.v;
     renderAll(); flash('STEP ' + pad2(index + 1) + ' CANCELLATO'); return;
   }
@@ -2891,6 +2945,10 @@ function moveButton({ name, pressed }) {
     case 'track3': act('mode', { m: 'COND' }); break;
     case 'track4': act('mode', { m: 'PATTERN' }); break;
     case 'left': case 'right': {
+      if (mv.shift && UI.mode !== 'PATTERN') {   // Shift + ◀ ▶ = pagina
+        UI.page = Math.max(0, Math.min(plenOf(P.cur) - 1, Math.min(UI.page, plenOf(P.cur) - 1) + (name === 'right' ? 1 : -1)));
+        UI.follow = false; renderAll(); break;
+      }
       const cur = UI.mode === 'PATTERN' ? UI.bank : (UI.pendingPat ?? P.cur) >> 4;
       act('bank', { b: String(Math.max(0, Math.min(7, cur + (name === 'right' ? 1 : -1)))) }); break;
     }
@@ -2908,7 +2966,7 @@ function moveButton({ name, pressed }) {
 function moveSync() {
   if (!move || !move.device.inControl || !mv.col) return;
   const d = move.device, K = mv.col, isPat = UI.mode === 'PATTERN';
-  const grp = [K.red, K.orange, K.yellow, K.cream], pat = P.patterns[P.cur][UI.track];
+  const grp = [K.red, K.orange, K.yellow, K.cream], pat = P.patterns[P.cur][UI.track], pg = Math.min(UI.page, plenOf(P.cur) - 1) * 16;
   const bank = isPat ? UI.bank : (UI.pendingPat ?? P.cur) >> 4;
   for (let s = 0; s < 16; s++) {
     let c;
@@ -2916,9 +2974,9 @@ function moveSync() {
       const idx = bank * 16 + s;
       c = idx === P.cur ? K.white : idx === UI.pendingPat ? K.yellow : patEmpty(P.patterns[idx]) ? K.off : grp[s >> 2];
     } else {
-      c = pat[s].on ? grp[s >> 2] : K.off;
-      if (UI.mode === 'PLOCK' && UI.selStep === s) c = K.blue;
-      if (playing && s === UI.head) c = K.white;
+      c = pat[pg + s].on ? grp[s >> 2] : K.off;
+      if (UI.mode === 'PLOCK' && UI.selStep === pg + s) c = K.blue;
+      if (playing && pg + s === UI.head) c = K.white;
     }
     d.setStepColor(s, c);
   }
@@ -2988,6 +3046,7 @@ function onAct(b) {
   if (act === 'skin') { setSkin(b.dataset.k, true); return; }
   if (act === 'export') { exportProject(); return; }
   if (act === 'install') { installApp(); return; }
+  if (act === 'follow') { UI.follow = !UI.follow; if (UI.follow && playing && UI.head >= 0) UI.page = UI.head >> 4; renderAll(); return; }
   if (act === 'undo') { histGo(-1); return; }
   if (act === 'redo') { histGo(1); return; }
   if (act === 'wavRec') { wavRecStart(b.dataset.k); return; }
@@ -3021,6 +3080,7 @@ function onAct(b) {
   if (act === 'view') { UI.view = b.dataset.v; renderAll(); return; }
   if (act === 'play') { play(); return; }
   if (act === 'stop') { stop(); return; }
+  if (act === 'track' && trkSuppress) { trkSuppress = false; return; }
   if (act === 'track') { UI.track = Number(b.dataset.i); UI.selStep = null; renderAll(); return; }
   if (act === 'machine') {
     const tr = P.tracks[UI.track];
@@ -3055,7 +3115,7 @@ function onAct(b) {
     return;
   }
   if (act === 'copy') {
-    if (UI.mode === 'PATTERN') { UI.clip = { kind: 'pattern', data: clone(P.patterns[P.cur]) }; flash('COPIATO ' + patName(P.cur)); }
+    if (UI.mode === 'PATTERN') { UI.clip = { kind: 'pattern', data: clone(P.patterns[P.cur]), plen: plenOf(P.cur) }; flash('COPIATO ' + patName(P.cur)); }
     else { UI.clip = { kind: 'track', data: clone(P.patterns[P.cur][UI.track]) }; flash('COPIATA T' + (UI.track + 1) + ' DI ' + patName(P.cur)); }
     UI.pasteArm = null; drawSteps(); return;
   }
@@ -3071,7 +3131,7 @@ function onAct(b) {
       flash('SOVRASCRIVO? TOCCA ANCORA'); drawSteps(); return;
     }
     UI.pasteArm = null;
-    if (isPat) { P.patterns[dest] = clone(UI.clip.data); flash('INCOLLATO SU ' + patName(dest)); }
+    if (isPat) { P.patterns[dest] = clone(UI.clip.data); P.plen[dest] = UI.clip.plen || 1; flash('INCOLLATO SU ' + patName(dest)); }
     else { P.patterns[dest][UI.track] = clone(UI.clip.data); flash('INCOLLATA SU T' + (UI.track + 1) + ' · ' + patName(dest)); }
     renderAll(); return;
   }
@@ -3081,7 +3141,7 @@ function onAct(b) {
     applyMix(); renderAll(); return;
   }
   if (act === 'stepAct') {
-    if (UI.mode === 'PATTERN') P.patterns[P.cur] = emptyPattern();
+    if (UI.mode === 'PATTERN') { P.patterns[P.cur] = emptyPattern(); P.plen[P.cur] = 1; }
     else if (UI.mode === 'PLOCK' && UI.selStep !== null) {
       const st = P.patterns[P.cur][UI.track][UI.selStep];
       st.locks = {}; delete st.tp; delete st.v;
@@ -3103,12 +3163,13 @@ function onAct(b) {
       if (playing && idx !== P.cur) UI.pendingPat = idx; else { P.cur = idx; UI.pendingPat = null; }
       renderAll(); return;
     }
-    const st = P.patterns[P.cur][UI.track][s];
+    const abs = Math.min(UI.page, plenOf(P.cur) - 1) * 16 + s;   // step della pagina visibile
+    const st = P.patterns[P.cur][UI.track][abs];
     if (UI.mode === 'TRIG') {
       st.on = !st.on;
       if (st.on && ctx && !playing) trigger(UI.track, st, ctx.currentTime + 0.01);
     } else if (UI.mode === 'PLOCK') {
-      UI.selStep = UI.selStep === s ? null : s;
+      UI.selStep = UI.selStep === abs ? null : abs;
       if (UI.selStep !== null) st.on = true;
     } else if (UI.mode === 'COND') {
       if (!st.on) st.on = true;
@@ -3149,13 +3210,7 @@ function tap() {
 function dragBpm(el, e) {
   const y0 = e.clientY, t0 = Math.round(P.fx.tempo);
   el.classList.add('drag');
-  try { el.setPointerCapture(e.pointerId); } catch (err) { /* ok */ }
-  const move = (ev) => setTempo(t0 + Math.round((y0 - ev.clientY) / 4));   // 4 px = 1 BPM
-  const up = () => {
-    el.classList.remove('drag');
-    el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up);
-  };
-  el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  trackDrag(el, e, (ev) => setTempo(t0 + Math.round((y0 - ev.clientY) / 4)), () => el.classList.remove('drag'));   // 4 px = 1 BPM
 }
 
 // ---------- adatta l'interfaccia all'altezza dello schermo ----------
@@ -3173,12 +3228,69 @@ function fit() {
 }
 
 let swipe = null, padHeld = null;
+// PAGINE: tocco = mostra quella pagina (una pagina spenta allunga il pattern fin lì); tieni premuto = il pattern finisce lì
+let pageHold = null;
+document.addEventListener('pointerdown', (e) => {
+  const b = e.target.closest && e.target.closest('[data-page]');
+  if (!b) return;
+  e.preventDefault();
+  const k = Number(b.dataset.page);
+  pageHold = { k, id: e.pointerId, long: false, timer: setTimeout(() => { pageHold.long = true; setPatternLength(k + 1); UI.page = k; renderAll(); save(); }, 450) };
+}, true);
+const pageUp = (e) => {
+  if (!pageHold || e.pointerId !== pageHold.id) return;
+  const h = pageHold; pageHold = null; clearTimeout(h.timer);
+  if (h.long || e.type === 'pointercancel') return;
+  if (h.k >= plenOf(P.cur)) { setPatternLength(h.k + 1); save(); }
+  UI.page = h.k;
+  if (playing && UI.follow && (UI.head >> 4) !== h.k) { UI.follow = false; flash('SEGUI SPENTO'); }
+  renderAll();
+};
+window.addEventListener('pointerup', pageUp, true); window.addEventListener('pointercancel', pageUp, true);
+// TRACCE: tieni premuto un tasto traccia per metterla in mute, al rilascio riparte (un tocco la seleziona, come prima)
+const trkHold = new Map();   // pointerId -> { i, timer, on }
+let trkSuppress = false;
+document.addEventListener('pointerdown', (e) => {
+  const b = e.target.closest && e.target.closest('[data-act="track"]');
+  if (!b) return;
+  trkSuppress = false;
+  const i = Number(b.dataset.i), h = { i, on: false };
+  h.timer = setTimeout(() => { h.on = true; UI.holdMute.add(i); applyMix(); drawTracks(); if (UI.view === 'mix') drawMixer(); }, 220);
+  trkHold.set(e.pointerId, h);
+}, true);
+const trkRelease = (e) => {
+  const h = trkHold.get(e.pointerId);
+  if (!h) return;
+  trkHold.delete(e.pointerId); clearTimeout(h.timer);
+  if (h.on) {
+    trkSuppress = true;   // era un mute tenuto: il click che segue non cambia traccia
+    if (![...trkHold.values()].some((o) => o.on && o.i === h.i)) UI.holdMute.delete(h.i);
+    applyMix(); drawTracks(); if (UI.view === 'mix') drawMixer();
+  }
+};
+window.addEventListener('pointerup', trkRelease, true); window.addEventListener('pointercancel', trkRelease, true);
+document.addEventListener('contextmenu', (e) => { if (e.target.closest && e.target.closest('[data-act="track"], [data-rpad], [data-pad], [data-act="step"]')) e.preventDefault(); });
+// ROLL e SCATTER: facendo scivolare il dito da un pad all'altro suona il pad di arrivo (su Android il tocco resta "agganciato" al primo)
+document.addEventListener('pointermove', (e) => {
+  const h = held.get(e.pointerId);
+  const onScatter = padHeld === e.pointerId && !UI.latch;
+  if (!h && !onScatter) return;
+  const hit = document.elementFromPoint(e.clientX, e.clientY);
+  if (!hit || !hit.closest) return;
+  if (h) {
+    const rp = hit.closest('[data-rpad]');
+    if (rp && rp !== h.el) padDown(rp, e.pointerId, e.clientY);
+  } else {
+    const sp = hit.closest('[data-pad]');
+    if (sp && sp.dataset.pad !== UI.scatter) scatterOn(sp.dataset.pad);
+  }
+});
 // in STEP: trascina su o giù su uno step per cambiarne la velocity (un tocco semplice lo accende/spegne come sempre)
 document.addEventListener('pointerdown', (e) => {
   velSuppress = false;   // un gesto nuovo: il tocco successivo vale di nuovo
   const k = UI.mode === 'TRIG' && e.target.closest && e.target.closest('[data-act="step"]');
   if (!k) return;
-  const s = Number(k.dataset.s), st = P.patterns[P.cur][UI.track][s];
+  const s = Math.min(UI.page, plenOf(P.cur) - 1) * 16 + Number(k.dataset.s), st = P.patterns[P.cur][UI.track][s];
   velDrag = { s, y0: e.clientY, v0: st.on ? (st.v != null ? st.v : 1) : 1, moved: false, id: e.pointerId };
 }, true);
 document.addEventListener('pointermove', (e) => {
@@ -3254,17 +3366,35 @@ function redrawAfterKnob(id) {
   if (UI.view === 'mix' && id.startsWith('m')) drawMixer();
   save();
 }
+// trascinamento che finisce sempre: anche se il rilascio avviene fuori dalla finestra o il browser perde il puntatore
+// (su macOS la manopola restava "agganciata" e si muoveva passandoci sopra)
+function trackDrag(el, e, onMove, onEnd) {
+  const id = e.pointerId;
+  try { el.setPointerCapture(id); } catch (err) { /* ok */ }
+  const move = (ev) => {
+    if (ev.pointerId !== id) return;
+    if (ev.pointerType === 'mouse' && ev.buttons === 0) { end(); return; }   // tasto già rilasciato
+    onMove(ev);
+  };
+  const end = (ev) => {
+    if (ev && ev.pointerId !== undefined && ev.pointerId !== id) return;
+    window.removeEventListener('pointermove', move, true);
+    window.removeEventListener('pointerup', end, true); window.removeEventListener('pointercancel', end, true);
+    el.removeEventListener('lostpointercapture', end); window.removeEventListener('blur', end);
+    if (onEnd) onEnd();
+  };
+  window.addEventListener('pointermove', move, true);
+  window.addEventListener('pointerup', end, true); window.addEventListener('pointercancel', end, true);
+  el.addEventListener('lostpointercapture', end); window.addEventListener('blur', end);
+}
 function dragKnob(el, e) {
   const id = el.dataset.knob, def = resolveKnob(id);
   const y0 = e.clientY, v0 = def.get();
   el.focus({ preventScroll: true });
-  try { el.setPointerCapture(e.pointerId); } catch (err) { /* ok */ }
-  const move = (ev) => {
+  trackDrag(el, e, (ev) => {
     const v = clamp(v0 + (y0 - ev.clientY) * 0.7);
     if (v !== def.get()) { def.set(v); redrawAfterKnob(id); }
-  };
-  const up = () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); };
-  el.addEventListener('pointermove', move); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  });
 }
 document.addEventListener('keydown', (e) => {
   // barra spaziatrice = play/pausa (quando non si è su un tasto)
@@ -3298,15 +3428,13 @@ function setFader(id, frac, delta) {
 }
 function dragFader(el, e) {
   const id = el.dataset.fader;
-  try { el.setPointerCapture(e.pointerId); } catch (err) { /* ok */ }
   const at = (ev) => {
     const r = el.getBoundingClientRect();
     const f = id === 'master' ? (ev.clientX - r.left) / r.width : (r.bottom - 10 - ev.clientY) / (r.height - 20);
     setFader(id, Math.max(0, Math.min(1, f)), 0);
   };
   at(e);
-  const up = () => { el.removeEventListener('pointermove', at); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); };
-  el.addEventListener('pointermove', at); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  trackDrag(el, e, at);
 }
 
 $('powerBtn').addEventListener('click', () => {
@@ -3319,6 +3447,7 @@ function frame() {
   if (ctx && playing) {
     let changed = false;
     while (uiQ.length && uiQ[0].t <= ctx.currentTime) { UI.head = uiQ.shift().s; changed = true; }
+    if (changed && UI.follow && UI.mode !== 'PATTERN' && (UI.head >> 4) !== UI.page && !velDrag) UI.page = UI.head >> 4;
     if (changed && shows('seq')) { drawSteps(); drawLcd(); }
     if (changed && move) moveSync();
   }
