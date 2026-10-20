@@ -1,0 +1,19 @@
+{
+  "name": "PonyDrone",
+  "short_name": "PonyDrone",
+  "description": "Ambient, drone e glitch dal vivo: dai un suono al nastro e suonalo con le manopole. Di Sad Pony Girl.",
+  "id": "/drone/",
+  "start_url": "/drone/",
+  "scope": "/drone/",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "it",
+  "categories": ["music", "entertainment"],
+  "background_color": "#23211e",
+  "theme_color": "#23211e",
+  "icons": [
+    { "src": "/drone/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/drone/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/drone/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

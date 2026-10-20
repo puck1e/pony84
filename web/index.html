@@ -645,6 +645,7 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
       <span class="rtop">
         <a class="ghost news" id="newsLink" href="novita/" target="_blank" rel="noopener">NOVITÀ</a>
         <a class="ghost" href="guide/" target="_blank" rel="noopener">GUIDA</a>
+        <a class="ghost" href="drone/" target="ponydrone">PONYDRONE</a>
         <button class="ghost" data-act="menuClose">CHIUDI</button>
       </span>
     </div>
@@ -787,7 +788,7 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
-const VERSION = '0.11.0';
+const VERSION = '0.12.0';
 const audioMode = () => { try { return localStorage.getItem('pony84-audio') === 'stable' ? 'stable' : 'fast'; } catch (e) { return 'fast'; } };   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
@@ -1811,11 +1812,12 @@ function tick() {
 function play() {
   initAudio();
   if (ctx.state === 'suspended') ctx.resume();
-  if (playing) { playing = false; keepAwake(false); clearTimeout(timer); restartRollLoop(); drawHeader(); drawLcd(); return; }
+  if (playing) { playing = false; keepAwake(false); clearTimeout(timer); restartRollLoop(); drawHeader(); drawLcd(); ponyBus({ type: 'transport', playing: false, bpm: P.fx.tempo }); return; }
   playing = true; keepAwake(true);
   if (UI.head < 0) { count = 0; pos = 0; loops = 0; }
   nextTime = ctx.currentTime + 0.06;
   tick(); drawHeader(); drawLcd();
+  ponyBus({ type: 'transport', playing: true, bpm: P.fx.tempo });
 }
 function stop() {
   keepAwake(false);
@@ -1823,6 +1825,7 @@ function stop() {
   if (UI.pendingPat !== null) { P.cur = UI.pendingPat; UI.pendingPat = null; }
   restartRollLoop();
   renderAll();
+  ponyBus({ type: 'transport', playing: false, bpm: P.fx.tempo });
 }
 
 // ===================================================================
@@ -2699,8 +2702,14 @@ function wavRecStop(keep) {
   a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  blob.arrayBuffer().then((wav) => ponyBus({ type: 'send-audio', from: 'pony84', name, wav }));   // a PonyDrone, se è aperto
   flashLcd('WAV SALVATO');
   projMsg('SALVATO: ' + name + ' (CARTELLA DOWNLOAD)');
+}
+// Ponte con PonyDrone (stesso sito, altra scheda): BPM, play/stop e WAV registrati
+function ponyBus(msg) {   // il canale nasce al primo uso: play/stop possono arrivare prima che lo script finisca
+  if (ponyBus.ch === undefined) ponyBus.ch = 'BroadcastChannel' in window ? new BroadcastChannel('pony') : null;
+  if (ponyBus.ch) try { ponyBus.ch.postMessage(msg); } catch (e) { /* niente ponte */ }
 }
 function wavBlob(chunks, frames, sr) {   // WAV PCM 16 bit stereo
   const buf = new ArrayBuffer(44 + frames * 4), v = new DataView(buf);
@@ -3218,6 +3227,7 @@ document.addEventListener('click', (e) => {
 function setTempo(t) {
   P.fx.tempo = Math.round(Math.max(40, Math.min(240, t)) * 10) / 10;
   applyFx(); drawLcd();
+  ponyBus({ type: 'transport', bpm: P.fx.tempo });
   if (UI.fx) drawKnobs();
   save();
 }

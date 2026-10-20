@@ -1,7 +1,8 @@
 // PONY84 service worker: l'app funziona anche senza rete.
 // Pagine: prima la rete (così gli aggiornamenti arrivano subito), poi la copia salvata.
 // Altri file: la copia salvata subito, aggiornata in sottofondo. Il nome della cache segue la versione.
-const VERSION = '0.11.0';
+// Le cache di PonyDrone (ponydrone-*) stanno nello stesso sito: non si toccano.
+const VERSION = '0.12.0';
 const CACHE = 'pony84-' + VERSION, FONTS = 'pony84-fonts';
 const SHELL = [
   '/', '/guide/', '/novita/', '/crediti/', '/manifest.webmanifest',
@@ -12,7 +13,7 @@ self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k !== FONTS).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k.startsWith('pony84-') && k !== CACHE && k !== FONTS).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
 });
 function fresh(req, cacheName) {   // copia salvata subito, aggiornata in sottofondo
   return caches.open(cacheName).then((c) => c.match(req).then((hit) => {
@@ -26,6 +27,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') { e.respondWith(fresh(req, FONTS)); return; }
   if (url.origin !== location.origin) return;
+  if (url.pathname.startsWith('/drone/')) return;   // PonyDrone ha il suo service worker (scope /drone/)
   if (req.mode === 'navigate') {
     e.respondWith(fetch(req).then((res) => {
       if (res.ok && !res.redirected) caches.open(CACHE).then((c) => c.put(req, res.clone()));

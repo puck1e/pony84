@@ -2,6 +2,22 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## PonyDrone v0.1.0 — 2026-10-20 · Il nastro che suona da solo
+
+Seconda app dell'ecosistema, in `web/drone/`, online su https://app.sadponygirl.com/drone/. Versione indipendente da PONY84.
+
+- **Nuovo**: nastro da 45 s: WAV, microfono (REC, OVERDUB, FREEZE; senza cancellazione d'eco, riduzione del rumore e guadagno automatico) o suoni di PONY84.
+- **Nuovo**: motore GRANI e GLITCH, 4 varianti ciascuno; macro ATTIVITÀ, RIPETI, FORMA, TEMPO, CAOS; pad XY con due macro per algoritmo; TEMPO libero o a divisioni di BPM.
+- **Nuovo**: pedaliera da 3–4 slot: TAPE, VHS, FILTRO, BITCRUSH, con bypass.
+- **Nuovo**: SPAZIO (riverbero FDN 2–20 s con freeze), MIX, LIVELLO, limiter sempre attivo; STOP = tape stop.
+- **Nuovo**: rocchetti animati dalla telemetria del worklet; scene `.ponydrone` (formato `ver` 1), export WAV 1–10 min, PWA con service worker su `/drone/`.
+
+## v0.12.0 — 2026-10-20 · Arriva PonyDrone
+
+- **Nuovo**: link a PonyDrone nel menu PROGETTO & MIDI.
+- **Nuovo**: ponte con PonyDrone su `BroadcastChannel('pony')`: i WAV registrati (LOOP e JAM LIBERA) arrivano a PonyDrone aperto in un'altra scheda; BPM, play e stop vengono inviati a ogni cambio.
+- **Fix**: il service worker di PONY84 ignora le richieste sotto `/drone/` (PonyDrone ha il suo).
+
 ## v0.11.0 — 2026-10-20 · La cassa con la punta
 
 - **Meglio**: SWEEP della KICK fino a +72 semitoni (prima +38): l'attacco parte dai kHz e dà il tick, poi scende sulla pancia. Il display mostra i semitoni.

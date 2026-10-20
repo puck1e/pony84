@@ -1,6 +1,6 @@
 # PONY84
 
-Versione **0.11.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
+Versione **0.12.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
 
 Groovebox ispirata a Elektron Model:Cycles e alla Roland SP-404, con i colori della 808.
 Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer a 6 canali.
@@ -15,6 +15,7 @@ Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer
 - `web/lab/` — laboratorio dei motori di sintesi (confronto, decay prima/dopo, test di carico), online su `/lab/`.
 - `web/vendor/movewire/` — libreria movewire 0.1.0 di Aureliano Bergese (MIT) per l'Ableton Move.
 - `web/` — la webapp giocabile (un solo file `index.html`, Web Audio API). È la cartella che pubblica Cloudflare.
+- `web/drone/` — **PonyDrone** v0.1.0, la seconda app (ambient, drone, glitch), online su `/drone/`: `index.html` (interfaccia, `VERSION`), `app.js` (stato, UI, scene), `audio.js` (grafo, microfono, export), `tape.js` (rocchetti e pad XY), `worklets/drone-processor.js` (buffer, motore, pedali, riverbero), `sw.js` (offline, scope `/drone/`). Specifica: `claude/ponydrone-design.md` nel Project.
 - `prototype/` — il prototipo Python che genera un groove in `groove.wav`.
 - `prototype/samples/` — i WAV per il motore SAMPLE.
 
