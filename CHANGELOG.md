@@ -2,6 +2,12 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## v0.14.1 — 2026-10-27 · Ascolto pulito
+
+- **Meglio**: in WAVE e CHOPY84 l'ascolto è **pulito**: il file così com'è, senza PITCH, DECAY, FILTER, GAIN, p-lock, velocity, mute, mixer, bus ed effetti. I tagli si giudicano sul suono originale.
+- **Fix**: nell'editor WAVE START ed END non possono più sovrapporsi (almeno 10 ms tra i due): una selezione vuota non suonava niente.
+- **Sito**: la guida ha la grafica del tema NOTTE e spiega i colori delle tracce.
+
 ## v0.14.0 — 2026-10-27 · Dub throw
 
 - **Nuovo**: in P-LOCK si bloccano anche **DELAY e REVERB**: la mandata si apre solo per quel colpo (dub throw) e torna al valore della traccia al colpo successivo; le ripetute già partite continuano.

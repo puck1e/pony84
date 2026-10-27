@@ -914,7 +914,7 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
-const VERSION = '0.14.0';
+const VERSION = '0.14.1';
 const audioMode = () => { try { return localStorage.getItem('pony84-audio') === 'stable' ? 'stable' : 'fast'; } catch (e) { return 'fast'; } };   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
@@ -2635,10 +2635,9 @@ function closeChop() { $('chopEd').hidden = true; CH.playT0 = -1; }
 function chopPlay(k) {   // ascolta la slice k (o tutto il file se non ci sono slice)
   if (!ctx) return;
   const tr = chopTrack(), n = sliceCount(tr), buf = waveBuf(); if (!buf) return;
-  const t = ctx.currentTime + 0.01;
-  if (n) trigger(UI.track, { locks: { 1: sliceVal(k, n), 2: 127, 3: 127 } }, t); else trigger(UI.track, { locks: { 1: 0, 2: 127, 3: 127 } }, t);
   const sl = n ? tr.slices : [0];
-  CH.playFrom = sl[k] || 0; CH.playTo = k + 1 < sl.length ? sl[k + 1] : 1; CH.playT0 = t;
+  CH.playFrom = sl[k] || 0; CH.playTo = k + 1 < sl.length ? sl[k + 1] : 1;
+  CH.playT0 = audition(buf, CH.playFrom, CH.playTo);   // ascolto pulito della slice
   requestAnimationFrame(drawChop);
 }
 (function chopInput() {
@@ -2738,6 +2737,22 @@ function chopExport() {
 // "Modifica": la traccia intera oppure solo lo step scelto in P-LOCK.
 UI.wave = { zoom: 1, center: 0.5, drag: null, last: 's', scope: 'track', snap: true, playFrom: 0, playRate: 1, playEnd: 0, playDir: 1, playT0: -1 };
 const waveBuf = () => (A.samples && A.samples[UI.track]) || A.demo || null;
+// ASCOLTO PULITO (WAVE e CHOPY84): il pezzo di file così com'è, dritto all'uscita. Niente PITCH, DECAY, FILTER,
+// GAIN, p-lock, velocity, mute, mixer, bus, master o scatter: i tagli si giudicano sul suono originale.
+function audition(buf, s, e) {
+  if (!ctx || !buf) return -1;
+  if (A.aud) { try { A.aud.g.gain.setTargetAtTime(0, ctx.currentTime, 0.002); A.aud.src.stop(ctx.currentTime + 0.02); } catch (err) { /* ok */ } }
+  const rev = e < s, dur = buf.duration, t = ctx.currentTime + 0.01;
+  const start = (rev ? 1 - s : s) * dur, len = Math.max(0.01, Math.abs(e - s) * dur), f = Math.min(0.003, len / 4);
+  const src = ctx.createBufferSource(), g = ctx.createGain();
+  src.buffer = rev ? reversedOf(buf) : buf;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.9, t + f);
+  g.gain.setValueAtTime(0.9, t + len - f); g.gain.linearRampToValueAtTime(0, t + len);
+  src.connect(g); g.connect(ctx.destination);
+  src.start(t, start, len); src.stop(t + len + 0.01);
+  const me = { src, g }; A.aud = me; src.onended = () => { g.disconnect(); if (A.aud === me) A.aud = null; };
+  return t;
+}
 const r2 = (v) => Math.round(v * 100) / 100;
 const waveStep = () => (UI.wave.scope === 'step' && UI.selStep !== null ? P.patterns[P.cur][UI.track][UI.selStep] : null);
 function waveKnob(i) {
@@ -2766,6 +2781,9 @@ function setWavePoint(which, f, noSnap) {
   const { ks, ke } = wavePoints();
   f = Math.max(0, Math.min(1, f));
   if (UI.wave.snap && !noSnap && f > 0 && f < 1) f = snapZero(f);
+  // S ed E mai sovrapposti: almeno 10 ms tra i due, altrimenti la selezione è vuota e non si sente niente
+  const buf = waveBuf(), gap = buf ? Math.min(0.05, 0.01 / buf.duration) : 0.002, o = which === 's' ? wavePoints().e : wavePoints().s;
+  if (Math.abs(f - o) < gap) { let nf = f >= o ? o + gap : o - gap; if (nf > 1 || nf < 0) nf = f >= o ? o - gap : o + gap; f = nf; }
   if (which === 's') ks.set(r2(Math.min(127, f / 0.99 * 127))); else ke.set(r2(f * 127));
   UI.wave.last = which;
   redrawAfterKnob('w1');
@@ -2856,13 +2874,9 @@ function openWave() {
 function closeWave() { $('waveEd').hidden = true; UI.wave.playT0 = -1; }
 function wavePlay() {
   if (!ctx) return;
-  const st = waveStep() || { locks: {} };
-  const t = ctx.currentTime + 0.01;
-  trigger(UI.track, st, t);
-  const K = P.tracks[UI.track].params.map((v, i) => (st.locks[i] != null ? st.locks[i] : v));
   const { s, e } = wavePoints();
-  UI.wave.playFrom = s; UI.wave.playEnd = e; UI.wave.playDir = e < s ? -1 : 1; UI.wave.playT0 = t;
-  UI.wave.playRate = Math.pow(2, Math.round((K[0] - 64) * 24 / 63) / 12);
+  UI.wave.playFrom = s; UI.wave.playEnd = e; UI.wave.playDir = e < s ? -1 : 1; UI.wave.playRate = 1;
+  UI.wave.playT0 = audition(waveBuf(), s, e);   // ascolto pulito: START/END sul file originale
   requestAnimationFrame(drawWave);
 }
 function waveZoomTo(z, anchorF, anchorX) {   // zoom tenendo fermo il punto anchorF nella posizione anchorX (0..1)

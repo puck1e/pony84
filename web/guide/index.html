@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#23211e">
+<meta name="theme-color" content="#18181b">
 <title>PONY84 · Guida</title>
 <meta name="description" content="Guida completa a PONY84, groovebox FM e sample nel browser: tracce, sequencer, ROLL, scatter, mixer con bus ed effetti, MIDI.">
 <link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
@@ -13,9 +13,10 @@
 <style>
 /* Layout: indice fisso a sinistra su schermi larghi, in testa su telefono; colonna di lettura ~68ch. */
 :root {
-  --body: #23211e; --panel: #2d2a26; --key: #3a3631; --edge: #141210; --line: #4a453e;
-  --cream: #ece4cf; --text: #d9d0bb; --muted: #a99f8a; --ink: #1d1a17; --white: #fff6ee;
-  --red: #c9372c; --orange: #e07b26; --yellow: #e3b93c; --lcd-bg: #120d07; --lcd: #ffb347;
+  /* tema NOTTE (quello predefinito dell'app): grigio scuro piatto, un accento */
+  --body: #18181b; --panel: #202024; --key: #27272c; --key2: #2d2d33; --edge: transparent; --line: #34343b;
+  --cream: #ececee; --text: #c8c8ce; --muted: #8d8d96; --ink: #141417; --white: #f6f6f7;
+  --acc: #e9473b; --red: #e9473b; --orange: #ff8b2b; --yellow: #f4c542; --blue: #6fa8dc; --green: #7cc796; --lcd-bg: #202024; --lcd: #ececee;
   --display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   --sans: 'Barlow', 'Segoe UI', Roboto, sans-serif;
   --mono: 'DM Mono', ui-monospace, Menlo, Consolas, monospace;
@@ -26,21 +27,21 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { margin: 0; background: var(--body); color: var(--text); font-family: var(--sans); font-size: 17px; line-height: 1.6; }
 html[lang="it"] .en, html[lang="en"] .it { display: none !important; }
-a { color: var(--lcd); text-underline-offset: 3px; }
-a:hover { color: var(--yellow); }
-:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+a { color: var(--cream); text-decoration-color: var(--acc); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+a:hover { color: var(--acc); }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
 
 /* barra in alto */
 .top { position: sticky; top: 0; z-index: 10; background: var(--body); border-bottom: 1px solid var(--line);
   padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .top-in { max-width: 1240px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .logo { font-family: var(--display); font-size: 30px; line-height: 1; font-weight: 800; font-style: italic; letter-spacing: -.5px; color: var(--cream); text-decoration: none; }
-.logo b { color: var(--orange); font-weight: 800; }
+.logo b { color: var(--acc); font-weight: 800; }
 .logo small { font-style: normal; font-weight: 600; font-size: 13px; letter-spacing: 2.4px; color: var(--muted); margin-left: 8px; vertical-align: middle; }
 .top nav { display: flex; gap: 8px; margin-left: auto; align-items: center; flex-wrap: wrap; }
 .btn { font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: 1.2px; text-decoration: none; color: var(--cream); background: var(--key);
-  border: none; border-bottom: 3px solid var(--edge); border-radius: 6px; padding: 7px 12px; cursor: pointer; }
-.btn.primary { background: var(--orange); color: var(--ink); }
+  border: none; border-radius: 6px; padding: 7px 12px; cursor: pointer; }
+.btn.primary { background: var(--acc); color: var(--ink); }
 .btn:hover { color: var(--white); filter: brightness(1.1); }
 .btn.primary:hover { color: var(--ink); }
 .lang { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
@@ -65,9 +66,9 @@ main { min-width: 0; max-width: 72ch; }
 .hero { display: flex; flex-direction: column; gap: 14px; margin-bottom: 8px; }
 .eyebrow { font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: 2.4px; color: var(--muted); text-transform: uppercase; }
 h1 { font-family: var(--display); font-weight: 800; font-style: italic; font-size: clamp(40px, 7vw, 64px); line-height: .95; color: var(--cream); margin: 0; letter-spacing: -.5px; text-wrap: balance; }
-h1 b { color: var(--orange); font-weight: 800; }
+h1 b { color: var(--acc); font-weight: 800; }
 .lead { font-size: 19px; color: var(--cream); margin: 0; max-width: 60ch; }
-.lcd { background: var(--lcd-bg); border: 2px solid var(--line); border-radius: 10px; padding: 10px 14px; font-family: var(--mono); color: var(--lcd); font-size: 13px; letter-spacing: 1px;
+.lcd { background: var(--lcd-bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-family: var(--mono); color: var(--lcd); font-size: 13px; letter-spacing: 1px;
   display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .lcd span { white-space: nowrap; }
 
@@ -80,11 +81,12 @@ h1 b { color: var(--orange); font-weight: 800; }
 .toc a { display: flex; gap: 10px; padding: 4px 6px; border-radius: 5px; color: var(--text); text-decoration: none; font-size: 16px; font-weight: 600; letter-spacing: .4px; }
 .toc a::before { content: counter(t, decimal-leading-zero); font-family: var(--mono); font-size: 12px; color: var(--muted); padding-top: 3px; }
 .toc a:hover, .toc a.here { background: var(--key); color: var(--cream); }
+.toc a.here::before { color: var(--acc); }
 
 /* sezioni */
 section { padding-top: 36px; margin-top: 36px; border-top: 1px solid var(--line); }
 h2.sec { font-family: var(--display); font-weight: 700; font-size: 30px; line-height: 1.1; color: var(--cream); margin: 0 0 14px; letter-spacing: .3px; display: flex; gap: 12px; align-items: baseline; }
-h2.sec .n { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--orange); }
+h2.sec .n { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--acc); }
 h3 { font-family: var(--display); font-weight: 700; font-size: 21px; color: var(--cream); margin: 26px 0 8px; letter-spacing: .4px; }
 p { margin: 0 0 14px; }
 ul, ol { margin: 0 0 14px; padding-left: 22px; }
@@ -92,18 +94,19 @@ li { margin-bottom: 6px; }
 li::marker { color: var(--muted); }
 strong { color: var(--cream); font-weight: 600; }
 .note { background: var(--panel); border-radius: 10px; padding: 12px 16px; margin: 0 0 16px; }
-.note.warn { box-shadow: inset 0 0 0 1px var(--orange); }
+.note.warn { box-shadow: inset 3px 0 0 var(--acc); }
 .note p:last-child, .note ul:last-child { margin-bottom: 0; }
-.note .lbl { font-family: var(--display); font-weight: 700; letter-spacing: 1.5px; font-size: 13px; color: var(--yellow); display: block; margin-bottom: 4px; }
+.note .lbl { font-family: var(--display); font-weight: 700; letter-spacing: 1.5px; font-size: 13px; color: var(--acc); display: block; margin-bottom: 4px; }
 
 /* tasti come sull'apparecchio */
 .k { display: inline-block; font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: .8px; line-height: 1.2; padding: 2px 7px 1px;
-  border-radius: 4px; background: var(--key); color: var(--cream); border-bottom: 2px solid var(--edge); white-space: nowrap; vertical-align: 1px; }
-.k.o { background: var(--orange); color: var(--ink); }
+  border-radius: 4px; background: var(--key); color: var(--cream); white-space: nowrap; vertical-align: 1px; }
+.k.o { background: var(--acc); color: var(--ink); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin: 0 4px 0 2px; vertical-align: 0; }
 .k.r { background: var(--red); color: var(--white); }
 .k.y { background: var(--yellow); color: var(--ink); }
 .k.c { background: var(--cream); color: var(--ink); }
-code, .m { font-family: var(--mono); font-size: 14px; color: var(--lcd); }
+code, .m { font-family: var(--mono); font-size: 14px; color: var(--cream); background: var(--key); border-radius: 4px; padding: 0 4px; }
 
 /* tabelle */
 .tbl { overflow-x: auto; margin: 0 0 18px; border-radius: 10px; border: 1px solid var(--line); }
@@ -113,19 +116,17 @@ th { font-family: var(--display); font-weight: 700; letter-spacing: 1.2px; font-
 tr:last-child td { border-bottom: none; }
 td:first-child { white-space: nowrap; }
 
-/* tasti step 808 */
+/* tasti step come nel tema NOTTE: gruppi da 4 alternati, gli step accesi pieni nel colore della traccia */
 .steps { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 4px; margin: 6px 0 18px; max-width: 560px; }
-.steps span { height: 30px; border-radius: 4px; border-bottom: 3px solid rgba(0,0,0,.45); font-family: var(--display); font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; color: var(--ink); }
-.steps span:nth-child(-n+4) { background: var(--red); color: var(--white); }
-.steps span:nth-child(n+5):nth-child(-n+8) { background: var(--orange); }
-.steps span:nth-child(n+9):nth-child(-n+12) { background: var(--yellow); }
-.steps span:nth-child(n+13) { background: var(--cream); }
+.steps span { height: 30px; border-radius: 5px; font-family: var(--display); font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; color: var(--muted); background: var(--key); }
+.steps span:nth-child(n+5):nth-child(-n+8), .steps span:nth-child(n+13) { background: var(--key2); }
+.steps span:nth-child(4n+1) { background: var(--acc); color: var(--ink); }
 @media (max-width: 480px) { .steps { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
 
 /* schema del segnale */
 .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 18px; font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: .8px; }
 .flow .b { background: var(--panel); border: 1px solid var(--line); color: var(--cream); border-radius: 6px; padding: 6px 10px; }
-.flow .b.hl { border-color: var(--yellow); }
+.flow .b.hl { border-color: var(--acc); }
 .flow .arr { color: var(--muted); }
 
 footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 15px; color: var(--muted); }
@@ -243,11 +244,13 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       <h2 class="sec"><span class="n">03</span><span class="it">Tracce e motori</span><span class="en">Tracks and machines</span></h2>
       <div class="it">
         <p>Ci sono <strong>6 tracce</strong>. Tocca una traccia per selezionarla, poi scegli il suo <strong>motore</strong> nella riga MACHINE. <strong>Tienila premuta</strong> per metterla in mute al volo: riparte appena la lasci (va bene anche con più dita su più tracce). Ogni traccia può usare qualsiasi motore: puoi avere anche sei KICK diverse. Cambiando motore le manopole tornano ai valori di partenza e i p-lock di quella traccia vengono azzerati.</p>
+        <p>Ogni traccia ha il suo <strong>colore</strong>: <i class="sw" style="background:var(--red)"></i>1 rosso, <i class="sw" style="background:var(--orange)"></i>2 arancio, <i class="sw" style="background:var(--yellow)"></i>3 giallo, <i class="sw" style="background:var(--cream)"></i>4 crema, <i class="sw" style="background:var(--blue)"></i>5 blu, <i class="sw" style="background:var(--green)"></i>6 verde. Con la skin NOTTE tutta l'app (tasti accesi, manopole, display) prende il colore della traccia selezionata, così vedi sempre dove stai lavorando.</p>
         <p>I motori KICK, SNARE, METAL e PERC sono voci <strong>FM</strong> a due operatori; <strong>SYNTH</strong> è il motore melodico con quattro modelli; SAMPLE suona un file audio. Le manopole si girano <strong>trascinando su e giù</strong>.</p>
         <p><strong>DECAY</strong> con la manopola a 0 dà un "tic" di pochi millisecondi, perfetto per i suoni glitch; i primi scatti della manopola sono i più fini.</p>
       </div>
       <div class="en">
         <p>There are <strong>6 tracks</strong>. Tap a track to select it, then pick its <strong>machine</strong> in the MACHINE row. <strong>Hold it down</strong> to mute it on the fly: it comes back as soon as you let go (works with several fingers on several tracks too). Any track can use any machine: you can even have six different KICKs. Changing machine resets the knobs and clears that track's p-locks.</p>
+        <p>Each track has its own <strong>colour</strong>: <i class="sw" style="background:var(--red)"></i>1 red, <i class="sw" style="background:var(--orange)"></i>2 orange, <i class="sw" style="background:var(--yellow)"></i>3 yellow, <i class="sw" style="background:var(--cream)"></i>4 cream, <i class="sw" style="background:var(--blue)"></i>5 blue, <i class="sw" style="background:var(--green)"></i>6 green. With the NOTTE skin the whole app (lit keys, knobs, display) takes the selected track's colour, so you always see where you're working.</p>
         <p>KICK, SNARE, METAL and PERC are two-operator <strong>FM</strong> voices; <strong>SYNTH</strong> is the melodic machine with four models; SAMPLE plays an audio file. Turn the knobs by <strong>dragging up and down</strong>.</p>
         <p>With the knob at 0, <strong>DECAY</strong> gives a "tick" of a few milliseconds, perfect for glitchy sounds; the first steps of the knob are the finest.</p>
       </div>
@@ -317,6 +320,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><strong>Due dita</strong> per lo zoom (fino a 64×), <strong>un dito</strong> per scorrere quando sei ingrandito. Ci sono anche <span class="k">ZOOM +</span> e <span class="k">ZOOM −</span>.</li>
           <li><span class="k">AGGANCIO ZERO</span> sposta il punto dove l'onda passa per lo zero, per non avere clic ai bordi. Spegnilo quando il clic lo vuoi, per i glitch.</li>
           <li>Sotto la forma d'onda ci sono PITCH, DECAY, FILTER e GAIN, così non devi chiudere l'editor.</li>
+          <li><strong>L'ascolto è pulito</strong>: quando lasci una maniglia o premi ▶ ASCOLTA senti il file così com'è, senza PITCH, DECAY, FILTER, GAIN, p-lock né effetti, anche se la traccia è in mute. Così giudichi i tagli sul suono originale; il suono della traccia lo senti poi nel sequencer.</li>
           <li><span class="k o">▶ ASCOLTA</span> suona la porzione scelta. <span class="k">TUTTO IL FILE</span> riporta START ed END agli estremi.</li>
           <li><span class="k">TRACCIA</span> / <span class="k">STEP</span>: scegli se le modifiche valgono per tutta la traccia o solo per lo step selezionato in <a href="#plock">P-LOCK</a>. Un campione, tante fette diverse, anche al contrario su singoli step.</li>
           <li>Su PC: frecce per spostare la maniglia (Maiusc = passi più grandi), S ed E per sceglierla, spazio per ascoltare.</li>
@@ -326,7 +330,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <ul>
           <li><span class="k">TAGLIA</span>: <span class="k">4</span> <span class="k">8</span> <span class="k">16</span> fette uguali, oppure <span class="k">COLPI</span> per tagliare sugli attacchi (cassa, rullante, note). <span class="k">NESSUNA</span> toglie i tagli e torna a START/END.</li>
           <li><strong>Le fette sono subito nella traccia</strong>: non serve esportare niente per suonarle. <span class="k o">▶ SUONA NEL ROLL</span> chiude CHOPY84 e ti porta ai pad, una fetta per pad.</li>
-          <li><strong>Tocca</strong> una fetta per sentirla. <strong>Trascina</strong> un taglio per spostarlo. <strong>Tieni premuto</strong> per aggiungere un taglio, o per toglierlo se sei sopra un taglio. Massimo 16 fette.</li>
+          <li><strong>Tocca</strong> una fetta per sentirla (pulita, come nell'editor WAVE). <strong>Trascina</strong> un taglio per spostarlo. <strong>Tieni premuto</strong> per aggiungere un taglio, o per toglierlo se sei sopra un taglio. Massimo 16 fette.</li>
           <li><span class="k">ZOOM +</span> <span class="k">ZOOM −</span> e <span class="k">AGG. ZERO</span> funzionano come nell'editor WAVE.</li>
           <li>Con le fette attive le prime due manopole diventano <span class="k">SLICE</span> (quale fetta suona, es. S3/8) e <span class="k">LEN</span> (quanta parte della fetta, in %). Metti <span class="k">SLICE</span> in <a href="#plock">P-LOCK</a> step per step per ricomporre il break.</li>
           <li>In <a href="#roll">ROLL</a> con <span class="k">KEYS</span> ogni pad è una fetta (la prima in basso a sinistra, come su MPC); con <span class="k">REC</span> acceso i colpi finiscono negli step con la fetta giusta. Da tastiera MIDI il Do centrale (C4) suona la fetta 1, le note sopra le successive.</li>
@@ -352,6 +356,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><strong>Two fingers</strong> to zoom (up to 64×), <strong>one finger</strong> to scroll when zoomed in. <span class="k">ZOOM +</span> and <span class="k">ZOOM −</span> are there too.</li>
           <li><span class="k">AGGANCIO ZERO</span> (zero snap) moves the point to where the wave crosses zero, so the edges don't click. Turn it off when you want the click, for glitches.</li>
           <li>PITCH, DECAY, FILTER and GAIN sit under the waveform, so you don't have to close the editor.</li>
+          <li><strong>Listening is clean</strong>: when you let go of a handle or press ▶ ASCOLTA you hear the file as it is, without PITCH, DECAY, FILTER, GAIN, p-locks or effects, even if the track is muted. That way you judge the cuts on the original sound; you hear the track's sound afterwards in the sequencer.</li>
           <li><span class="k o">▶ ASCOLTA</span> (listen) plays the selection. <span class="k">TUTTO IL FILE</span> (whole file) resets START and END to the ends.</li>
           <li><span class="k">TRACCIA</span> / <span class="k">STEP</span>: choose whether changes apply to the whole track or only to the step selected in <a href="#plock">P-LOCK</a>. One sample, many slices, even reversed on single steps.</li>
           <li>On a computer: arrows move the handle (Shift = bigger steps), S and E pick it, space to listen.</li>
@@ -361,7 +366,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <ul>
           <li><span class="k">TAGLIA</span> (cut): <span class="k">4</span> <span class="k">8</span> <span class="k">16</span> equal slices, or <span class="k">COLPI</span> (hits) to cut on the attacks (kick, snare, notes). <span class="k">NESSUNA</span> (none) removes the cuts and goes back to START/END.</li>
           <li><strong>Slices are in the track right away</strong>: you don't need to export anything to play them. <span class="k o">▶ SUONA NEL ROLL</span> (play in ROLL) closes CHOPY84 and takes you to the pads, one slice per pad.</li>
-          <li><strong>Tap</strong> a slice to hear it. <strong>Drag</strong> a cut to move it. <strong>Hold</strong> to add a cut, or to remove it when you're on one. Up to 16 slices.</li>
+          <li><strong>Tap</strong> a slice to hear it (clean, as in the WAVE editor). <strong>Drag</strong> a cut to move it. <strong>Hold</strong> to add a cut, or to remove it when you're on one. Up to 16 slices.</li>
           <li><span class="k">ZOOM +</span> <span class="k">ZOOM −</span> and <span class="k">AGG. ZERO</span> work as in the WAVE editor.</li>
           <li>With slices on, the first two knobs become <span class="k">SLICE</span> (which slice plays, e.g. S3/8) and <span class="k">LEN</span> (how much of the slice, in %). P-lock <span class="k">SLICE</span> step by step to rebuild the break.</li>
           <li>In <a href="#roll">ROLL</a> with <span class="k">KEYS</span> every pad is a slice (the first one bottom-left, MPC style); with <span class="k">REC</span> on, hits land on the steps with the right slice. From a MIDI keyboard, middle C (C4) plays slice 1 and the notes above play the next ones.</li>
@@ -390,7 +395,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
       <h2 class="sec"><span class="n">05</span><span class="it">STEP: programmare il ritmo</span><span class="en">STEP: programming beats</span></h2>
       <div class="steps" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span></div>
       <div class="it">
-        <p>Con <span class="k c">STEP</span> attivo, i 16 tasti colorati sono i sedicesimi di una battuta della traccia selezionata. Tocca un tasto per accenderlo (LED rosso) o spegnerlo. A sequencer fermo, accendendo uno step senti subito il suono.</p>
+        <p>Con <span class="k c">STEP</span> attivo, i 16 tasti sono i sedicesimi di una battuta della traccia selezionata. Tocca un tasto per accenderlo (si riempie del colore della traccia) o spegnerlo. A sequencer fermo, accendendo uno step senti subito il suono.</p>
         <p>Sotto il numero dello step possono comparire tre indicazioni:</p>
         <ul>
           <li><code>●</code> lo step ha dei <a href="#plock">p-lock</a>;</li>
@@ -403,7 +408,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><strong>Tocca</strong> una pagina per vederla e modificarla.</li>
           <li>Le pagine <strong>tratteggiate</strong> sono fuori dal pattern: toccane una per allungarlo fin lì. Le pagine nuove nascono come <strong>copia</strong> di quelle prima (da 1 a 2 pagine, la 2 è la copia della 1), così parti da una variazione.</li>
           <li><strong>Tieni premuta</strong> una pagina per far finire il pattern lì (anche per accorciarlo). Le pagine tolte non si perdono: se lo riallunghi tornano com'erano.</li>
-          <li><span class="k c">SEGUI</span>: mentre suona, la vista va da sola sulla pagina che sta suonando. Toccando un'altra pagina si spegne; un pallino rosso indica la pagina che sta suonando.</li>
+          <li><span class="k c">SEGUI</span>: mentre suona, la vista va da sola sulla pagina che sta suonando. Toccando un'altra pagina si spegne; un pallino colorato indica la pagina che sta suonando.</li>
           <li>Il cambio di pattern avviene alla fine del pattern intero. Sulla Move: Shift + ◀ ▶ cambia pagina.</li>
         </ul>
         <h3>Velocity: colpi piano e forti</h3>
@@ -411,7 +416,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <p>La <strong>barretta</strong> in fondo allo step mostra la velocity: corta = colpo piano; senza barra = velocity piena. I colpi piano sono anche più scuri, come su uno strumento vero: meno FM, meno DCW, filtro più chiuso sul SAMPLE, colpo più morbido sul MOD. Ghost note e accenti, per groove meno rigidi.</p>
       </div>
       <div class="en">
-        <p>With <span class="k c">STEP</span> active, the 16 coloured keys are the sixteenth notes of one bar of the selected track. Tap a key to turn it on (red LED) or off. While stopped, turning a step on plays its sound straight away.</p>
+        <p>With <span class="k c">STEP</span> active, the 16 keys are the sixteenth notes of one bar of the selected track. Tap a key to turn it on (it fills with the track's colour) or off. While stopped, turning a step on plays its sound straight away.</p>
         <p>Three markers can appear under the step number:</p>
         <ul>
           <li><code>●</code> the step has <a href="#plock">p-locks</a>;</li>
@@ -424,7 +429,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><strong>Tap</strong> a page to see and edit it.</li>
           <li><strong>Dashed</strong> pages are outside the pattern: tap one to extend the pattern up to it. New pages start as a <strong>copy</strong> of the ones before (from 1 to 2 pages, page 2 is a copy of page 1), so you start from a variation.</li>
           <li><strong>Hold</strong> a page to make the pattern end there (to shorten it too). Removed pages aren't lost: extend it again and they come back as they were.</li>
-          <li><span class="k c">SEGUI</span> (follow): while playing, the view jumps to the page that's playing. Tapping another page turns it off; a red dot marks the playing page.</li>
+          <li><span class="k c">SEGUI</span> (follow): while playing, the view jumps to the page that's playing. Tapping another page turns it off; a coloured dot marks the playing page.</li>
           <li>Pattern changes happen at the end of the whole pattern. On the Move: Shift + ◀ ▶ changes page.</li>
         </ul>
         <h3>Velocity: soft and hard hits</h3>
@@ -441,7 +446,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <ol>
           <li>Premi <span class="k">P-LOCK</span>.</li>
           <li>Tocca uno step: si evidenzia (e si accende, se era spento).</li>
-          <li>Gira le manopole. Quelle bloccate hanno l'<strong>anello arancione</strong> e il valore in arancione.</li>
+          <li>Gira le manopole. Quelle bloccate hanno un <strong>anello bianco</strong> e il valore nel colore della traccia (con la skin 808: anello e valore arancioni).</li>
           <li>Tocca un altro step per bloccarne altri, oppure lo stesso step per uscire.</li>
         </ol>
         <p><span class="k">TOGLI LOCK</span> cancella tutti i lock dello step selezionato, comprese le note e l'intensità registrate con ROLL. Si bloccano tutte e 8 le manopole.</p>
@@ -453,7 +458,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <ol>
           <li>Press <span class="k">P-LOCK</span>.</li>
           <li>Tap a step: it gets highlighted (and turned on, if it was off).</li>
-          <li>Turn the knobs. Locked knobs show an <strong>orange ring</strong> and an orange value.</li>
+          <li>Turn the knobs. Locked knobs show a <strong>white ring</strong> and the value in the track's colour (with the 808 skin: orange ring and value).</li>
           <li>Tap another step to lock more, or the same step to leave.</li>
         </ol>
         <p><span class="k">TOGLI LOCK</span> (remove lock) clears every lock on the selected step, including notes and intensity recorded with ROLL. All 8 knobs can be locked.</p>
