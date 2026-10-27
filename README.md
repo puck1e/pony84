@@ -15,6 +15,7 @@ Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer
 - `web/lab/` — laboratorio dei motori di sintesi (confronto, decay prima/dopo, test di carico), online su `/lab/`.
 - `web/vendor/movewire/` — libreria movewire 0.1.0 di Aureliano Bergese (MIT) per l'Ableton Move.
 - `web/` — la webapp giocabile (un solo file `index.html`, Web Audio API). È la cartella che pubblica Cloudflare.
+- `archive/ponydrone/` — **PonyDrone** 0.1.1 (ambient, drone, glitch), archiviata a ottobre 2026: non viene pubblicata. In `web/drone/` resta solo una pagina che rimanda a PONY84 e un service worker che toglie la vecchia app dai dispositivi. Per riprenderla: rimetti la cartella in `web/drone/`. Specifica nel Project (`claude/ponydrone-design.md`).
 - `prototype/` — il prototipo Python che genera un groove in `groove.wav`.
 - `prototype/samples/` — i WAV per il motore SAMPLE.
 

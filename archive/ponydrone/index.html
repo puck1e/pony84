@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#23211e">
+<title>PonyDrone</title>
+<meta name="description" content="PonyDrone: ambient, drone e glitch dal vivo nel browser. Dai un suono al nastro e suonalo con le manopole. Di Sad Pony Girl.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script>const VERSION = '0.1.1';</script>
+<script>try { if (localStorage.getItem('pony84-skin') === 'spg') document.documentElement.dataset.skin = 'spg'; } catch (e) {}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Narrow:wght@500;600;700&family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,800&family=DM+Mono:wght@400;500&family=VT323&display=swap">
+<style>
+/* Stessa pelle di PONY84 (808 scura o Sad Pony Girl): una colonna da telefono, due colonne su desktop.
+   La catena del segnale si legge dall'alto in basso: NASTRO → MOTORE → PEDALIERA → SPAZIO. */
+:root {
+  --body: #23211e; --panel: #2d2a26; --key: #3a3631; --edge: #141210; --line: #4a453e;
+  --cream: #ece4cf; --muted: #a99f8a; --ink: #1d1a17; --white: #fff6ee;
+  --red: #c9372c; --orange: #e07b26; --yellow: #e3b93c;
+  --led: #ff3b2f; --led-off: #4a2621; --lcd-bg: #120d07; --lcd: #ffb347;
+  --cap-hi: #f6f0e0; --cap-mid: #ddd3bb; --cap-lo: #b9ae95; --ring: #2f2c28;
+  --shade: rgba(0,0,0,.45); --veil: rgba(20,18,16,.95);
+  --display: 'Barlow Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+  --mono: 'DM Mono', ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+html[data-skin="spg"] {
+  --body: #e6e22b; --panel: rgba(247,240,221,.78); --key: #f7f0dd; --edge: #2a1a22; --line: #2a1a22;
+  --cream: #2a1a22; --muted: #4f3340; --ink: #fffaf0; --white: #fffaf0;
+  --red: #d92b22; --orange: #c7417b; --yellow: #6fb3ad;
+  --led: #ff3d7f; --led-off: rgba(42,26,34,.2); --lcd-bg: #5d9ea3; --lcd: #fffaf0;
+  --cap-hi: #f7a3c0; --cap-mid: #e7578a; --cap-lo: #b8346f; --ring: #2a1a22;
+  --shade: rgba(42,26,34,.55); --veil: rgba(42,26,34,.55);
+  --display: 'Archivo Narrow', 'Arial Narrow', sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; min-height: 100%; background: var(--body); color: var(--cream); }
+body { font-family: var(--display); padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+button { font-family: inherit; color: inherit; border: none; padding: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+button:focus-visible, [role="slider"]:focus-visible, a:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+a { color: var(--lcd); }
+
+.app { max-width: 440px; margin: 0 auto; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 18px max(16px, env(safe-area-inset-left, 0px));
+  display: grid; gap: 10px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.col { display: grid; gap: 10px; align-content: start; }
+@media (min-width: 900px) {
+  .app { max-width: 920px; grid-template-columns: 1fr 1fr; column-gap: 20px; }
+  header { grid-column: 1 / -1; }
+}
+
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.logo { font-size: 32px; line-height: .9; font-weight: 800; font-style: italic; letter-spacing: -.5px; }
+.logo b { color: var(--orange); font-weight: 800; }
+.hdr { display: flex; gap: 8px; align-items: center; }
+.recbadge { font-family: var(--mono); font-size: 12px; color: var(--led); }
+
+.panel { background: var(--panel); border-radius: 10px; padding: 10px; display: grid; gap: 8px; }
+html[data-skin="spg"] .panel { border: 2px solid var(--edge); }
+.label { font-size: 11px; font-weight: 600; letter-spacing: 2.4px; color: var(--muted); }
+.row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.between { justify-content: space-between; }
+
+.hw { background: var(--key); border-bottom: 3px solid var(--edge); border-radius: 7px; color: var(--cream); font-weight: 700;
+  font-size: 13px; letter-spacing: 1.2px; height: 36px; padding: 0 10px; }
+html[data-skin="spg"] .hw { border: 2px solid var(--edge); box-shadow: 2px 2px 0 var(--edge); }
+.hw:active { transform: translateY(1px); }
+.hw[aria-pressed="true"], .hw[aria-checked="true"] { background: var(--cream); color: var(--ink); }
+.hw.rec[aria-pressed="true"] { background: var(--led); color: var(--white); }
+.hw.grow { flex: 1; }
+.hw.big { height: 46px; font-size: 16px; }
+.hw small { font-weight: 600; opacity: .8; }
+
+#tape { width: 100%; height: 150px; display: block; }
+.srcrow .hw { flex: 1; padding: 0 4px; font-size: 12px; }
+.srcinfo { font-family: var(--mono); font-size: 11px; color: var(--muted); min-height: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.seg { display: flex; gap: 4px; }
+.segb { height: 30px; padding: 0 9px; border-radius: 5px; border: 1px solid var(--line); font-size: 12px; font-weight: 700; letter-spacing: 1.2px; color: var(--muted); }
+.segb[aria-checked="true"] { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+#pad { width: 100%; height: 150px; display: block; border-radius: 8px; border: 1px dashed var(--line); background: var(--lcd-bg); touch-action: none; cursor: crosshair; }
+html[data-skin="spg"] #pad { border: 2px solid var(--edge); }
+
+.knobs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.knobs.k3 { grid-template-columns: repeat(3, 1fr); }
+.knob { display: flex; flex-direction: column; align-items: center; gap: 2px; touch-action: none; cursor: ns-resize; outline: none; }
+.knob .cap { position: relative; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, var(--cap-hi) 0%, var(--cap-mid) 60%, var(--cap-lo) 100%); box-shadow: 0 3px 0 var(--edge), 0 0 0 4px var(--ring); }
+html[data-skin="spg"] .knob .cap { border: 2px solid var(--edge); box-shadow: 2px 2px 0 var(--edge); }
+.knob .rot { position: absolute; inset: 0; }
+.knob .rot i { position: absolute; left: calc(50% - 2px); top: 4px; width: 4px; height: 31%; border-radius: 2px; background: var(--red); }
+html[data-skin="spg"] .knob .rot i { background: var(--white); }
+.knob .lbl { font-size: 12px; line-height: 1.1; font-weight: 600; letter-spacing: 1.2px; margin-top: 4px; white-space: nowrap; }
+.knob .val { font-family: var(--mono); font-size: 11px; line-height: 1.1; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.knob.chaos .cap { box-shadow: 0 3px 0 var(--edge), 0 0 0 4px var(--red); }
+.knob.chaos.blink .cap { box-shadow: 0 3px 0 var(--edge), 0 0 0 4px var(--red), 0 0 0 8px var(--led); }
+.knob.xy .lbl::after { content: " ✣"; color: var(--orange); }
+.knob:focus-visible .cap { outline: 2px solid var(--orange); outline-offset: 6px; }
+
+.pedals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.pedal { position: relative; min-width: 0; height: 62px; border-radius: 8px; background: var(--key); border-bottom: 3px solid var(--edge); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 700; letter-spacing: 1px; touch-action: none; }
+@media (max-width: 400px) { .pedal { font-size: 12px; letter-spacing: .4px; } }
+html[data-skin="spg"] .pedal { border: 2px solid var(--edge); box-shadow: 2px 2px 0 var(--edge); }
+.pedal[aria-current="true"] { outline: 2px solid var(--orange); outline-offset: 2px; }
+.pedal .led { width: 9px; height: 9px; border-radius: 50%; background: var(--led-off); }
+.pedal.on .led { background: var(--led); box-shadow: 0 0 6px var(--led); }
+.pedal.empty { background: none; border: 1px dashed var(--line); color: var(--muted); }
+.pedal.add { background: none; border: 1px dashed var(--line); color: var(--muted); font-size: 22px; }
+.pedhead { min-height: 30px; }
+.pedname { font-size: 15px; font-weight: 700; letter-spacing: 1.6px; }
+
+.spacerow { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: center; }
+.spacebtns { display: grid; gap: 6px; }
+.play[aria-pressed="true"] { background: var(--orange); color: var(--white); }
+
+/* fogli: menu, scelta del pedale */
+.sheet { position: fixed; inset: 0; z-index: 30; background: var(--shade); display: flex; align-items: flex-end; justify-content: center; }
+.sheet-card { width: 100%; max-width: 480px; max-height: 88dvh; overflow-y: auto; background: var(--body); border-radius: 14px 14px 0 0; padding: 14px 16px calc(18px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 14px; }
+html[data-skin="spg"] .sheet-card { border: 2px solid var(--edge); }
+@media (min-width: 900px) { .sheet { align-items: center; } .sheet-card { border-radius: 14px; } }
+.sheet-title { font-size: 18px; letter-spacing: 2px; }
+.mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mnote { margin: 0; font-family: var(--mono); font-size: 11px; line-height: 1.5; color: var(--muted); }
+.list { display: grid; gap: 6px; }
+.list .hw { text-align: left; display: flex; justify-content: space-between; align-items: center; }
+.ver { font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.6; }
+.bpm { font-family: var(--mono); font-size: 18px; min-width: 56px; text-align: center; }
+
+/* accensione e messaggi */
+.power { position: fixed; inset: 0; z-index: 40; background: var(--veil); display: grid; place-items: center; }
+.power button { display: grid; gap: 10px; justify-items: center; font-size: 22px; font-weight: 700; letter-spacing: 3px; color: var(--cream); }
+.power .ring { width: 92px; height: 92px; border-radius: 50%; border: 3px solid var(--orange); display: grid; place-items: center; font-size: 34px; color: var(--orange); }
+.power small { font-size: 12px; letter-spacing: 1.5px; color: var(--muted); font-weight: 600; max-width: 260px; text-align: center; line-height: 1.4; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 35; max-width: min(440px, calc(100% - 24px));
+  background: var(--lcd-bg); color: var(--lcd); border-radius: 8px; padding: 10px 12px; font-family: var(--mono); font-size: 12px; display: flex; gap: 10px; align-items: center; box-shadow: 0 4px 18px var(--shade); }
+.toast .hw { height: 30px; font-size: 12px; flex: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .knob.chaos.blink .cap { box-shadow: 0 3px 0 var(--edge), 0 0 0 4px var(--red); } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header>
+    <span class="logo" aria-label="PonyDrone">PONY<b>DRONE</b></span>
+    <span class="hdr">
+      <span class="recbadge" id="recBadge" hidden></span>
+      <button class="hw" id="menuBtn" aria-label="Menu" aria-haspopup="dialog">☰</button>
+    </span>
+  </header>
+
+  <div class="col">
+    <section class="panel" aria-label="Nastro e sorgente">
+      <canvas id="tape" aria-label="Nastro: rocchetti e materiale nel buffer" role="img"></canvas>
+      <div class="row srcrow" role="group" aria-label="Sorgente">
+        <button class="hw" id="wavBtn">WAV</button>
+        <button class="hw" id="micBtn" aria-pressed="false">MIC</button>
+        <button class="hw rec" id="recBtn" aria-pressed="false">REC</button>
+        <button class="hw rec" id="dubBtn" aria-pressed="false">OVERDUB</button>
+        <button class="hw" id="frzBtn" aria-pressed="true">FREEZE</button>
+      </div>
+      <div class="srcinfo" id="srcInfo" aria-live="polite"></div>
+      <input type="file" id="fileIn" accept="audio/*,.wav,.mp3,.ogg,.flac,.m4a,.aif,.aiff" hidden>
+    </section>
+
+    <section class="panel" aria-label="Motore">
+      <div class="row between">
+        <div class="seg" role="radiogroup" aria-label="Algoritmo" id="algoSeg">
+          <button class="segb" role="radio" data-algo="0">GRANI</button>
+          <button class="segb" role="radio" data-algo="1">GLITCH</button>
+        </div>
+        <div class="seg" role="radiogroup" aria-label="Variante" id="varSeg">
+          <button class="segb" role="radio" data-var="0">A</button>
+          <button class="segb" role="radio" data-var="1">B</button>
+          <button class="segb" role="radio" data-var="2">C</button>
+          <button class="segb" role="radio" data-var="3">D</button>
+        </div>
+      </div>
+      <div class="srcinfo" id="varInfo"></div>
+      <canvas id="pad" aria-label="Pad XY: muove insieme due macro"></canvas>
+      <div class="knobs" id="macroKnobs"></div>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="panel" aria-label="Pedaliera">
+      <span class="label">PEDALIERA</span>
+      <div class="pedals" id="pedals"></div>
+      <div class="row between pedhead">
+        <span class="pedname" id="pedName"></span>
+        <span class="row">
+          <button class="hw" id="bypBtn" aria-pressed="false">BYPASS</button>
+          <button class="hw" id="chgBtn">CAMBIA</button>
+        </span>
+      </div>
+      <div class="knobs k3" id="pedKnobs"></div>
+    </section>
+
+    <section class="panel" aria-label="Spazio e uscita">
+      <span class="label">SPAZIO</span>
+      <div class="spacerow">
+        <div id="kSpazio"></div><div id="kMix"></div><div id="kLivello"></div>
+        <div class="spacebtns">
+          <button class="hw" id="gfrzBtn" aria-pressed="false" title="Congela sorgente e coda del riverbero">❄ FREEZE</button>
+          <button class="hw big play" id="playBtn" aria-pressed="false">▶ PLAY</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="sheet" id="menu" hidden role="dialog" aria-modal="true" aria-labelledby="menuTitle">
+  <div class="sheet-card">
+    <div class="row between">
+      <b class="sheet-title" id="menuTitle">PONYDRONE</b>
+      <span class="row">
+        <a class="hw" href="/novita/#ponydrone" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;text-decoration:none">NOVITÀ</a>
+        <button class="hw" data-close>CHIUDI</button>
+      </span>
+    </div>
+
+    <section class="list" aria-label="Scena">
+      <span class="label">SCENA</span>
+      <div class="mgrid">
+        <button class="hw" id="saveBtn">SALVA</button>
+        <button class="hw" id="saveAudioBtn">SALVA + AUDIO</button>
+        <button class="hw" id="openBtn">APRI</button>
+        <button class="hw" id="newBtn">NUOVA</button>
+      </div>
+      <input type="file" id="sceneIn" accept=".ponydrone,application/json" hidden>
+      <p class="mnote">Il file .ponydrone contiene motore, pedaliera e spazio. Con <b>SALVA + AUDIO</b> dentro c'è anche il nastro (file più pesante).</p>
+    </section>
+
+    <section class="list" aria-label="Esporta WAV">
+      <span class="label">ESPORTA WAV</span>
+      <div class="seg" role="radiogroup" aria-label="Durata" id="durSeg">
+        <button class="segb" role="radio" data-min="1">1 MIN</button>
+        <button class="segb" role="radio" data-min="2">2</button>
+        <button class="segb" role="radio" data-min="5">5</button>
+        <button class="segb" role="radio" data-min="10">10</button>
+      </div>
+      <button class="hw rec" id="expBtn" aria-pressed="false">● REGISTRA L'USCITA</button>
+      <p class="mnote">Registra quello che senti, in tempo reale, fino alla durata scelta o finché premi FERMA. Il WAV finisce nella cartella Download.</p>
+    </section>
+
+    <section class="list" aria-label="Tempo">
+      <span class="label">TEMPO</span>
+      <div class="row">
+        <button class="hw" id="syncBtn" aria-pressed="false">SYNC BPM</button>
+        <button class="hw" data-bpm="-1" aria-label="BPM meno">−</button>
+        <span class="bpm" id="bpmVal">90</span>
+        <button class="hw" data-bpm="1" aria-label="BPM più">+</button>
+      </div>
+      <p class="mnote">Con <b>SYNC</b> la manopola TEMPO va a divisioni di battuta.</p>
+    </section>
+
+    <section class="list" aria-label="Microfono">
+      <span class="label">MICROFONO</span>
+      <button class="hw" id="monBtn" aria-pressed="false">ASCOLTA IL MIC MENTRE REGISTRI</button>
+      <p class="mnote">Spento di default: con le casse il microfono riprende l'uscita e fischia. Accendilo solo in cuffia.</p>
+    </section>
+
+    <p class="ver" id="verLine"></p>
+  </div>
+</div>
+
+<div class="sheet" id="fxSheet" hidden role="dialog" aria-modal="true" aria-labelledby="fxTitle">
+  <div class="sheet-card">
+    <div class="row between"><b class="sheet-title" id="fxTitle">PEDALE</b><button class="hw" data-close>CHIUDI</button></div>
+    <div class="list" id="fxList"></div>
+  </div>
+</div>
+
+<div class="power" id="power">
+  <button id="powerBtn"><span class="ring" aria-hidden="true">⏻</span>ACCENDI<small id="powerNote">Tocca per avviare l'audio</small></button>
+</div>
+<div class="toast" id="toast" hidden role="status"><span id="toastTxt"></span><button class="hw" id="toastBtn" hidden></button></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
