@@ -325,6 +325,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <p>Nell'editor WAVE tocca <span class="k o">CHOPY84 ▸</span>. Il campione viene diviso in fette (slice) che restano <strong>dentro la stessa traccia</strong>: un break, una frase, un giro di accordi diventano un kit da suonare.</p>
         <ul>
           <li><span class="k">TAGLIA</span>: <span class="k">4</span> <span class="k">8</span> <span class="k">16</span> fette uguali, oppure <span class="k">COLPI</span> per tagliare sugli attacchi (cassa, rullante, note). <span class="k">NESSUNA</span> toglie i tagli e torna a START/END.</li>
+          <li><strong>Le fette sono subito nella traccia</strong>: non serve esportare niente per suonarle. <span class="k o">▶ SUONA NEL ROLL</span> chiude CHOPY84 e ti porta ai pad, una fetta per pad.</li>
           <li><strong>Tocca</strong> una fetta per sentirla. <strong>Trascina</strong> un taglio per spostarlo. <strong>Tieni premuto</strong> per aggiungere un taglio, o per toglierlo se sei sopra un taglio. Massimo 16 fette.</li>
           <li><span class="k">ZOOM +</span> <span class="k">ZOOM −</span> e <span class="k">AGG. ZERO</span> funzionano come nell'editor WAVE.</li>
           <li>Con le fette attive le prime due manopole diventano <span class="k">SLICE</span> (quale fetta suona, es. S3/8) e <span class="k">LEN</span> (quanta parte della fetta, in %). Metti <span class="k">SLICE</span> in <a href="#plock">P-LOCK</a> step per step per ricomporre il break.</li>
@@ -359,6 +360,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
         <p>In the WAVE editor tap <span class="k o">CHOPY84 ▸</span>. The sample is cut into slices that stay <strong>inside the same track</strong>: a break, a phrase or a chord loop becomes a kit to play.</p>
         <ul>
           <li><span class="k">TAGLIA</span> (cut): <span class="k">4</span> <span class="k">8</span> <span class="k">16</span> equal slices, or <span class="k">COLPI</span> (hits) to cut on the attacks (kick, snare, notes). <span class="k">NESSUNA</span> (none) removes the cuts and goes back to START/END.</li>
+          <li><strong>Slices are in the track right away</strong>: you don't need to export anything to play them. <span class="k o">▶ SUONA NEL ROLL</span> (play in ROLL) closes CHOPY84 and takes you to the pads, one slice per pad.</li>
           <li><strong>Tap</strong> a slice to hear it. <strong>Drag</strong> a cut to move it. <strong>Hold</strong> to add a cut, or to remove it when you're on one. Up to 16 slices.</li>
           <li><span class="k">ZOOM +</span> <span class="k">ZOOM −</span> and <span class="k">AGG. ZERO</span> work as in the WAVE editor.</li>
           <li>With slices on, the first two knobs become <span class="k">SLICE</span> (which slice plays, e.g. S3/8) and <span class="k">LEN</span> (how much of the slice, in %). P-lock <span class="k">SLICE</span> step by step to rebuild the break.</li>
@@ -442,8 +444,9 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li>Gira le manopole. Quelle bloccate hanno l'<strong>anello arancione</strong> e il valore in arancione.</li>
           <li>Tocca un altro step per bloccarne altri, oppure lo stesso step per uscire.</li>
         </ol>
-        <p><span class="k">TOGLI LOCK</span> cancella tutti i lock dello step selezionato, comprese le note e l'intensità registrate con ROLL. Si bloccano le prime 6 manopole; DELAY e REVERB valgono per tutta la traccia.</p>
-        <p>In P-LOCK, con uno step selezionato, la manopola DELAY diventa <strong>VEL</strong>: la velocity di quello step, da 1 a 127 (si gira anche dalla Move o con il MIDI LEARN).</p>
+        <p><span class="k">TOGLI LOCK</span> cancella tutti i lock dello step selezionato, comprese le note e l'intensità registrate con ROLL. Si bloccano tutte e 8 le manopole.</p>
+        <p><strong>DELAY e REVERB su un solo colpo</strong> (dub throw): blocca DELAY o REVERB su uno step e la mandata si apre solo per quel colpo. Al colpo successivo della traccia torna al valore della traccia, ma le ripetute e la coda già partite continuano e sfumano da sole. Esempio: DELAY a 0 sulla traccia del rullante, DELAY alto solo sull'ultimo rullante del giro.</p>
+        <p><strong>Velocity</strong>: anche in P-LOCK trascina su o giù su uno step, come in STEP. Lo step trascinato diventa quello selezionato.</p>
       </div>
       <div class="en">
         <p><strong>Parameter locks</strong> give a single step values that differ from the track's: a shorter kick, a more open hi-hat, a different note.</p>
@@ -453,8 +456,9 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li>Turn the knobs. Locked knobs show an <strong>orange ring</strong> and an orange value.</li>
           <li>Tap another step to lock more, or the same step to leave.</li>
         </ol>
-        <p><span class="k">TOGLI LOCK</span> (remove lock) clears every lock on the selected step, including notes and intensity recorded with ROLL. The first 6 knobs can be locked; DELAY and REVERB apply to the whole track.</p>
-        <p>In P-LOCK, with a step selected, the DELAY knob becomes <strong>VEL</strong>: that step's velocity, from 1 to 127 (you can also turn it from the Move or with MIDI LEARN).</p>
+        <p><span class="k">TOGLI LOCK</span> (remove lock) clears every lock on the selected step, including notes and intensity recorded with ROLL. All 8 knobs can be locked.</p>
+        <p><strong>DELAY and REVERB on a single hit</strong> (dub throw): lock DELAY or REVERB on a step and the send opens for that hit only. On the track's next hit it goes back to the track value, but the echoes and tail already sent keep going and fade on their own. Example: DELAY at 0 on the snare track, DELAY high only on the last snare of the loop.</p>
+        <p><strong>Velocity</strong>: in P-LOCK too, drag up or down on a step, as in STEP. The dragged step becomes the selected one.</p>
       </div>
     </section>
 

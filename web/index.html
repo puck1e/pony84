@@ -284,10 +284,19 @@ html[data-skin="spg"] .follow[aria-pressed="true"] { background: var(--dark); co
 .learnbar.recbar .ghost { flex: none; }
 .learnbar.recbar .ghost { border-color: var(--white); color: var(--white); }
 .chop-card { max-width: 900px; }
-.chopbox { height: clamp(170px, 32dvh, 300px); }
+/* CHOPY84 a tutto schermo: la forma d'onda prende tutto lo spazio libero */
+#chopEd { padding: 0; align-items: stretch; }
+#chopEd .chop-card { max-width: none; max-height: none; height: 100%; border: none; border-radius: 0; gap: 12px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+#chopEd .chop-card > :not(.chopbox) { width: 100%; max-width: 1100px; align-self: center; }
+.chopbox { flex: 1 1 auto; min-height: 160px; height: auto; }
+#chopEd .mnote { margin: 0; }
+@media (max-height: 500px) { #chopEd .mnote, #chopEd .chop-card > .label { display: none; } #chopEd .chop-row .mbtn { height: 36px; } #chopEd .chop-card { gap: 8px; } .chopbox { min-height: 120px; } }
 .chop-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
 .chop-row .mbtn { height: 42px; font-size: 12px; letter-spacing: .4px; padding: 0 2px; white-space: nowrap; overflow: hidden; }
 .chop-row .chop-exp { grid-column: span 2; background: var(--orange); color: var(--ink); }
+.chop-row .chop-play { background: var(--yellow); color: var(--ink); }
+.chop-row .mbtn:disabled { opacity: .35; cursor: default; }
 .wave-btns .chopgo { background: var(--yellow); color: var(--ink); }
 .rpad.off { opacity: .25; pointer-events: none; }
 .mgrid.skins { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -424,7 +433,7 @@ html[data-skin="notte"] .fxsel { border: 0; border-radius: 8px; }
 html[data-skin="notte"] .sheet-card { border: 1px solid var(--line); }
 html[data-skin="notte"] .wavebox { border: 0; background: #111114; }
 html[data-skin="notte"] .power .go { background: var(--acc); border-bottom: 0; }
-html[data-skin="notte"] .chop-row .chop-exp, html[data-skin="notte"] .wave-btns .chopgo, html[data-skin="notte"] .wave-btns .wave-play { background: var(--acc); color: var(--acc-ink); }
+html[data-skin="notte"] .chop-row .chop-play, html[data-skin="notte"] .chop-row .chop-exp, html[data-skin="notte"] .wave-btns .chopgo, html[data-skin="notte"] .wave-btns .wave-play { background: var(--acc); color: var(--acc-ink); }
 html[data-skin="notte"] .mbtn.install { background: var(--acc); color: var(--acc-ink); }
 
 /* ===== SKIN SAD PONY GIRL: giallo "Guerrilla", maschere rosa, display VHS (weirdcore / nostalgiacore) ===== */
@@ -854,6 +863,7 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
     </div>
     <div class="wavebox chopbox" id="chopBox"><canvas id="chopCanvas" tabindex="0" role="img" aria-label="Forma d'onda con le slice"></canvas></div>
     <p class="mmsg" id="chopMsg" aria-live="polite"></p>
+    <div class="chop-row"><button class="hw mbtn chop-play" data-act="chopRoll" id="chopRoll" disabled>▶ SUONA NEL ROLL</button></div>
     <span class="label">TAGLIA</span>
     <div class="chop-row">
       <button class="hw mbtn" data-act="chopGrid" data-n="4">4</button>
@@ -904,7 +914,7 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
-const VERSION = '0.13.0';
+const VERSION = '0.14.0';
 const audioMode = () => { try { return localStorage.getItem('pony84-audio') === 'stable' ? 'stable' : 'fast'; } catch (e) { return 'fast'; } };   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
@@ -1333,10 +1343,21 @@ function applyMix() {
   });
 }
 
+// DELAY e REVERB in P-LOCK ("dub throw"): la mandata della traccia si apre per quel colpo e torna al valore
+// della traccia al colpo successivo senza lock; le ripetute già entrate nel delay continuano da sole
+function sendLocks(ti, step, K, t) {
+  const N = A.tr[ti]; if (!N) return;
+  const locked = !!step && (step.locks[6] != null || step.locks[7] != null);
+  if (!locked && !N.sendLocked) return;            // niente lock: la mandata resta quella della manopola
+  N.sd.gain.setTargetAtTime(K[6] / 127, t, 0.003);
+  N.srv.gain.setTargetAtTime(K[7] / 127, t, 0.003);
+  N.sendLocked = locked;
+}
 // step.tp = trasposizione in semitoni (dai pad KEYS), step.v = intensità 0..1
 function trigger(ti, step, t) {
   const tr = P.tracks[ti];
   const K = tr.params.map((v, i) => (step && step.locks[i] != null ? step.locks[i] : v));
+  sendLocks(ti, step, K, t);
   const mul = Math.pow(2, ((step && step.tp) || 0) / 12);
   const vel = step && step.v != null ? step.v : 1;
   if (tr.machine === 'SAMPLE') playSample(ti, K, t, mul, vel);
@@ -1932,6 +1953,11 @@ function stop() {
   keepAwake(false);
   playing = false; clearTimeout(timer); uiQ.length = 0; count = 0; pos = 0; loops = 0; UI.head = -1;
   if (UI.pendingPat !== null) { P.cur = UI.pendingPat; UI.pendingPat = null; }
+  if (ctx) A.tr.forEach((N, i) => {   // dopo lo stop le mandate tornano ai valori della traccia (anche dopo un dub throw)
+    if (!N.sendLocked) return;
+    const t = ctx.currentTime + 0.25, tr = P.tracks[i]; N.sendLocked = false;
+    N.sd.gain.setTargetAtTime(tr.params[6] / 127, t, 0.05); N.srv.gain.setTargetAtTime(tr.params[7] / 127, t, 0.05);
+  });
   restartRollLoop();
   renderAll();
 }
@@ -2071,16 +2097,8 @@ function resolveKnob(id) {
     const tr = P.tracks[UI.track];
     const sn = sliceCount(tr);
     const labels = tr.machine === 'SAMPLE' ? (sn ? SLICE_LABELS : SAMPLE_LABELS) : tr.machine === 'SYNTH' ? MODEL_LABELS[tr.model] : SYNTH_LABELS;
-    const st = UI.mode === 'PLOCK' && UI.selStep !== null && i < 6 ? P.patterns[P.cur][UI.track][UI.selStep] : null;
-    if (i === 6 && UI.mode === 'PLOCK' && UI.selStep !== null) {   // in P-LOCK la manopola DELAY diventa la velocity dello step
-      const vs = P.patterns[P.cur][UI.track][UI.selStep];
-      return {
-        label: 'VEL', locked: vs.v != null,
-        get: () => (vs.v != null ? Math.round(vs.v * 127) : 127),
-        set: (v) => { vs.on = true; if (v >= 127) delete vs.v; else vs.v = Math.max(1, Math.round(v)) / 127; },
-        fmt: (v) => String(Math.max(1, Math.round(v)))
-      };
-    }
+    // in P-LOCK tutte e 8 le manopole si bloccano sullo step, anche DELAY e REVERB; la velocity si trascina sullo step
+    const st = UI.mode === 'PLOCK' && UI.selStep !== null ? P.patterns[P.cur][UI.track][UI.selStep] : null;
     return {
       label: labels[i], locked: st && st.locks[i] != null,
       get: () => (st && st.locks[i] != null ? st.locks[i] : tr.params[i]),
@@ -2263,7 +2281,7 @@ function drawRoll() {
   document.querySelectorAll('[data-act="rmode"]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.m === R.mode)));
   $('recBtn').setAttribute('aria-pressed', String(UI.rec));
   $('rtracks').hidden = kit || UI.wide;   // nella vista larga la traccia si sceglie dal sequencer
-  $('keysCtl').hidden = kit;
+  $('keysCtl').hidden = kit || !!sliceCount(P.tracks[UI.track]);   // con le slice scala, tonica e ottava non servono
   $('scaleName').textContent = SCALES[R.scale][0];
   $('rootName').textContent = NOTE[R.root];
   $('octVal').textContent = (R.oct > 0 ? '+' : '') + R.oct;
@@ -2359,7 +2377,7 @@ function drawSteps() {
   if (isPat) { act.hidden = false; act.textContent = 'SVUOTA'; }
   else if (UI.mode === 'PLOCK') {
     if (UI.selStep === null) hint.textContent = 'SCEGLI UNO STEP';
-    else { hint.textContent = 'GIRA LE MANOPOLE'; act.hidden = false; act.textContent = 'TOGLI LOCK'; }
+    else { hint.textContent = 'VEL: TRASCINA LO STEP'; act.hidden = false; act.textContent = 'TOGLI LOCK'; }
   } else if (UI.mode === 'COND') hint.textContent = '% · BATTUTE: TOCCA LO STEP';
 }
 function drawPages() {
@@ -2526,9 +2544,12 @@ function chopSet(list, msg) {
   if (!before && tr.slices.length) { tr.params[1] = sliceVal(0, tr.slices.length); tr.params[2] = 127; }   // entrando in modalità slice
   if (before && !tr.slices.length) { tr.params[1] = 0; tr.params[2] = 127; }                               // uscendo: tutto il file
   CH.sel = Math.min(CH.sel, tr.slices.length - 1);
-  $('chopMsg').textContent = msg || '';
+  $('chopMsg').textContent = tr.slices.length ? chopReady(msg) : (msg || '');
   renderAll(); drawChop(); save();
 }
+// dopo un taglio: ricorda che le fette sono già nella traccia, niente da esportare per usarle
+function chopReady(head) { return (head || sliceCount(chopTrack()) + ' SLICE') + ', GIÀ NELLA TRACCIA · SUONALE NEL ROLL O CON LA MANOPOLA SLICE'; }
+function chopRoll() { closeChop(); P.roll.mode = 'KEYS'; UI.view = 'roll'; renderAll(); }
 function chopGrid(n) { chopSet(Array.from({ length: n }, (_, i) => i / n), n + ' SLICE UGUALI'); }
 // transienti: dove l'energia sale di colpo (flusso spettrale semplificato), i 16 più forti, almeno 60 ms uno dall'altro
 function chopTransients() {
@@ -2555,6 +2576,7 @@ function chopView() {
 }
 function drawChop() {
   if ($('chopEd').hidden) return;
+  $('chopRoll').disabled = !sliceCount(chopTrack());
   const cv = $('chopCanvas'), box = $('chopBox'), dpr = window.devicePixelRatio || 1, W = box.clientWidth, H = box.clientHeight;
   if (!W || !H) return;
   if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
@@ -2606,7 +2628,7 @@ function openChop() {
   $('chopEd').hidden = false;
   $('chopTitle').textContent = 'CHOPY84 · TRACCIA ' + (UI.track + 1);
   $('chopName').textContent = chopTrack().sample;
-  $('chopMsg').textContent = sliceCount(chopTrack()) ? '' : 'SCEGLI COME TAGLIARE: 4, 8, 16 PARTI O SUI COLPI';
+  $('chopMsg').textContent = sliceCount(chopTrack()) ? chopReady() : 'SCEGLI COME TAGLIARE: 4, 8, 16 PARTI O SUI COLPI';
   requestAnimationFrame(drawChop);
 }
 function closeChop() { $('chopEd').hidden = true; CH.playT0 = -1; }
@@ -3403,6 +3425,7 @@ function onAct(b) {
   if (act === 'wave') { if (sliceCount(P.tracks[UI.track])) openChop(); else openWave(); return; }
   if (act === 'chop') { closeWave(); openChop(); return; }
   if (act === 'chopClose') { closeChop(); return; }
+  if (act === 'chopRoll') { chopRoll(); return; }
   if (act === 'chopGrid') { chopGrid(Number(b.dataset.n)); return; }
   if (act === 'chopTrans') { chopTransients(); return; }
   if (act === 'chopClear') { chopSet([]); return; }
@@ -3665,10 +3688,10 @@ document.addEventListener('pointermove', (e) => {
     if (sp && sp.dataset.pad !== UI.scatter) scatterOn(sp.dataset.pad);
   }
 });
-// in STEP: trascina su o giù su uno step per cambiarne la velocity (un tocco semplice lo accende/spegne come sempre)
+// in STEP e P-LOCK: trascina su o giù su uno step per cambiarne la velocity (un tocco semplice lo accende/spegne come sempre)
 document.addEventListener('pointerdown', (e) => {
   velSuppress = false;   // un gesto nuovo: il tocco successivo vale di nuovo
-  const k = UI.mode === 'TRIG' && e.target.closest && e.target.closest('[data-act="step"]');
+  const k = (UI.mode === 'TRIG' || UI.mode === 'PLOCK') && e.target.closest && e.target.closest('[data-act="step"]');
   if (!k) return;
   const s = Math.min(UI.page, plenOf(P.cur) - 1) * 16 + Number(k.dataset.s), st = P.patterns[P.cur][UI.track][s];
   velDrag = { s, y0: e.clientY, v0: st.on ? (st.v != null ? st.v : 1) : 1, moved: false, id: e.pointerId };
@@ -3688,6 +3711,7 @@ const velEnd = (e) => {
   const d = velDrag; velDrag = null;
   if (d.moved) {
     velSuppress = true;
+    if (UI.mode === 'PLOCK') { UI.selStep = d.s; renderAll(); }   // in P-LOCK lo step trascinato diventa quello scelto
     const st = P.patterns[P.cur][UI.track][d.s];
     if (ctx && !playing) trigger(UI.track, st, ctx.currentTime + 0.01);   // senti subito il colpo
     drawSteps(); save();

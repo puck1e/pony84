@@ -2,6 +2,16 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## v0.14.0 — 2026-10-27 · Dub throw
+
+- **Nuovo**: in P-LOCK si bloccano anche **DELAY e REVERB**: la mandata si apre solo per quel colpo (dub throw) e torna al valore della traccia al colpo successivo; le ripetute già partite continuano.
+- **Cambia**: la manopola DELAY in P-LOCK non è più VEL. La velocity si cambia trascinando su o giù sullo step, ora anche in P-LOCK.
+
+## v0.13.1 — 2026-10-27 · CHOPY84 a tutto schermo
+
+- **Meglio**: dopo il taglio CHOPY84 dice che le fette sono già nella traccia (non serve esportarle per usarle); nuovo tasto **▶ SUONA NEL ROLL** che chiude CHOPY84 e apre i pad in KEYS, una fetta per pad. Con le fette nel ROLL spariscono SCALA, TONICA e OTTAVA, che lì non servono.
+- **Meglio**: CHOPY84 si apre a tutto schermo: la forma d'onda prende tutto lo spazio libero (sul PC tutta la larghezza), più precisione nel piazzare i tagli. Con il telefono in orizzontale il testo d'aiuto si nasconde per lasciare posto all'onda.
+
 ## v0.13.0 — 2026-10-27 · NOTTE e CHOPY84
 
 - **Nuovo**: **CHOPY84**, dall'editor WAVE: taglia il campione in 4/8/16 fette o sui colpi (COLPI); tocca per ascoltare, trascina per spostare un taglio, tieni premuto per aggiungerlo o toglierlo; massimo 16 fette, salvate nella traccia.

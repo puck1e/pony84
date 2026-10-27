@@ -1,6 +1,6 @@
 # PONY84
 
-Versione **0.13.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
+Versione **0.14.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
 
 Groovebox ispirata a Elektron Model:Cycles e alla Roland SP-404, con i colori della 808.
 Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer a 6 canali.
@@ -28,7 +28,7 @@ Online: **https://app.sadponygirl.com** (anche https://pony84.raptuzbass.workers
 - **WAVE** (motore SAMPLE): editor della forma d'onda con maniglie START/END; END prima di START = suono al contrario. Zoom a due dita fino a 64×, ascolto automatico quando lasci la maniglia, aggancio allo zero, PITCH/DECAY/FILTER/GAIN nell'editor, interruttore TRACCIA/STEP per i p-lock. Su Android, CARICA WAV permette anche di registrare un audio al momento.
 - **CHOPY84** (dall'editor WAVE): fino a 16 fette nella stessa traccia, a griglia (4/8/16) o sui colpi; tocca per ascoltare, trascina per spostare, tieni premuto per aggiungere/togliere un taglio. Le manopole START/END diventano SLICE/LEN (anche in P-LOCK); in ROLL → KEYS ogni pad è una fetta; ESPORTA SLICE scarica uno .zip con un WAV per fetta.
 - **STEP**: tocca gli step per accenderli. **Pagine 1–4**: pattern da 16 a 64 step (tocca una pagina tratteggiata per allungare, copiando la precedente; tieni premuto per accorciare); SEGUI fa seguire alla vista la pagina che suona.
-- **P-LOCK**: scegli uno step e gira le manopole per dargli valori propri; la manopola DELAY diventa VEL (velocity dello step).
+- **P-LOCK**: scegli uno step e gira le manopole per dargli valori propri; tutte e 8 si bloccano, anche DELAY e REVERB (la mandata si apre solo per quel colpo: dub throw). La velocity si trascina sullo step, come in STEP.
 - **Velocity**: in STEP trascina su o giù su uno step; la barretta nello step mostra i colpi piano, che suonano anche più scuri.
 - **PROB**: tocca uno step acceso per cambiare quando suona: sempre → 75% → 50% → 25% → 1:2 → 2:2 → 1:4 → 4:4 (1:2 = prima battuta ogni due, 4:4 = quarta battuta ogni quattro).
 - **PATTERN**: 128 pattern in 8 banchi (A–H × 16). Scegli il banco nella fila A…H e il pattern con i 16 tasti; durante la riproduzione il cambio avviene a fine battuta. **COPIA / INCOLLA** copia un pattern intero (in PATTERN) o una sola traccia (in STEP), con conferma prima di sovrascrivere.
