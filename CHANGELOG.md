@@ -2,6 +2,14 @@
 
 Registro dei rilasci, dal più recente. Versione online: https://app.sadponygirl.com/novita/
 
+## v0.13.0 — 2026-10-27 · NOTTE e CHOPY84
+
+- **Nuovo**: **CHOPY84**, dall'editor WAVE: taglia il campione in 4/8/16 fette o sui colpi (COLPI); tocca per ascoltare, trascina per spostare un taglio, tieni premuto per aggiungerlo o toglierlo; massimo 16 fette, salvate nella traccia.
+- **Nuovo**: con le fette attive le manopole START/END diventano SLICE/LEN (anche in P-LOCK); in ROLL → KEYS ogni pad è una fetta, REC la registra negli step; da tastiera MIDI C4 = fetta 1.
+- **Nuovo**: ESPORTA SLICE (.ZIP), un WAV 16 bit per fetta, con NORMALIZZA opzionale.
+- **Nuovo**: skin **NOTTE**, ora predefinita: grigio scuro piatto, accento con il colore della traccia selezionata (rosso, arancio, giallo, crema, blu, verde). 808 e SAD PONY GIRL restano nel menu SKIN.
+- Nota: i numeri 0.11–0.12 erano stati usati dalle prove di PonyDrone, ritirate; per questo si passa da 0.10.1 a 0.13.0.
+
 ## v0.10.1 — 2026-10-20 · Mute dal vivo con il controller
 
 - **Nuovo**: mute tenuto dal controller MIDI: canale 10, note 44–49 (banco B dei pad MPK Mini) → tracce 1–6, anche più insieme.

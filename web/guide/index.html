@@ -321,6 +321,17 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><span class="k">TRACCIA</span> / <span class="k">STEP</span>: scegli se le modifiche valgono per tutta la traccia o solo per lo step selezionato in <a href="#plock">P-LOCK</a>. Un campione, tante fette diverse, anche al contrario su singoli step.</li>
           <li>Su PC: frecce per spostare la maniglia (Maiusc = passi più grandi), S ed E per sceglierla, spazio per ascoltare.</li>
         </ul>
+        <h3>CHOPY84: un campione, 16 fette</h3>
+        <p>Nell'editor WAVE tocca <span class="k o">CHOPY84 ▸</span>. Il campione viene diviso in fette (slice) che restano <strong>dentro la stessa traccia</strong>: un break, una frase, un giro di accordi diventano un kit da suonare.</p>
+        <ul>
+          <li><span class="k">TAGLIA</span>: <span class="k">4</span> <span class="k">8</span> <span class="k">16</span> fette uguali, oppure <span class="k">COLPI</span> per tagliare sugli attacchi (cassa, rullante, note). <span class="k">NESSUNA</span> toglie i tagli e torna a START/END.</li>
+          <li><strong>Tocca</strong> una fetta per sentirla. <strong>Trascina</strong> un taglio per spostarlo. <strong>Tieni premuto</strong> per aggiungere un taglio, o per toglierlo se sei sopra un taglio. Massimo 16 fette.</li>
+          <li><span class="k">ZOOM +</span> <span class="k">ZOOM −</span> e <span class="k">AGG. ZERO</span> funzionano come nell'editor WAVE.</li>
+          <li>Con le fette attive le prime due manopole diventano <span class="k">SLICE</span> (quale fetta suona, es. S3/8) e <span class="k">LEN</span> (quanta parte della fetta, in %). Metti <span class="k">SLICE</span> in <a href="#plock">P-LOCK</a> step per step per ricomporre il break.</li>
+          <li>In <a href="#roll">ROLL</a> con <span class="k">KEYS</span> ogni pad è una fetta (la prima in basso a sinistra, come su MPC); con <span class="k">REC</span> acceso i colpi finiscono negli step con la fetta giusta. Da tastiera MIDI il Do centrale (C4) suona la fetta 1, le note sopra le successive.</li>
+          <li><span class="k">ESPORTA SLICE (.ZIP)</span> scarica ogni fetta come WAV separato (<span class="k">NORMALIZZA</span> per portarle allo stesso volume): pronte per un Model:Samples o un altro campionatore.</li>
+          <li>Caricando un nuovo WAV le fette si azzerano. Se la traccia ha già le fette, il tasto <span class="k">WAVE</span> apre direttamente CHOPY84.</li>
+        </ul>
       </div>
       <div class="en">
         <ol>
@@ -344,6 +355,17 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><span class="k">TRACCIA</span> / <span class="k">STEP</span>: choose whether changes apply to the whole track or only to the step selected in <a href="#plock">P-LOCK</a>. One sample, many slices, even reversed on single steps.</li>
           <li>On a computer: arrows move the handle (Shift = bigger steps), S and E pick it, space to listen.</li>
         </ul>
+        <h3>CHOPY84: one sample, 16 slices</h3>
+        <p>In the WAVE editor tap <span class="k o">CHOPY84 ▸</span>. The sample is cut into slices that stay <strong>inside the same track</strong>: a break, a phrase or a chord loop becomes a kit to play.</p>
+        <ul>
+          <li><span class="k">TAGLIA</span> (cut): <span class="k">4</span> <span class="k">8</span> <span class="k">16</span> equal slices, or <span class="k">COLPI</span> (hits) to cut on the attacks (kick, snare, notes). <span class="k">NESSUNA</span> (none) removes the cuts and goes back to START/END.</li>
+          <li><strong>Tap</strong> a slice to hear it. <strong>Drag</strong> a cut to move it. <strong>Hold</strong> to add a cut, or to remove it when you're on one. Up to 16 slices.</li>
+          <li><span class="k">ZOOM +</span> <span class="k">ZOOM −</span> and <span class="k">AGG. ZERO</span> work as in the WAVE editor.</li>
+          <li>With slices on, the first two knobs become <span class="k">SLICE</span> (which slice plays, e.g. S3/8) and <span class="k">LEN</span> (how much of the slice, in %). P-lock <span class="k">SLICE</span> step by step to rebuild the break.</li>
+          <li>In <a href="#roll">ROLL</a> with <span class="k">KEYS</span> every pad is a slice (the first one bottom-left, MPC style); with <span class="k">REC</span> on, hits land on the steps with the right slice. From a MIDI keyboard, middle C (C4) plays slice 1 and the notes above play the next ones.</li>
+          <li><span class="k">ESPORTA SLICE (.ZIP)</span> (export slices) downloads every slice as its own WAV (<span class="k">NORMALIZZA</span> brings them to the same level): ready for a Model:Samples or another sampler.</li>
+          <li>Loading a new WAV clears the slices. If the track already has slices, the <span class="k">WAVE</span> button opens CHOPY84 directly.</li>
+        </ul>
       </div>
       <div class="tbl"><table>
         <thead><tr><th><span class="it">MANOPOLA</span><span class="en">KNOB</span></th><th>SAMPLE</th></tr></thead>
@@ -355,6 +377,8 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <tr><td>FILTER</td><td><span class="it">passa-basso, da 200 Hz a 20 kHz</span><span class="en">low-pass, 200 Hz to 20 kHz</span></td></tr>
           <tr><td>GAIN</td><td><span class="it">volume del campione</span><span class="en">sample volume</span></td></tr>
           <tr><td>DELAY · REVERB</td><td><span class="it">mandate agli effetti globali</span><span class="en">sends to the global effects</span></td></tr>
+          <tr><td>SLICE <span class="it">(con CHOPY84)</span><span class="en">(with CHOPY84)</span></td><td><span class="it">al posto di START: quale fetta suona</span><span class="en">replaces START: which slice plays</span></td></tr>
+          <tr><td>LEN <span class="it">(con CHOPY84)</span><span class="en">(with CHOPY84)</span></td><td><span class="it">al posto di END: quanta parte della fetta suona</span><span class="en">replaces END: how much of the slice plays</span></td></tr>
         </tbody>
       </table></div>
     </section>
@@ -653,7 +677,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><span class="k">ESPORTA FILE</span>: scarica un file <code>.pony84</code> (cartella Download) con tutto il progetto, WAV compresi.</li>
           <li><span class="k">IMPORTA FILE</span>: apre un file <code>.pony84</code>, anche creato su un altro dispositivo.</li>
           <li><span class="k">NUOVO VUOTO</span>: tiene suoni ed effetti del demo, con tutti i pattern vuoti. <span class="k">NUOVO DA DEMO</span>: ricarica il demo. Entrambi chiedono un secondo tocco per conferma.</li>
-          <li><span class="k">SKIN</span>: <span class="k">808</span> (i colori della Roland) oppure <span class="k">SAD PONY GIRL</span> (giallo, maschere rosa e display VHS). Cambia solo l’aspetto; la scelta resta salvata.</li>
+          <li><span class="k">SKIN</span>: <span class="k">NOTTE</span> (predefinita: grigio scuro, l'accento prende il colore della traccia selezionata), <span class="k">808</span> (i colori della Roland) oppure <span class="k">SAD PONY GIRL</span> (giallo, maschere rosa e display VHS). Cambia solo l’aspetto; la scelta resta salvata.</li>
         </ul>
         <div class="note warn"><span class="lbl">ATTENZIONE</span><p>Il salvataggio automatico vale per un browser su un dispositivo. In una scheda in incognito o cancellando i dati del sito il progetto si perde: esporta spesso i progetti a cui tieni.</p></div>
       </div>
@@ -666,7 +690,7 @@ footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line);
           <li><span class="k">ESPORTA FILE</span> (export): downloads a <code>.pony84</code> file (Downloads folder) with the whole project, WAVs included.</li>
           <li><span class="k">IMPORTA FILE</span> (import): opens a <code>.pony84</code> file, even one made on another device.</li>
           <li><span class="k">NUOVO VUOTO</span> (new empty): keeps the demo sounds and effects with all patterns empty. <span class="k">NUOVO DA DEMO</span> (new from demo): reloads the demo. Both ask for a second tap to confirm.</li>
-          <li><span class="k">SKIN</span>: <span class="k">808</span> (the Roland colours) or <span class="k">SAD PONY GIRL</span> (yellow, pink masks and a VHS display). It only changes the look; your choice is remembered.</li>
+          <li><span class="k">SKIN</span>: <span class="k">NOTTE</span> (default: dark grey, the accent takes the colour of the selected track), <span class="k">808</span> (the Roland colours) or <span class="k">SAD PONY GIRL</span> (yellow, pink masks and a VHS display). It only changes the look; your choice is remembered.</li>
         </ul>
         <div class="note warn"><span class="lbl">WATCH OUT</span><p>Autosave works for one browser on one device. In an incognito tab, or if you clear the site's data, the project is lost: export the projects you care about often.</p></div>
       </div>

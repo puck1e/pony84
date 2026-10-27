@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#23211e">
+<meta name="theme-color" content="#18181b">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
 <title>PONY84</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<script>try { if (localStorage.getItem('pony84-skin') === 'spg') document.documentElement.dataset.skin = 'spg'; } catch (e) {}</script>
+<script>{ let k = 'notte'; try { k = localStorage.getItem('pony84-skin') || 'notte'; } catch (e) {} if (k !== '808') document.documentElement.dataset.skin = k === 'spg' ? 'spg' : 'notte'; }</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Narrow:wght@500;600;700&family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;1,800&family=DM+Mono:wght@400;500&family=VT323&display=swap">
 <style>
@@ -256,7 +256,7 @@ html[data-skin="spg"] .follow[aria-pressed="true"] { background: var(--dark); co
 .wave-knobs { margin-top: 0; }
 .segb:disabled { opacity: .35; cursor: default; }
 .wave-lock { color: var(--orange); }
-@media (min-width: 700px) { .wave-btns { grid-template-columns: repeat(6, minmax(0, 1fr)); } .wave-btns .wave-play, .wave-btns .wave-wide { grid-column: auto; } .wave-btns .mbtn { font-size: 12px; letter-spacing: .4px; padding: 0 4px; white-space: nowrap; } }
+@media (min-width: 700px) { .wave-btns { grid-template-columns: repeat(7, minmax(0, 1fr)); } .wave-btns .wave-play, .wave-btns .wave-wide { grid-column: auto; } .wave-btns .mbtn { font-size: 12px; letter-spacing: .4px; padding: 0 4px; white-space: nowrap; } }
 
 /* pannello PROGETTO & MIDI */
 .sheet { position: fixed; inset: 0; z-index: 30; background: var(--veil); display: flex; align-items: flex-end; justify-content: center;
@@ -283,6 +283,14 @@ html[data-skin="spg"] .follow[aria-pressed="true"] { background: var(--dark); co
 .learnbar.recbar #recTxt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-family: var(--mono); font-weight: 500; letter-spacing: .5px; }
 .learnbar.recbar .ghost { flex: none; }
 .learnbar.recbar .ghost { border-color: var(--white); color: var(--white); }
+.chop-card { max-width: 900px; }
+.chopbox { height: clamp(170px, 32dvh, 300px); }
+.chop-row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
+.chop-row .mbtn { height: 42px; font-size: 12px; letter-spacing: .4px; padding: 0 2px; white-space: nowrap; overflow: hidden; }
+.chop-row .chop-exp { grid-column: span 2; background: var(--orange); color: var(--ink); }
+.wave-btns .chopgo { background: var(--yellow); color: var(--ink); }
+.rpad.off { opacity: .25; pointer-events: none; }
+.mgrid.skins { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .mbtn.install { grid-column: 1 / -1; background: var(--orange); color: var(--ink); }
 .mlist { padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
 .mmsg { margin: 0; min-height: 16px; font-family: var(--mono); font-size: 12px; letter-spacing: .5px; color: var(--lcd); }
@@ -346,6 +354,78 @@ html[data-skin="spg"] .follow[aria-pressed="true"] { background: var(--dark); co
 .guide-link { color: var(--lcd); font-size: 15px; letter-spacing: .5px; text-underline-offset: 3px; }
 a.ghost { display: inline-flex; align-items: center; text-decoration: none; }
 @media (prefers-reduced-motion: reduce) { .key.pending { animation: none; } }
+
+/* ===== SKIN NOTTE (predefinita): grafite, piatta, niente bordi "hardware"; l'accento è il colore della traccia selezionata ===== */
+html[data-skin="notte"] {
+  --acc: #e9473b; --acc-ink: #141417;
+  --body: #18181b; --panel: #202024; --key: #27272c; --key2: #2d2d33; --edge: transparent; --line: #34343b;
+  --cream: #ececee; --muted: #8d8d96; --ink: #141417; --white: #f6f6f7;
+  --red: #e9473b; --orange: #ff8b2b; --yellow: #f4c542;
+  --led: var(--acc); --led-off: #303036; --lcd-bg: #202024; --lcd: #ececee;
+  --cap-hi: #2c2c32; --cap-mid: #26262b; --cap-lo: #222227; --ring: transparent;
+  --shade: transparent; --veil: rgba(16,16,19,.94);
+  color-scheme: dark;
+}
+html[data-skin="notte"] button:focus-visible, html[data-skin="notte"] [role="slider"]:focus-visible { outline-color: var(--acc); }
+html[data-skin="notte"] .logo { font-style: normal; font-weight: 700; letter-spacing: .5px; }
+html[data-skin="notte"] .logo b { color: var(--acc); font-weight: 700; }
+html[data-skin="notte"] .hw { background: var(--key); border-bottom: 0; border-radius: 10px; }
+html[data-skin="notte"] .tbtn.on { background: var(--acc); }
+html[data-skin="notte"] .tbtn.on svg { fill: var(--acc-ink); }
+html[data-skin="notte"] .tap.on { background: var(--cream); color: var(--ink); }
+html[data-skin="notte"] .tab, html[data-skin="notte"] .segb, html[data-skin="notte"] .bankb, html[data-skin="notte"] .mach, html[data-skin="notte"] .latch, html[data-skin="notte"] .busb, html[data-skin="notte"] .ghost, html[data-skin="notte"] .modb { border: 0; background: var(--key); color: var(--muted); border-radius: 8px; }
+html[data-skin="notte"] .tab { background: none; border-radius: 0; box-shadow: inset 0 -2px 0 transparent; }
+html[data-skin="notte"] .tab[aria-selected="true"] { background: none; color: var(--acc); box-shadow: inset 0 -2px 0 var(--acc); }
+html[data-skin="notte"] .segb[aria-checked="true"], html[data-skin="notte"] .seg [data-act="mixPage"][aria-selected="true"], html[data-skin="notte"] .bankb[aria-checked="true"], html[data-skin="notte"] .follow[aria-pressed="true"],
+html[data-skin="notte"] .mbtn.on, html[data-skin="notte"] .mbtn[aria-pressed="true"], html[data-skin="notte"] .rates .segb[aria-checked="true"], html[data-skin="notte"] .bustabs .segb[aria-selected="true"] { background: var(--cream); color: var(--ink); }
+html[data-skin="notte"] .fbtn[aria-pressed="true"] { background: var(--key2); color: var(--acc); box-shadow: inset 0 -2px 0 var(--acc); }
+html[data-skin="notte"] .mach[aria-checked="true"], html[data-skin="notte"] .modb[aria-checked="true"] { background: var(--acc); color: var(--acc-ink); }
+html[data-skin="notte"] .ghost { color: var(--cream); }
+html[data-skin="notte"] .ghost.armed, html[data-skin="notte"] .mbtn.armed, html[data-skin="notte"] .recb[aria-pressed="true"] { background: var(--red); color: var(--white); }
+html[data-skin="notte"] .latch[aria-pressed="true"], html[data-skin="notte"] .busb.on { background: var(--acc); color: var(--acc-ink); }
+html[data-skin="notte"] .pageb.off { opacity: .35; border: 1px dashed var(--line); background: none; }
+html[data-skin="notte"] .lcd { border: 0; border-radius: 12px; background: var(--panel); }
+html[data-skin="notte"] .lcd .bpm b { color: var(--acc); font-weight: 500; }
+html[data-skin="notte"] .lcd .l2 { color: var(--muted); opacity: 1; }
+html[data-skin="notte"] .lcd .bpm.drag { background: var(--key); }
+html[data-skin="notte"] .trk { background: var(--key); }
+html[data-skin="notte"] .trk .dot { background: var(--tc, var(--led-off)); box-shadow: none; opacity: .9; }
+html[data-skin="notte"] .trk.sel { background: var(--acc); color: var(--acc-ink); }
+html[data-skin="notte"] .trk.sel .dot { background: var(--acc-ink); }
+html[data-skin="notte"] .knob .cap { background: var(--key); box-shadow: none; }
+html[data-skin="notte"] .knob .cap::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(from 225deg, var(--acc) calc(var(--kv, 0) * 270deg), #34343b calc(var(--kv, 0) * 270deg) 270deg, transparent 270deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px)); }
+html[data-skin="notte"] .knob .rot i { background: var(--cream); width: 3px; left: calc(50% - 1.5px); }
+html[data-skin="notte"] .knob .lbl { color: var(--cream); font-weight: 600; }
+html[data-skin="notte"] .knob.locked .cap { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--cream); }
+html[data-skin="notte"] .knob.locked .val { color: var(--acc); }
+html[data-skin="notte"] .knob.sm .cap { box-shadow: none; }
+html[data-skin="notte"] .pad { background: var(--key); border-bottom: 0; border-radius: 10px; }
+html[data-skin="notte"] .pad.on, html[data-skin="notte"] .rpad.on { background: var(--acc); color: var(--acc-ink); transform: none; box-shadow: none; }
+html[data-skin="notte"] .rpad.on small { color: var(--acc-ink); }
+html[data-skin="notte"] .key { border-bottom: 0; border-radius: 8px; color: var(--muted); background: var(--key); }
+html[data-skin="notte"] .g1, html[data-skin="notte"] .g3 { background: var(--key2); }
+html[data-skin="notte"] .key[aria-pressed="true"] { background: var(--acc); color: var(--acc-ink); }
+html[data-skin="notte"] .key.head { transform: none; filter: none; box-shadow: inset 0 0 0 2px var(--cream); }
+html[data-skin="notte"] .key.sel { outline: 2px solid var(--cream); }
+html[data-skin="notte"] .led { width: 6px; height: 6px; }
+html[data-skin="notte"] .led.on { box-shadow: none; }
+html[data-skin="notte"] .rpad { background: var(--key); border-bottom: 0; border-radius: 12px; }
+html[data-skin="notte"] .rpad.root { box-shadow: inset 0 0 0 2px var(--acc); }
+html[data-skin="notte"] .rbtn b, html[data-skin="notte"] .oct b { color: var(--acc); }
+html[data-skin="notte"] .strip, html[data-skin="notte"] .master, html[data-skin="notte"] .slot { background: var(--panel); border-radius: 12px; }
+html[data-skin="notte"] .ms button, html[data-skin="notte"] .busmute { background: var(--key); border-bottom: 0; }
+html[data-skin="notte"] .ms .solo[aria-pressed="true"] { background: var(--cream); color: var(--ink); }
+html[data-skin="notte"] .fader::before, html[data-skin="notte"] .hfader .track { background: var(--key2); }
+html[data-skin="notte"] .fcap, html[data-skin="notte"] .hfader .hcap { box-shadow: none; }
+html[data-skin="notte"] .hfader .fill { background: var(--acc); }
+html[data-skin="notte"] .fxsel { border: 0; border-radius: 8px; }
+html[data-skin="notte"] .sheet-card { border: 1px solid var(--line); }
+html[data-skin="notte"] .wavebox { border: 0; background: #111114; }
+html[data-skin="notte"] .power .go { background: var(--acc); border-bottom: 0; }
+html[data-skin="notte"] .chop-row .chop-exp, html[data-skin="notte"] .wave-btns .chopgo, html[data-skin="notte"] .wave-btns .wave-play { background: var(--acc); color: var(--acc-ink); }
+html[data-skin="notte"] .mbtn.install { background: var(--acc); color: var(--acc-ink); }
 
 /* ===== SKIN SAD PONY GIRL: giallo "Guerrilla", maschere rosa, display VHS (weirdcore / nostalgiacore) ===== */
 .lcd .l3 { display: none; }
@@ -666,9 +746,10 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
 
     <section class="sec" aria-label="Skin">
       <span class="label">SKIN</span>
-      <div class="mgrid" role="radiogroup" aria-label="Skin">
+      <div class="mgrid skins" role="radiogroup" aria-label="Skin">
+        <button class="hw mbtn" data-act="skin" data-k="notte" role="radio">NOTTE</button>
         <button class="hw mbtn" data-act="skin" data-k="808" role="radio">808</button>
-        <button class="hw mbtn" data-act="skin" data-k="spg" role="radio">SAD PONY GIRL</button>
+        <button class="hw mbtn" data-act="skin" data-k="spg" role="radio">SAD PONY</button>
       </div>
     </section>
 
@@ -754,9 +835,44 @@ html[data-skin="spg"] .mbtn[aria-pressed="true"] { background: var(--dark); colo
       <button class="hw mbtn" data-act="waveZoom" data-z="-1" aria-label="Rimpicciolisci">ZOOM −</button>
       <button class="hw mbtn" data-act="waveReset">TUTTO IL FILE</button>
       <button class="hw mbtn" data-act="waveSnap" id="waveSnap" aria-pressed="true">AGGANCIO ZERO</button>
-      <button class="hw mbtn wave-wide" data-act="load">CARICA WAV…</button>
+      <button class="hw mbtn" data-act="load">CARICA WAV…</button>
+      <button class="hw mbtn chopgo" data-act="chop">CHOPY84 ▸</button>
     </div>
     <p class="mnote">Trascina <b>S</b> ed <b>E</b>: quando lasci, senti il risultato. <b>E prima di S</b> = suono al contrario. Due dita per lo zoom, un dito per scorrere. AGGANCIO ZERO evita i clic ai bordi; spegnilo per i glitch.</p>
+  </div>
+</div>
+
+<div class="sheet" id="chopEd" hidden role="dialog" aria-modal="true" aria-labelledby="chopTitle">
+  <div class="sheet-card wave-card chop-card">
+    <div class="row-between">
+      <b class="sheet-title" id="chopTitle">CHOPY84</b>
+      <button class="ghost" data-act="chopClose">CHIUDI</button>
+    </div>
+    <div class="row-between">
+      <span class="label" id="chopName"></span>
+      <span class="label wave-lock" id="chopCount"></span>
+    </div>
+    <div class="wavebox chopbox" id="chopBox"><canvas id="chopCanvas" tabindex="0" role="img" aria-label="Forma d'onda con le slice"></canvas></div>
+    <p class="mmsg" id="chopMsg" aria-live="polite"></p>
+    <span class="label">TAGLIA</span>
+    <div class="chop-row">
+      <button class="hw mbtn" data-act="chopGrid" data-n="4">4</button>
+      <button class="hw mbtn" data-act="chopGrid" data-n="8">8</button>
+      <button class="hw mbtn" data-act="chopGrid" data-n="16">16</button>
+      <button class="hw mbtn" data-act="chopTrans" aria-label="Taglia sui colpi (transienti)">COLPI</button>
+      <button class="hw mbtn" data-act="chopClear">NESSUNA</button>
+    </div>
+    <div class="chop-row">
+      <button class="hw mbtn" data-act="chopZoom" data-z="1" aria-label="Ingrandisci">ZOOM +</button>
+      <button class="hw mbtn" data-act="chopZoom" data-z="-1" aria-label="Rimpicciolisci">ZOOM −</button>
+      <button class="hw mbtn" data-act="chopSnap" id="chopSnap" aria-pressed="true" aria-label="Aggancio allo zero">AGG. ZERO</button>
+    </div>
+    <span class="label">ESPORTA</span>
+    <div class="chop-row">
+      <button class="hw mbtn" data-act="chopNorm" id="chopNorm" aria-pressed="false">NORMALIZZA</button>
+      <button class="hw mbtn chop-exp" data-act="chopExport">ESPORTA SLICE (.ZIP)</button>
+    </div>
+    <p class="mnote"><b>Tocca</b> una slice per sentirla. <b>Trascina</b> un taglio per spostarlo. <b>Tieni premuto</b> per aggiungere un taglio, o su un taglio per toglierlo. Massimo 16 slice: nel ROLL i pad suonano le slice, nel sequencer la manopola <b>SLICE</b> (anche in P-LOCK) sceglie quale suona e <b>LEN</b> quanta parte. L'export salva ogni slice come WAV, pronto per un campionatore come il Model:Samples.</p>
   </div>
 </div>
 
@@ -788,11 +904,12 @@ const $ = (s) => document.getElementById(s);
 // ===================================================================
 // DATI DEL PROGETTO
 // ===================================================================
-const VERSION = '0.10.1';
+const VERSION = '0.13.0';
 const audioMode = () => { try { return localStorage.getItem('pony84-audio') === 'stable' ? 'stable' : 'fast'; } catch (e) { return 'fast'; } };   // a ogni rilascio: aggiornare anche novita/index.html e CHANGELOG.md
 const MACHINES = ['KICK', 'SNARE', 'METAL', 'PERC', 'SYNTH', 'SAMPLE'];
 const SYNTH_LABELS = ['PITCH', 'DECAY', 'COLOR', 'SHAPE', 'SWEEP', 'CONTOUR', 'DELAY', 'REVERB'];
 const SAMPLE_LABELS = ['PITCH', 'START', 'END', 'DECAY', 'FILTER', 'GAIN', 'DELAY', 'REVERB'];
+const SLICE_LABELS = ['PITCH', 'SLICE', 'LEN', 'DECAY', 'FILTER', 'GAIN', 'DELAY', 'REVERB'];
 // SYNTH ha quattro modelli: FM2 (il TONE di prima), FM4, CZ (phase distortion) e MODAL (oggetti percossi)
 const MODELS = ['FM2', 'FM4', 'CZ', 'MODAL'];
 const MODEL_LABELS = {
@@ -812,6 +929,8 @@ const MATERIALS = [
   ['VETRO', [1, 2.32, 4.25, 6.63, 9.38], 5],
   ['TAMBURO', [1, 1.59, 2.14, 2.3, 2.65, 2.92, 3.16, 3.5], 0.3]
 ];
+const sliceCount = (tr) => (tr.machine === 'SAMPLE' && tr.slices && tr.slices.length >= 2 ? tr.slices.length : 0);
+const sliceVal = (k, n) => Math.round((k + 0.5) * 127 / n * 100) / 100;   // valore della manopola SLICE che sceglie la slice k
 const zone = (v, n) => Math.min(n - 1, Math.floor(v / 127 * n));   // manopola divisa in n zone
 const decayT = (v) => 0.003 * Math.pow(4 / 0.003, v / 127);       // DECAY dei modelli nuovi: da 3 ms a 4 s
 const fmtT = (t) => (t < 1 ? Math.round(t * 1000) + 'ms' : t.toFixed(2) + 's');
@@ -976,6 +1095,9 @@ function normalizeProject(p) {
     if (typeof t.sample !== 'string') t.sample = DEMO_SAMPLE;
     t.bus = [0, 1, 2, 3].includes(t.bus) ? t.bus : 0;   // 0 = MAIN, 1..3 = BUS A..C
     t.model = MODELS.includes(t.model) ? t.model : 'FM2';
+    // slice di CHOPY84: inizi (0..1) in ordine, il primo è 0; da 2 a 16 slice, altrimenti niente slice
+    const sl = Array.isArray(t.slices) ? t.slices.filter((x) => typeof x === 'number' && x >= 0 && x < 1).sort((a, b) => a - b).slice(0, 16) : [];
+    t.slices = sl.length >= 2 && sl[0] === 0 ? sl : [];
   });
   const okSlots = (s) => Array.isArray(s) && s.length === 3 && s.every((x) => x && FX_TYPES[x.type] && Array.isArray(x.p) && x.p.length === 3);
   const m = p.mix;
@@ -1604,7 +1726,13 @@ function playSample(ti, K, t, mul = 1, vel = 1) {
   if (!buf) return;
   const n = (x) => x / 127;
   const semis = Math.round((K[0] - 64) * 24 / 63), rate = Math.pow(2, semis / 12) * mul;
-  const dur = buf.duration, s = n(K[1]) * 0.99, e = n(K[2]), rev = e < s;
+  const dur = buf.duration, sn = sliceCount(P.tracks[ti]);
+  let s = n(K[1]) * 0.99, e = n(K[2]);
+  if (sn) {   // slice: manopola 2 = quale slice, manopola 3 = quanta parte della slice (LEN)
+    const sl = P.tracks[ti].slices, k = zone(K[1], sn);
+    s = sl[k]; e = s + ((k + 1 < sn ? sl[k + 1] : 1) - s) * Math.max(0.02, n(K[2]));
+  }
+  const rev = e < s;
   const start = (rev ? 1 - s : s) * dur;                       // al contrario: si legge la copia rovesciata
   const len = Math.max(0.005, Math.abs(e - s) * dur);
   const real = Math.max(0.006, len / rate);
@@ -1826,10 +1954,12 @@ function baseMidi(ti) {
 const noteName = (m) => NOTE[((m % 12) + 12) % 12] + (Math.floor(m / 12) - 1);
 function padTarget(pos) {
   if (P.roll.mode === 'KIT') return pos < 6 ? { ti: pos, tp: 0 } : null;
+  const sn = sliceCount(P.tracks[UI.track]);
+  if (sn) { const k = keyIdx(pos); return k < sn ? { ti: UI.track, tp: 0, slice: k, sn } : null; }
   return { ti: UI.track, tp: padSemis(keyIdx(pos)) };
 }
 function rollHit(h, t) {
-  trigger(h.ti, { locks: {}, v: h.vel, tp: h.tp }, t);
+  trigger(h.ti, { locks: h.slice != null ? { 1: sliceVal(h.slice, h.sn) } : {}, v: h.vel, tp: h.tp }, t);
   if (UI.rec && playing) recordHit(h, t);
 }
 function recordHit(h, t) {
@@ -1838,7 +1968,8 @@ function recordHit(h, t) {
   const st = P.patterns[P.cur][h.ti][s];
   st.on = true;
   st.v = Math.round(h.vel * 100) / 100;
-  if (!h.kit) st.tp = h.tp;
+  if (h.slice != null) { st.locks[1] = sliceVal(h.slice, h.sn); delete st.tp; }   // slice registrata come p-lock
+  else if (!h.kit) st.tp = h.tp;
   needRender = true;
 }
 // ripetizioni a tempo quando il sequencer suona
@@ -1877,11 +2008,11 @@ function holdStart(key, tg, vel, el) {
   initAudio(); if (ctx.state === 'suspended') ctx.resume();
   padUp(key);
   const t = ctx.currentTime + 0.005;
-  const h = { ti: tg.ti, tp: tg.tp, kit: !!tg.kit, vel, el, rate: P.roll.rate, t0: t, next: t + RATE_STEPS[P.roll.rate] * stepDur() };
+  const h = { ti: tg.ti, tp: tg.tp, kit: !!tg.kit, slice: tg.slice, sn: tg.sn, vel, el, rate: P.roll.rate, t0: t, next: t + RATE_STEPS[P.roll.rate] * stepDur() };
   held.set(key, h);
   rollHit(h, t);
   if (el) el.classList.add('on');
-  UI.lastNote = h.kit ? 'T' + (tg.ti + 1) + ' ' + P.tracks[tg.ti].machine : noteName(baseMidi(tg.ti) + tg.tp);
+  UI.lastNote = h.kit ? 'T' + (tg.ti + 1) + ' ' + P.tracks[tg.ti].machine : h.slice != null ? 'SLICE ' + (h.slice + 1) : noteName(baseMidi(tg.ti) + tg.tp);
   if (move) moveSync();
   drawLcd();
   if (UI.wide) $('rollHint').textContent = UI.rec ? $('rollHint').textContent : 'ULTIMA NOTA ' + UI.lastNote;
@@ -1917,6 +2048,7 @@ function knobEl(id, small) {
 function setKnob(el, def) {
   const v = def.get();
   el.querySelector('.rot').style.transform = 'rotate(' + (-135 + v / 127 * 270) + 'deg)';
+  el.style.setProperty('--kv', (Math.max(0, Math.min(127, v)) / 127).toFixed(3));   // arco della skin NOTTE
   el.querySelector('.lbl').textContent = def.label;
   const val = el.querySelector('.val');
   if (val) val.textContent = def.fmt(v);
@@ -1937,7 +2069,8 @@ function resolveKnob(id) {
       return { label: d.label, get: () => P.fx[d.k], set: (v) => { P.fx[d.k] = v; applyFx(); }, fmt: d.fmt };
     }
     const tr = P.tracks[UI.track];
-    const labels = tr.machine === 'SAMPLE' ? SAMPLE_LABELS : tr.machine === 'SYNTH' ? MODEL_LABELS[tr.model] : SYNTH_LABELS;
+    const sn = sliceCount(tr);
+    const labels = tr.machine === 'SAMPLE' ? (sn ? SLICE_LABELS : SAMPLE_LABELS) : tr.machine === 'SYNTH' ? MODEL_LABELS[tr.model] : SYNTH_LABELS;
     const st = UI.mode === 'PLOCK' && UI.selStep !== null && i < 6 ? P.patterns[P.cur][UI.track][UI.selStep] : null;
     if (i === 6 && UI.mode === 'PLOCK' && UI.selStep !== null) {   // in P-LOCK la manopola DELAY diventa la velocity dello step
       const vs = P.patterns[P.cur][UI.track][UI.selStep];
@@ -1952,7 +2085,7 @@ function resolveKnob(id) {
       label: labels[i], locked: st && st.locks[i] != null,
       get: () => (st && st.locks[i] != null ? st.locks[i] : tr.params[i]),
       set: (v) => { if (st) { st.locks[i] = v; st.on = true; } else { tr.params[i] = v; if (i >= 6) applyMix(); } },
-      fmt: (v) => fmtParam(tr.machine, i, v, tr.model)
+      fmt: (v) => (sn && i === 1 ? 'S' + (zone(v, sn) + 1) + '/' + sn : sn && i === 2 ? Math.max(2, Math.round(v / 127 * 100)) + '%' : fmtParam(tr.machine, i, v, tr.model))
     };
   }
   if (id.startsWith('w')) return waveKnob(Number(id.slice(1)));   // manopole dell'editor WAVE
@@ -2098,9 +2231,13 @@ function drawLcd() {
   if (lcdFlash && performance.now() < lcdFlash.until) right = lcdFlash.t;
   $('lcd2').textContent = left; $('lcd3').textContent = right;
 }
+// i 6 colori delle tracce: rosso, arancio, giallo e crema come i tasti della 808, poi blu e verde come i LED della Move
+const TRACK_ACC = ['#e9473b', '#ff8b2b', '#f4c542', '#ece4cf', '#6fa8dc', '#7cc796'];
 function drawTracks() {
+  document.documentElement.style.setProperty('--acc', TRACK_ACC[UI.track]);
   trackBtns.forEach((b, k) => {
     const i = k % 6;
+    b.style.setProperty('--tc', TRACK_ACC[i]);
     b.classList.toggle('sel', i === UI.track);
     b.classList.toggle('muted', !audible(i));
     b.querySelector('.nm').textContent = P.tracks[i].machine;
@@ -2143,9 +2280,16 @@ function drawRoll() {
         b.querySelector('b').textContent = P.tracks[pos].machine;
         b.querySelector('small').textContent = 'TRACCIA ' + (pos + 1);
         b.setAttribute('aria-label', 'Suona traccia ' + (pos + 1) + ' ' + P.tracks[pos].machine);
+        b.classList.remove('off');
       }
+    } else if (sliceCount(P.tracks[UI.track])) {
+      const sn = sliceCount(P.tracks[UI.track]), k = keyIdx(pos);
+      b.hidden = false; b.classList.toggle('root', false); b.classList.toggle('off', k >= sn);
+      b.querySelector('b').textContent = k < sn ? 'S' + (k + 1) : '';
+      b.querySelector('small').textContent = k < sn ? 'SLICE' : '';
+      b.setAttribute('aria-label', k < sn ? 'Suona la slice ' + (k + 1) : 'Pad vuoto');
     } else {
-      b.hidden = false;
+      b.hidden = false; b.classList.remove('off');
       const idx = keyIdx(pos), s = padSemis(idx), name = noteName(base + s);
       b.querySelector('b').textContent = name;
       b.querySelector('small').textContent = (s > 0 ? '+' : '') + s;
@@ -2358,6 +2502,7 @@ wavInput.addEventListener('change', async () => {
     const buf = await ctx.decodeAudioData(data);
     A.samples[ti] = buf;
     P.tracks[ti].sample = file.name.toUpperCase().slice(0, 16);
+    if (P.tracks[ti].slices && P.tracks[ti].slices.length) { P.tracks[ti].slices = []; P.tracks[ti].params[1] = 0; P.tracks[ti].params[2] = 127; }   // file nuovo: le slice del vecchio non valgono più
     await samplePut(ti, { name: P.tracks[ti].sample, data: copy });
   } catch (e) {
     P.tracks[ti].sample = 'FILE NON LETTO';
@@ -2366,6 +2511,205 @@ wavInput.addEventListener('change', async () => {
   renderAll();
   if (!$('waveEd').hidden) { UI.wave.zoom = 1; UI.wave.center = 0.5; drawWave(); }
 });
+
+// ---------- CHOPY84: taglia un campione in un massimo di 16 slice ----------
+// Le slice sono gli inizi (0..1) salvati nella traccia: P.tracks[t].slices. Con 2 o più slice la traccia SAMPLE
+// passa in "modalità slice": manopola 2 = SLICE (quale), manopola 3 = LEN (quanta parte); nel ROLL i pad sono le slice.
+const CH = { zoom: 1, center: 0.5, sel: -1, norm: false, g: null, playT0: -1, playFrom: 0, playTo: 0 };
+const chopTrack = () => P.tracks[UI.track];
+function chopSet(list, msg) {
+  const tr = chopTrack(), before = sliceCount(tr);
+  let sl = [...new Set(list.map((x) => Math.round(Math.max(0, Math.min(0.9999, x)) * 1e6) / 1e6))].sort((a, b) => a - b);
+  if (sl.length && sl[0] !== 0) sl.unshift(0);
+  sl = sl.slice(0, 16);
+  tr.slices = sl.length >= 2 ? sl : [];
+  if (!before && tr.slices.length) { tr.params[1] = sliceVal(0, tr.slices.length); tr.params[2] = 127; }   // entrando in modalità slice
+  if (before && !tr.slices.length) { tr.params[1] = 0; tr.params[2] = 127; }                               // uscendo: tutto il file
+  CH.sel = Math.min(CH.sel, tr.slices.length - 1);
+  $('chopMsg').textContent = msg || '';
+  renderAll(); drawChop(); save();
+}
+function chopGrid(n) { chopSet(Array.from({ length: n }, (_, i) => i / n), n + ' SLICE UGUALI'); }
+// transienti: dove l'energia sale di colpo (flusso spettrale semplificato), i 16 più forti, almeno 60 ms uno dall'altro
+function chopTransients() {
+  const buf = waveBuf(); if (!buf) return;
+  const d = buf.getChannelData(0), d2 = buf.numberOfChannels > 1 ? buf.getChannelData(1) : d, sr = buf.sampleRate, hop = 256, N = d.length;
+  const env = []; let prev = 0;
+  for (let i = 0; i + hop <= N; i += hop) {
+    let e = 0; for (let j = i; j < i + hop; j++) { const x = (d[j] + d2[j]) * 0.5; e += x * x; }
+    e = Math.sqrt(e / hop); env.push(Math.max(0, e - prev)); prev = e;
+  }
+  const mean = env.reduce((a, b) => a + b, 0) / Math.max(1, env.length);
+  const cand = [];
+  for (let k = 1; k < env.length - 1; k++) if (env[k] > mean * 2.2 && env[k] >= env[k - 1] && env[k] >= env[k + 1]) cand.push({ k, v: env[k] });
+  cand.sort((a, b) => b.v - a.v);
+  const minGap = Math.round(0.06 * sr / hop), pick = [];
+  for (const c of cand) { if (pick.every((p) => Math.abs(p - c.k) >= minGap)) pick.push(c.k); if (pick.length >= 15) break; }
+  const pts = pick.map((k) => { const f = (k * hop) / N; return UI.wave.snap ? snapZero(f) : f; });
+  chopSet([0, ...pts], pts.length ? (pts.length + 1) + ' SLICE SUI COLPI' : 'NESSUN COLPO EVIDENTE: PROVA 4, 8 O 16');
+}
+function chopView() {
+  const span = 1 / CH.zoom;
+  CH.center = Math.max(span / 2, Math.min(1 - span / 2, CH.center));
+  return { v0: CH.center - span / 2, span };
+}
+function drawChop() {
+  if ($('chopEd').hidden) return;
+  const cv = $('chopCanvas'), box = $('chopBox'), dpr = window.devicePixelRatio || 1, W = box.clientWidth, H = box.clientHeight;
+  if (!W || !H) return;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  if (!waveColors) { const cs = getComputedStyle(document.documentElement); waveColors = ['--cream', '--muted', '--orange', '--red', '--yellow', '--line', '--lcd'].reduce((o, k) => (o[k] = cs.getPropertyValue(k).trim(), o), {}); }
+  const C = waveColors, buf = waveBuf(), tr = chopTrack(), sl = tr.slices && tr.slices.length >= 2 ? tr.slices : [0];
+  const { v0, span } = chopView(), X = (f) => (f - v0) / span * W;
+  const acc = getComputedStyle(document.documentElement).getPropertyValue('--acc').trim() || C['--orange'];
+  // slice alterne leggermente schiarite, quella scelta evidenziata
+  sl.forEach((a, k) => {
+    const b = k + 1 < sl.length ? sl[k + 1] : 1, x0 = Math.max(0, X(a)), x1 = Math.min(W, X(b));
+    if (x1 <= x0) return;
+    g.fillStyle = k === CH.sel ? 'rgba(255,255,255,.12)' : k % 2 ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,0)';
+    g.fillRect(x0, 0, x1 - x0, H);
+  });
+  if (buf) {
+    const chs = [...Array(buf.numberOfChannels).keys()].map((c) => buf.getChannelData(c)), N = chs[0].length;
+    let peak = 0.0001; const top = new Float32Array(W), bot = new Float32Array(W);
+    for (let x = 0; x < W; x++) {
+      const i0 = Math.floor((v0 + x / W * span) * N), i1 = Math.max(i0 + 1, Math.floor((v0 + (x + 1) / W * span) * N)), st = Math.max(1, Math.floor((i1 - i0) / 256));
+      let mn = 0, mx = 0;
+      for (const d of chs) for (let i = i0; i < i1 && i < N; i += st) { const v = d[i]; if (v < mn) mn = v; if (v > mx) mx = v; }
+      top[x] = mx; bot[x] = mn; peak = Math.max(peak, mx, -mn);
+    }
+    const amp = (H / 2 - 22) / Math.max(peak, 0.25);
+    g.fillStyle = C['--cream'];
+    for (let x = 0; x < W; x++) g.fillRect(x, H / 2 - top[x] * amp, 1, Math.max(1, (top[x] - bot[x]) * amp));
+  }
+  // tagli e numeri
+  g.font = '700 12px "Barlow Condensed", sans-serif'; g.textBaseline = 'top'; g.textAlign = 'left';
+  sl.forEach((a, k) => {
+    const x = X(a);
+    if (x >= -1 && x <= W + 1 && k > 0) { g.fillStyle = acc; g.fillRect(x - 1, 0, 2, H); }
+    const b = k + 1 < sl.length ? sl[k + 1] : 1, xm = Math.max(0, x) + 4;
+    if (xm < W - 12 && X(b) - Math.max(0, x) > 16) { g.fillStyle = k === CH.sel ? acc : C['--muted']; g.fillText(String(k + 1), xm, 4); }
+  });
+  if (CH.playT0 >= 0 && ctx && buf) {   // testina
+    const pos = CH.playFrom + (ctx.currentTime - CH.playT0) / buf.duration;
+    if (pos < CH.playTo) { g.fillStyle = C['--yellow']; g.fillRect(X(pos) - 1, 0, 2, H); requestAnimationFrame(drawChop); } else CH.playT0 = -1;
+  }
+  const n = sliceCount(tr);
+  $('chopCount').textContent = n ? n + ' SLICE' : 'NESSUNA SLICE · FILE INTERO';
+  $('chopSnap').setAttribute('aria-pressed', String(UI.wave.snap));
+  $('chopNorm').setAttribute('aria-pressed', String(CH.norm));
+}
+function openChop() {
+  initAudio(); if (ctx.state === 'suspended') ctx.resume();
+  CH.zoom = 1; CH.center = 0.5; CH.sel = -1; CH.playT0 = -1;
+  $('chopEd').hidden = false;
+  $('chopTitle').textContent = 'CHOPY84 · TRACCIA ' + (UI.track + 1);
+  $('chopName').textContent = chopTrack().sample;
+  $('chopMsg').textContent = sliceCount(chopTrack()) ? '' : 'SCEGLI COME TAGLIARE: 4, 8, 16 PARTI O SUI COLPI';
+  requestAnimationFrame(drawChop);
+}
+function closeChop() { $('chopEd').hidden = true; CH.playT0 = -1; }
+function chopPlay(k) {   // ascolta la slice k (o tutto il file se non ci sono slice)
+  if (!ctx) return;
+  const tr = chopTrack(), n = sliceCount(tr), buf = waveBuf(); if (!buf) return;
+  const t = ctx.currentTime + 0.01;
+  if (n) trigger(UI.track, { locks: { 1: sliceVal(k, n), 2: 127, 3: 127 } }, t); else trigger(UI.track, { locks: { 1: 0, 2: 127, 3: 127 } }, t);
+  const sl = n ? tr.slices : [0];
+  CH.playFrom = sl[k] || 0; CH.playTo = k + 1 < sl.length ? sl[k + 1] : 1; CH.playT0 = t;
+  requestAnimationFrame(drawChop);
+}
+(function chopInput() {
+  const cv = $('chopCanvas');
+  const frac = (x) => { const r = cv.getBoundingClientRect(), { v0, span } = chopView(); return v0 + (x - r.left) / r.width * span; };
+  const nearCut = (x) => {   // indice del taglio vicino al dito (entro 22 px), mai lo 0
+    const sl = chopTrack().slices || [], r = cv.getBoundingClientRect(), { v0, span } = chopView();
+    let best = -1, bd = 23;
+    sl.forEach((a, k) => { if (!k) return; const d = Math.abs(r.left + (a - v0) / span * r.width - x); if (d < bd) { bd = d; best = k; } });
+    return best;
+  };
+  const sliceAt = (f) => { const sl = chopTrack().slices || []; let k = 0; sl.forEach((a, i) => { if (a <= f) k = i; }); return k; };
+  cv.addEventListener('pointerdown', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    try { cv.setPointerCapture(e.pointerId); } catch (err) { /* ok */ }
+    const cut = nearCut(e.clientX);
+    CH.g = { id: e.pointerId, x0: e.clientX, cut, moved: false, c0: CH.center, timer: setTimeout(() => {
+      if (!CH.g || CH.g.moved) return;
+      CH.g.long = true;
+      const sl = (chopTrack().slices || []).slice();
+      if (cut > 0) { sl.splice(cut, 1); chopSet(sl, 'TAGLIO TOLTO'); }                         // tieni premuto su un taglio = toglilo
+      else if ((sl.length || 1) < 16) { const f = frac(CH.g.x0); chopSet([...(sl.length ? sl : [0]), UI.wave.snap ? snapZero(f) : f], 'TAGLIO AGGIUNTO'); }
+      else $('chopMsg').textContent = 'MASSIMO 16 SLICE';
+    }, 450) };
+  });
+  cv.addEventListener('pointermove', (e) => {
+    const G = CH.g; if (!G || e.pointerId !== G.id) return;
+    if (!G.moved && Math.abs(e.clientX - G.x0) < 6) return;
+    G.moved = true; clearTimeout(G.timer);
+    const tr = chopTrack();
+    if (G.cut > 0) {   // sposta il taglio, senza scavalcare i vicini
+      const sl = tr.slices, lo = sl[G.cut - 1] + 0.001, hi = (G.cut + 1 < sl.length ? sl[G.cut + 1] : 1) - 0.001;
+      let f = Math.max(lo, Math.min(hi, frac(e.clientX)));
+      if (UI.wave.snap) f = Math.max(lo, Math.min(hi, snapZero(f)));
+      sl[G.cut] = f; drawChop();
+    } else if (CH.zoom > 1) { CH.center = G.c0 - (e.clientX - G.x0) / cv.getBoundingClientRect().width / CH.zoom; drawChop(); }
+  });
+  const end = (e) => {
+    const G = CH.g; if (!G || e.pointerId !== G.id) return;
+    CH.g = null; clearTimeout(G.timer);
+    if (G.long) return;
+    if (G.moved) { if (G.cut > 0) { save(); renderAll(); chopPlay(G.cut); CH.sel = G.cut; } return; }
+    if (e.type === 'pointerup') { const k = sliceAt(frac(e.clientX)); CH.sel = k; chopPlay(k); }   // tocco = ascolta la slice
+  };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+})();
+// export: ogni slice come WAV 16 bit (stereo se il file lo è) dentro un unico .zip
+function wavBytes(chs, a, b, sr, norm) {
+  const nc = chs.length, n = Math.max(0, b - a);
+  let g = 1;
+  if (norm) { let pk = 0; for (const d of chs) for (let i = a; i < b; i++) pk = Math.max(pk, Math.abs(d[i])); if (pk > 0) g = 0.98 / pk; }
+  const buf = new ArrayBuffer(44 + n * nc * 2), v = new DataView(buf);
+  const str = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  str(0, 'RIFF'); v.setUint32(4, 36 + n * nc * 2, true); str(8, 'WAVE'); str(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
+  v.setUint16(22, nc, true); v.setUint32(24, sr, true); v.setUint32(28, sr * nc * 2, true); v.setUint16(32, nc * 2, true); v.setUint16(34, 16, true);
+  str(36, 'data'); v.setUint32(40, n * nc * 2, true);
+  let o = 44;
+  const fade = Math.min(64, n >> 2);   // 1–2 ms di dissolvenza ai bordi: niente clic nell'altro campionatore
+  for (let i = 0; i < n; i++) {
+    const w = Math.min(1, (i + 1) / (fade || 1), (n - i) / (fade || 1));
+    for (const d of chs) { const x = Math.max(-1, Math.min(1, d[a + i] * g * w)); v.setInt16(o, x < 0 ? x * 32768 : x * 32767, true); o += 2; }
+  }
+  return new Uint8Array(buf);
+}
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u) { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = CRC[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zipStore(files) {   // zip senza compressione (i WAV non si comprimono comunque)
+  const parts = [], central = []; let off = 0;
+  for (const f of files) {
+    const name = new TextEncoder().encode(f.name), crc = crc32(f.data), h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint32(14, crc, true); h.setUint32(18, f.data.length, true); h.setUint32(22, f.data.length, true); h.setUint16(26, name.length, true);
+    parts.push(new Uint8Array(h.buffer), name, f.data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint32(16, crc, true); c.setUint32(20, f.data.length, true); c.setUint32(24, f.data.length, true);
+    c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), name);
+    off += 30 + name.length + f.data.length;
+  }
+  const cs = central.reduce((a, b) => a + b.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cs, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)], { type: 'application/zip' });
+}
+function chopExport() {
+  const buf = waveBuf(); if (!buf) return;
+  const tr = chopTrack(), sl = sliceCount(tr) ? tr.slices : [0], N = buf.length;
+  const chs = [...Array(buf.numberOfChannels).keys()].map((c) => buf.getChannelData(c));
+  const base = (tr.sample || 'sample').replace(/\.[a-z0-9]+$/i, '').replace(/[^A-Za-z0-9_-]+/g, '_').toLowerCase() || 'sample';
+  const files = sl.map((a, k) => ({ name: base + '_' + pad2(k + 1) + '.wav', data: wavBytes(chs, Math.round(a * N), Math.round((k + 1 < sl.length ? sl[k + 1] : 1) * N), buf.sampleRate, CH.norm) }));
+  const blob = zipStore(files), name = 'chopy84-' + base + '-' + files.length + 'slice.zip';
+  const el = document.createElement('a'); el.href = URL.createObjectURL(blob); el.download = name;
+  document.body.appendChild(el); el.click(); el.remove(); setTimeout(() => URL.revokeObjectURL(el.href), 10000);
+  $('chopMsg').textContent = 'SALVATO: ' + name + ' (CARTELLA DOWNLOAD)';
+}
 
 // ---------- editor WAVE: START / END sulla forma d'onda (stile MPC) ----------
 // START = manopola 2, END = manopola 3; se END sta prima di START il suono va al contrario.
@@ -2816,6 +3160,10 @@ function midiNoteOn(ch, note, vel) {
     const i = note - 36;
     if (i < 0 || i > 5) return;
     tg = { ti: i, tp: 0, kit: true };
+  } else if (sliceCount(P.tracks[UI.track])) {             // traccia con slice: C4 = slice 1, C#4 = slice 2…
+    const sn = sliceCount(P.tracks[UI.track]), k = note - 60;
+    if (k < 0 || k >= sn) return;
+    tg = { ti: UI.track, tp: 0, kit: false, slice: k, sn };
   } else tg = { ti: UI.track, tp: note - 60, kit: false };   // tastiera: C4 = intonazione della traccia
   const el = tg.kit && P.roll.mode === 'KIT' && shows('roll') ? rpadBtns[tg.ti] : null;
   holdStart('midi' + ch + ':' + note, tg, 0.35 + 0.65 * vel / 127, el);
@@ -3052,7 +3400,16 @@ function drawMenu() {
 
 function onAct(b) {
   const act = b.dataset.act;
-  if (act === 'wave') { openWave(); return; }
+  if (act === 'wave') { if (sliceCount(P.tracks[UI.track])) openChop(); else openWave(); return; }
+  if (act === 'chop') { closeWave(); openChop(); return; }
+  if (act === 'chopClose') { closeChop(); return; }
+  if (act === 'chopGrid') { chopGrid(Number(b.dataset.n)); return; }
+  if (act === 'chopTrans') { chopTransients(); return; }
+  if (act === 'chopClear') { chopSet([]); return; }
+  if (act === 'chopZoom') { CH.zoom = Math.max(1, Math.min(64, CH.zoom * (Number(b.dataset.z) > 0 ? 2 : 0.5))); drawChop(); return; }
+  if (act === 'chopSnap') { UI.wave.snap = !UI.wave.snap; drawChop(); return; }
+  if (act === 'chopNorm') { CH.norm = !CH.norm; drawChop(); return; }
+  if (act === 'chopExport') { chopExport(); return; }
   if (act === 'waveClose') { closeWave(); return; }
   if (act === 'wavePlay') { wavePlay(); return; }
   if (act === 'waveReset') { setWavePoint('s', 0, true); setWavePoint('e', 1, true); return; }
@@ -3204,6 +3561,7 @@ function onAct(b) {
 document.addEventListener('click', (e) => {
   if (e.target === $('menu')) { closeMenu(); return; }                        // tocco fuori dal pannello
   if (e.target === $('waveEd')) { closeWave(); return; }
+  if (e.target === $('chopEd')) { closeChop(); return; }
   if (e.detail === 0 && e.target.closest('[data-tap]')) { tap(); return; }   // TAP da tastiera
   const kp = e.detail === 0 && e.target.closest('[data-rpad]');               // pad ROLL da tastiera
   if (kp) { padDown(kp, 'kbd', null); setTimeout(() => padUp('kbd'), 150); return; }
@@ -3423,7 +3781,7 @@ document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 'z' || e.key === 'Z' || e.key === 'y' || e.key === 'Y') && !(e.target.closest && e.target.closest('input, select, textarea'))) {
     e.preventDefault(); histGo(e.key.toLowerCase() === 'y' || e.shiftKey ? 1 : -1); return;
   }
-  if (e.key === 'Escape') { if (!$('waveEd').hidden) closeWave(); else if (!$('menu').hidden) closeMenu(); else if (UI.learn) setLearn(false); return; }
+  if (e.key === 'Escape') { if (!$('chopEd').hidden) closeChop(); else if (!$('waveEd').hidden) closeWave(); else if (!$('menu').hidden) closeMenu(); else if (UI.learn) setLearn(false); return; }
   if (e.code === 'Space' && !e.repeat && !$('waveEd').hidden && e.target.id === 'waveCanvas') { e.preventDefault(); wavePlay(); return; }
   if (e.code === 'Space' && !e.repeat && $('menu').hidden && $('waveEd').hidden && (e.target === document.body || e.target === document.documentElement)) {
     e.preventDefault(); play(); return;
@@ -3483,7 +3841,7 @@ requestAnimationFrame(frame);
 let fitTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
-  fitTimer = setTimeout(() => { if (updateWide()) renderAll(); else fit(); if (shows('mix')) drawMixer(); drawWave(); }, 120);
+  fitTimer = setTimeout(() => { if (updateWide()) renderAll(); else fit(); if (shows('mix')) drawMixer(); drawWave(); drawChop(); }, 120);
 });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 
@@ -3493,15 +3851,18 @@ function vhsDate() {   // la data della videocamera: oggi, ma nel 1996
   const d = new Date(), h = d.getHours();
   $('lcdDate').textContent = MESI[d.getMonth()] + ' ' + String(d.getDate()).padStart(2, '0') + ' 1996  ' + (h < 12 ? 'AM' : 'PM') + ' ' + (h % 12 || 12) + ':' + String(d.getMinutes()).padStart(2, '0');
 }
+// skin: NOTTE (predefinita), 808 o SAD PONY GIRL; la scelta resta salvata nel browser
+const SKINS = { notte: '#18181b', '808': '#23211e', spg: '#e6e22b' };
 function setSkin(k, save) {
-  const spg = k === 'spg', root = document.documentElement;
-  if (spg) root.dataset.skin = 'spg'; else delete root.dataset.skin;
-  if (save) { try { localStorage.setItem('pony84-skin', spg ? 'spg' : '808'); } catch (e) {} }
-  const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = spg ? '#e6e22b' : '#23211e';
-  document.querySelectorAll('[data-act="skin"]').forEach(b => { const on = b.dataset.k === (spg ? 'spg' : '808'); b.setAttribute('aria-checked', String(on)); b.classList.toggle('on', on); });
-  waveColors = null; vhsDate(); fit(); drawWave();
+  if (!SKINS[k]) k = 'notte';
+  const root = document.documentElement;
+  if (k === '808') delete root.dataset.skin; else root.dataset.skin = k;
+  if (save) { try { localStorage.setItem('pony84-skin', k); } catch (e) {} }
+  const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = SKINS[k];
+  document.querySelectorAll('[data-act="skin"]').forEach(b => { const on = b.dataset.k === k; b.setAttribute('aria-checked', String(on)); b.classList.toggle('on', on); });
+  waveColors = null; vhsDate(); fit(); drawWave(); drawChop();
 }
-setSkin(document.documentElement.dataset.skin === 'spg' ? 'spg' : '808', false);
+setSkin(document.documentElement.dataset.skin || '808', false);
 setInterval(vhsDate, 30000);
 // versione e "novità non ancora lette" (pallino sul logo e sul tasto NOVITÀ)
 {

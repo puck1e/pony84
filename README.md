@@ -1,6 +1,6 @@
 # PONY84
 
-Versione **0.10.1** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
+Versione **0.13.0** · [novità](https://app.sadponygirl.com/novita/) · [CHANGELOG](CHANGELOG.md)
 
 Groovebox ispirata a Elektron Model:Cycles e alla Roland SP-404, con i colori della 808.
 Motori FM e sample → sequencer a 16 step → scatter, delay, riverbero e mixer a 6 canali.
@@ -26,6 +26,7 @@ Online: **https://app.sadponygirl.com** (anche https://pony84.raptuzbass.workers
 - **Tracce**: 6 tracce, ognuna assegnabile a KICK, SNARE, METAL, PERC, SYNTH o SAMPLE. DECAY a 0 = un "tic" di pochi millisecondi.
 - **SYNTH**: quattro modelli: FM2 (il vecchio TONE), FM4 (4 operatori, algoritmi e feedback), CZ (phase distortion stile Casio) e MOD (modale: marimba, campana, metallo, vetro, tamburo). I modelli nuovi girano in un AudioWorklet.
 - **WAVE** (motore SAMPLE): editor della forma d'onda con maniglie START/END; END prima di START = suono al contrario. Zoom a due dita fino a 64×, ascolto automatico quando lasci la maniglia, aggancio allo zero, PITCH/DECAY/FILTER/GAIN nell'editor, interruttore TRACCIA/STEP per i p-lock. Su Android, CARICA WAV permette anche di registrare un audio al momento.
+- **CHOPY84** (dall'editor WAVE): fino a 16 fette nella stessa traccia, a griglia (4/8/16) o sui colpi; tocca per ascoltare, trascina per spostare, tieni premuto per aggiungere/togliere un taglio. Le manopole START/END diventano SLICE/LEN (anche in P-LOCK); in ROLL → KEYS ogni pad è una fetta; ESPORTA SLICE scarica uno .zip con un WAV per fetta.
 - **STEP**: tocca gli step per accenderli. **Pagine 1–4**: pattern da 16 a 64 step (tocca una pagina tratteggiata per allungare, copiando la precedente; tieni premuto per accorciare); SEGUI fa seguire alla vista la pagina che suona.
 - **P-LOCK**: scegli uno step e gira le manopole per dargli valori propri; la manopola DELAY diventa VEL (velocity dello step).
 - **Velocity**: in STEP trascina su o giù su uno step; la barretta nello step mostra i colpi piano, che suonano anche più scuri.
@@ -46,7 +47,7 @@ Online: **https://app.sadponygirl.com** (anche https://pony84.raptuzbass.workers
   - **Audio**: BASSA LATENZA o STABILE (se senti click o crepitii).
   - **Esporta / Importa**: file `.pony84` con pattern, suoni, mixer, effetti e WAV, da riaprire su qualsiasi dispositivo.
   - **Nuovo vuoto / Nuovo da demo**: due tocchi per confermare.
-  - **Skin**: 808 oppure SAD PONY GIRL (giallo acido, maschere rosa, display VHS in stile weirdcore/nostalgiacore). La scelta resta salvata.
+  - **Skin**: NOTTE (predefinita: grigio scuro piatto, accento con il colore della traccia selezionata), 808 oppure SAD PONY GIRL (giallo acido, maschere rosa, display VHS in stile weirdcore/nostalgiacore). La scelta resta salvata.
   - **Controller MIDI** (Chrome su PC e Android, sul telefono con adattatore USB-C OTG): pad sul canale 10: note 36–41 → tracce 1–6, note 44–49 (banco B dell'MPK Mini) → mute tenuto delle tracce 1–6; tastiera sugli altri canali → note della traccia scelta (C4 = intonazione della traccia); CC 70–77 → le 8 manopole della pagina aperta; program change 1–128 → pattern A01–H16; Start/Stop MIDI → play/stop. Con **MIDI LEARN** tocchi una manopola o un fader e muovi un controllo del controller per assegnarlo; toccando un tasto traccia e premendo un pad assegni il mute tenuto.
   - **Ableton Move**: COLLEGA MOVE trasforma la Move nel controller di PONY84 (step, pad, encoder, LED), grazie a [movewire](https://github.com/auridevil/movewire) di Auri, incluso in `web/vendor/movewire/` (licenza MIT). Mappatura completa nella guida.
 

@@ -1,7 +1,7 @@
 // PONY84 service worker: l'app funziona anche senza rete.
 // Pagine: prima la rete (così gli aggiornamenti arrivano subito), poi la copia salvata.
 // Altri file: la copia salvata subito, aggiornata in sottofondo. Il nome della cache segue la versione.
-const VERSION = '0.10.1';
+const VERSION = '0.13.0';
 const CACHE = 'pony84-' + VERSION, FONTS = 'pony84-fonts';
 const SHELL = [
   '/', '/guide/', '/novita/', '/crediti/', '/manifest.webmanifest',
